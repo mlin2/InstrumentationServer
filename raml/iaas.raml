@@ -1,0 +1,82 @@
+#%RAML 1.0
+title: IaaS
+# description: Instrumentation As A Service
+version: v1
+protocols: [http, https]
+baseUri: http://sentinel.org/{version}
+schemas:
+  - error: !include schemas/error-schema.json
+  - apk: !include schemas/apk-schema.json
+  - apks: !include schemas/apks-schema.json
+  - hash: !include schemas/hash-schema.json
+/instrument:
+  description: |
+    Instrument apk based on the configuration files contained in the request.
+  get:
+    description: Retrieve a list of instrumented apk files
+    responses:
+      200:
+        body:
+          application/json:
+            schema: apks
+            example: !include examples/instrumentGet-response.json
+  post:
+    description: |
+      Instrument an apk file based on the configuration files attached
+      to the request
+    body:
+      multipart/form-data:
+        formParameters:
+          sourceFile:
+            description: Source file containing the android's source methods
+            displayName: Source File
+            type: file
+            required: true
+            example: !include examples/sources.txt
+          sinkFile:
+            description: Sink file containing the android's sink methods
+            displayName: Sink File
+            type: file
+            required: true
+            example: !include examples/sinks.txt
+          easyTaintWrapperSource:
+            description: |
+              Taint wrapper file containing the android's package names that
+              should be considered during the instrumentation phase
+            displayName: Easy Taint Wrapper File
+            type: file
+            required: true
+            example: !include examples/taintWrapperSource.txt
+          apkFile:
+            description: APK file that should be instrumented
+            displayName: APK File
+            type: file
+            required: true
+    responses:
+      202:
+        body:
+          application/json:
+            schema: apk
+            example: !include examples/instrumentPost-response.json
+      400:
+        body:
+          application/json:
+            schema: error
+            example: !include examples/error-response.json
+  /{apkHash}:
+    get:
+      description: |
+        Retrieve the location of the instrumented apk file based its hash sum value.
+        The hash value is calculated from the non-instrumented apk with sha512.
+      responses:
+        200:
+          body:
+            application/json:
+              schema: hash
+              example: !include examples/instrumentApkHashGet-response.json
+        404:
+          body:
+            application/json:
+              schema: error
+              example: !include examples/error-response.json
+

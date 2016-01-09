@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema",
+  "type": "object",
+  "properties": {
+    "errorId": {
+      "type": "number",
+      "required": true
+    },
+    "msg": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

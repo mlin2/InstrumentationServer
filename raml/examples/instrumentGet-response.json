@@ -1,0 +1,11 @@
+{
+  "apks": [
+    {
+      "hash": "f4439018f1cd7e5d770c77743533e31bc76fcf31950dca09991c93bece5bb49e9896d6e3d5d597ed983fdb444505dbc9cd336b58c3917645cfbc97b6b05d8791",
+      "url": "http://sentinel.de/instrumentedApps/f4439018f1cd7e5d770c77743533e31bc76fcf31950dca09991c93bece5bb49e9896d6e3d5d597ed983fdb444505dbc9cd336b58c3917645cfbc97b6b05d8791"
+    }, {
+      "hash": "1652d23fd36ffdb6eebe21b9b6ae5d09aeb6d40c929fdc45cb2621b4538084d5b0b34d64803608d2ad30d918d0d194a20ad8483a9ae564fefd41eddc43a6f05e",
+      "url": "http://sentinel.de/instrumentedApps/1652d23fd36ffdb6eebe21b9b6ae5d09aeb6d40c929fdc45cb2621b4538084d5b0b34d64803608d2ad30d918d0d194a20ad8483a9ae564fefd41eddc43a6f05e"
+    }
+  ]
+}
