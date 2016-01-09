@@ -53,6 +53,11 @@
             <version>4.9</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-multipart</artifactId>
+            <version>2.22.1</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -91,7 +96,7 @@
                     <sourceDirectory>${basedir}/raml</sourceDirectory>
                     <!-- Optionally configure outputDirectory if you don't like the default value: ${project.build.directory}/generated-sources/raml-JAX-RS -->
                     <!-- Replace with your package name -->
-                    <basePackageName>org.sentinel.instrumentationserver</basePackageName>
+                    <basePackageName>org.sentinel.instrumentationserver.generated</basePackageName>
                     <!-- Valid values: 1.1 2.0 -->
                     <jaxrsVersion>2.0</jaxrsVersion>
                     <useJsr303Annotations>false</useJsr303Annotations>
