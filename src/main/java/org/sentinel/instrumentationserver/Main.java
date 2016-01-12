@@ -3,6 +3,7 @@ package org.sentinel.instrumentationserver;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.sentinel.instrumentationserver.resource.impl.InstrumentResourceImpl;
 
@@ -26,6 +27,7 @@ public class Main {
         // in org.sentinel.instrumentationserver package
         final ResourceConfig rc = new ResourceConfig().packages("org.sentinel.instrumentationserver.resource");
         rc.register(InstrumentResourceImpl.class);
+        rc.register(MultiPartFeature.class);
         rc.register(JacksonFeature.class);
 
         // create and start a new instance of grizzly http server

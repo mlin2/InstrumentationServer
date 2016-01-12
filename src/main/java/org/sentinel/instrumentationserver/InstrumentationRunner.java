@@ -54,7 +54,7 @@ public class InstrumentationRunner {
         writeFileToDisk(sinkFile, sinkFileInJobDirectory);
         writeFileToDisk(easyTaintWrapperSource, easyTaintWrapperSourceInJobDirectory);
         writeFileToDisk(apkFile, apkFileInJobDirectory);
-        
+
         try {
             Ini ini = new Ini(new File("config.ini"));
 

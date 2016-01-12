@@ -2,7 +2,6 @@ package org.sentinel.instrumentationserver;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
-import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
