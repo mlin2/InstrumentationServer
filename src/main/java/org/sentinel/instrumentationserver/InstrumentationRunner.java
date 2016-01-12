@@ -1,40 +1,37 @@
 package org.sentinel.instrumentationserver;
 
 import org.ini4j.Ini;
-import org.ini4j.Wini;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by sebastian on 1/12/16.
  */
 public class InstrumentationRunner {
 
-        private static void printLines(String name, InputStream ins) throws Exception {
-            String line = null;
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(ins));
-            while ((line = in.readLine()) != null) {
-                System.out.println(name + " " + line);
-            }
+    private static void printLines(String name, InputStream ins) throws Exception {
+        String line = null;
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(ins));
+        while ((line = in.readLine()) != null) {
+            System.out.println(name + " " + line);
         }
+    }
 
-        private static void runProcess(String command) throws Exception {
-            Process pro = Runtime.getRuntime().exec(command);
-            printLines(command + " stdout:", pro.getInputStream());
-            printLines(command + " stderr:", pro.getErrorStream());
-            pro.waitFor();
-            System.out.println(command + " exitValue() " + pro.exitValue());
-        }
+    private static void runProcess(String command) throws Exception {
+        Process pro = Runtime.getRuntime().exec(command);
+        printLines(command + " stdout:", pro.getInputStream());
+        printLines(command + " stderr:", pro.getErrorStream());
+        pro.waitFor();
+        System.out.println(command + " exitValue() " + pro.exitValue());
+    }
 
     public void run(Object sourceFile, Object sinkFile, Object easyTaintWrapperSource, Object apkFile) {
         try {
 
 
-            runProcess("javac");
-            runProcess("java Main");
+            //runProcess("javac");
+            runProcess(buildCommand(sourceFile, sinkFile, easyTaintWrapperSource, apkFile));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -53,7 +50,11 @@ public class InstrumentationRunner {
         File easyTaintWrapperSourceInJobDirectory = new File("instrumentJobDirectoryName/EasyTaintWrapperSource.txt");
         File apkFileInJobDirectory = new File("instrumentJobDirectoryName/fileToInstrument.apk");
 
-
+        writeFileToDisk(sourceFile, sourceFileInJobDirectory);
+        writeFileToDisk(sinkFile, sinkFileInJobDirectory);
+        writeFileToDisk(easyTaintWrapperSource, easyTaintWrapperSourceInJobDirectory);
+        writeFileToDisk(apkFile, apkFileInJobDirectory);
+        
         try {
             Ini ini = new Ini(new File("config.ini"));
 
@@ -78,7 +79,7 @@ public class InstrumentationRunner {
 
             //TODO introduce constants for separators
             return javaPath + encodingOption + "-classpath" + instrumentationPepDirectory + "/bin:" + instrumentationPepDirectory + "/libs/*" +
-                     ":" + sootDirectory + "/testclasses:" + sootDirectory + "/classes:" + sootDirectory + "/libs/*" +
+                    ":" + sootDirectory + "/testclasses:" + sootDirectory + "/classes:" + sootDirectory + "/libs/*" +
                     ":" + jasminDirectory + "classes:" + jasminDirectory + "/libs/*" +
                     ":" + herosDirectory + "target/classes:" + herosDirectory + "target/testclasses:" + herosDirectory + "/*" +
                     ":" + functionalJavaDirectory +
@@ -101,13 +102,18 @@ public class InstrumentationRunner {
 
     }
 
+    private void writeFileToDisk(Object fileData, File file) {
+        try {
+            file.createNewFile();
+            FileOutputStream fos = new FileOutputStream(file);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+            objectOutputStream.writeObject(fileData);
+            fos.write(byteArrayOutputStream.toByteArray());
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-/*        public static void run(String[] args) {
-            try {
-                runProcess("javac Main.java");
-                runProcess("java Main");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }*/
 }
