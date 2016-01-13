@@ -1,0 +1,30 @@
+apply plugin: "java"
+
+sourceSets {
+    main {
+        java {
+            srcDir "src"
+        }
+    }
+}
+
+compileJava {
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+    options.deprecation = true
+}
+
+jar {
+    archiveName "DroidForce.jar"
+    from {
+        "resources"
+    }
+
+    manifest {
+        attributes("Main-Class": "de.ecspride.Main")
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: '*.jar')
+}

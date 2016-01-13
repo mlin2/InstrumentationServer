@@ -1,0 +1,7 @@
+NETWORK:
+<java.net.URL: void set(java.lang.String,java.lang.String,int,java.lang.String,java.lang.String)> (NETWORK)
+<java.net.URL: void set(java.lang.String,java.lang.String,int,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String)> (NETWORK)
+<java.net.URLConnection: void setRequestProperty(java.lang.String,java.lang.String)> (NETWORK)
+<java.net.Socket: void connect(java.net.SocketAddress)> (NETWORK)
+<org.apache.http.impl.client.DefaultHttpClient: org.apache.http.HttpResponse execute(org.apache.http.client.methods.HttpUriRequest)> (NETWORK)
+<org.apache.http.client.HttpClient: org.apache.http.HttpResponse execute(org.apache.http.client.methods.HttpUriRequest)> (NETWORK)

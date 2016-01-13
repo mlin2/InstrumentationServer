@@ -1,0 +1,6 @@
+soot.jar=./libs/soot-trunk.jar
+soot-infoflow.jar=./libs/soot-infoflow.jar
+soot-infoflow-android.jar=./libs/soot-infoflow-android.jar
+android.jar=./libs/android.jar
+
+droidforce.jar=build/jar/DroidForce.jar

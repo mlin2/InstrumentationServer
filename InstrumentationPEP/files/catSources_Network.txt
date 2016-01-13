@@ -1,0 +1,19 @@
+NETWORK_INFORMATION:
+<org.apache.http.HttpResponse: org.apache.http.HttpEntity getEntity()> (NETWORK_INFORMATION)
+<org.apache.http.util.EntityUtils: java.lang.String toString(org.apache.http.HttpEntity)> (NETWORK_INFORMATION)
+<org.apache.http.util.EntityUtils: java.lang.String toString(org.apache.http.HttpEntity,java.lang.String)> (NETWORK_INFORMATION)
+<org.apache.http.util.EntityUtils: byte[] toByteArray(org.apache.http.HttpEntity)> (NETWORK_INFORMATION)
+<org.apache.http.util.EntityUtils: java.lang.String getContentCharSet(org.apache.http.HttpEntity)> (NETWORK_INFORMATION)
+<android.net.wifi.WifiInfo: java.lang.String: getMacAddress()> (NETWORK_INFORMATION)
+<android.net.wifi.WifiInfo: java.lang.String getSSID()> (NETWORK_INFORMATION)
+<android.telephony.gsm.GsmCellLocation: int getCid()> (NETWORK_INFORMATION)
+<android.telephony.gsm.GsmCellLocation: int getLac()> (NETWORK_INFORMATION)
+<android.location.Location: double getLongitude()> (NETWORK_INFORMATION)
+<android.location.Location: double getLatitude()> (NETWORK_INFORMATION)
+<android.net.nsd.NsdServiceInfo: int getPort()> (NETWORK_INFORMATION)
+<android.net.ConnectivityManager: android.net.NetworkInfo[] getAllNetworkInfo()> (NETWORK_INFORMATION) 
+
+BROWSER_INFORMATION:
+<android.provider.Browser: android.database.Cursor getAllBookmarks()> (BROWSER_INFORMATION)
+<android.provider.Browser: android.database.Cursor getAllVisitedUrls()> (BROWSER_INFORMATION)
+<java.net.URL: java.net.URLConnection openConnection()> (BROWSER_INFORMATION)
