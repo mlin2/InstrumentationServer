@@ -84,12 +84,12 @@ public class InstrumentationRunner {
                     ":" + infoflowAndroidDirectory + "bin:" + infoflowAndroidDirectory + "/lib/*" +
                     " " + mainMethod +
                     " " + "-sourceFile " + sourceFileTemp.getAbsolutePath() +
-                    " " + "-sinkFile" + sinkFileTemp.getAbsolutePath() +
-                    " " + "-apkFile" + fileToInstrumentTemp.getAbsolutePath() +
-                    " " + "-taintWrapper" + easyTaintWrapperSourceTemp.getAbsolutePath() +
-                    " " + "-androidPlatforms" + androidPlatformDirectory +
-                    " " + "-androidJar" + androidJarDirectory +
-                    " " + "-j -o" + outputDirectory;
+                    " " + "-sinkFile " + sinkFileTemp.getAbsolutePath() +
+                    " " + "-apkFile " + fileToInstrumentTemp.getAbsolutePath() +
+                    " " + "-taintWrapper " + easyTaintWrapperSourceTemp.getAbsolutePath() +
+                    " " + "-androidPlatforms " + androidPlatformDirectory +
+                    " " + "-androidJar " + androidJarDirectory +
+                    " " + "-j -o " + outputDirectory;
 
 
         } catch (IOException e) {
