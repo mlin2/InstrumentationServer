@@ -1,5 +1,7 @@
 package org.sentinel.instrumentationserver;
 
+import org.glassfish.jersey.media.multipart.BodyPart;
+
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
 import java.io.IOException;
@@ -87,8 +89,8 @@ public class InstrumentationServerManager {
         }
     }
 
-    public boolean handleMultipartPost(MimeMultipart mimeMultipart) {
-        InstrumentationRunner instrumentationRunner = new InstrumentationRunner();
+    public boolean handleMultipartPost(List<BodyPart> mimeMultipart) {
+      /*  InstrumentationRunner instrumentationRunner = new InstrumentationRunner();
         try {
             if (!isMimeMultipartOK(mimeMultipart)) {
                 return false;
@@ -103,6 +105,7 @@ public class InstrumentationServerManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return true;*/
         return true;
     }
 

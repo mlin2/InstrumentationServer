@@ -1,12 +1,19 @@
 package org.sentinel.instrumentationserver.resource.impl;
 
+import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.glassfish.jersey.media.multipart.MultiPart;
 import org.sentinel.instrumentationserver.InstrumentationServerManager;
-import org.sentinel.instrumentationserver.generated.resource.InstrumentResource;
+import org.sentinel.instrumentationserver.generated.workaround.InstrumentResource;
 import org.sentinel.instrumentationserver.generated.model.Apk;
 import org.sentinel.instrumentationserver.generated.model.Apks;
 
 import javax.mail.internet.MimeMultipart;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,15 +37,19 @@ public class InstrumentResourceImpl implements InstrumentResource {
         return GetInstrumentResponse.withJsonOK(apks);
     }
 
-    @Override
-    public PostInstrumentResponse postInstrument(MimeMultipart entity) throws Exception {
+    @POST
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces({
+            "application/json"
+    })
+    public PostInstrumentResponse postInstrument(@FormDataParam("file")InputStream file1) throws Exception {
 
-        if (InstrumentationServerManager.getInstance().handleMultipartPost(entity)) {
+/*        if (InstrumentationServerManager.getInstance().handleMultipartPost(entity.getBodyParts())) {
             return PostInstrumentResponse.withJsonAccepted(new Apk());
-        }
+        }*/
 
 
-        return null;
+        return PostInstrumentResponse.withJsonAccepted(new Apk());
     }
 
     @Override
