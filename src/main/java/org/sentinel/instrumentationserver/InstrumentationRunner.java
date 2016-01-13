@@ -74,16 +74,10 @@ public class InstrumentationRunner {
 
             String mainMethod = "de.ecspride.Main";
             String javaExecutionDirectory = "-Duser.dir=" + instrumentationPepDirectory;
+            String jarName = "-jar bit.jar";
 
             //TODO introduce constants for separators
-            return javaPath + " " + encodingOption + " " + javaExecutionDirectory + " " + "-classpath " + instrumentationPepDirectory + "bin:" + instrumentationPepDirectory + "libs/*" +
-                    ":" + sootDirectory + "testclasses:" + sootDirectory + "classes:" + sootDirectory + "libs/*" +
-                    ":" + jasminDirectory + "classes:" + jasminDirectory + "libs/*" +
-                    ":" + herosDirectory + "target/classes:" + herosDirectory + "target/testclasses:" + herosDirectory + "*" +
-                    ":" + functionalJavaDirectory +
-                    ":" + infoflowDirectory + "bin:" + infoflowDirectory + "lib/*" +
-                    ":" + infoflowAndroidDirectory + "bin:" + infoflowAndroidDirectory + "lib/*" +
-                    " " + mainMethod +
+            return javaPath + " " + jarName +
                     " " + "-sourceFile " + sourceFileTemp.getAbsolutePath() +
                     " " + "-sinkFile " + sinkFileTemp.getAbsolutePath() +
                     " " + "-apkFile " + fileToInstrumentTemp.getAbsolutePath() +
