@@ -24,3 +24,7 @@ hs_err_pid*
 
 # RAML
 raml/target
+
+# Project specific
+sootOutput
+test.db

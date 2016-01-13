@@ -1,5 +1,6 @@
 package org.sentinel.instrumentationserver;
 
+import org.apache.commons.io.IOUtils;
 import org.ini4j.Ini;
 
 import java.io.*;
@@ -26,7 +27,7 @@ public class InstrumentationRunner {
         System.out.println(command + " exitValue() " + pro.exitValue());
     }
 
-    public void run(Object sourceFile, Object sinkFile, Object easyTaintWrapperSource, Object apkFile) {
+    public void run(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource, InputStream apkFile) {
         try {
 
 
@@ -40,20 +41,15 @@ public class InstrumentationRunner {
     }
 
     //TODO do something better than returning null
-    private String buildCommand(Object sourceFile, Object sinkFile, Object easyTaintWrapperSource, Object apkFile) {
+    private String buildCommand(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource, InputStream apkFile) {
         String instrumentJobDirectoryName = String.valueOf(Math.random());
-        File directory = new File(instrumentJobDirectoryName);
+        File directory = new File("sootOutput/" + instrumentJobDirectoryName);
         directory.mkdir();
 
-        File sourceFileInJobDirectory = new File("instrumentJobDirectoryName/catSources_Short.txt");
-        File sinkFileInJobDirectory = new File("instrumentJobDirectoryName/catSinks_Short.txt");
-        File easyTaintWrapperSourceInJobDirectory = new File("instrumentJobDirectoryName/EasyTaintWrapperSource.txt");
-        File apkFileInJobDirectory = new File("instrumentJobDirectoryName/fileToInstrument.apk");
-
-        writeFileToDisk(sourceFile, sourceFileInJobDirectory);
-        writeFileToDisk(sinkFile, sinkFileInJobDirectory);
-        writeFileToDisk(easyTaintWrapperSource, easyTaintWrapperSourceInJobDirectory);
-        writeFileToDisk(apkFile, apkFileInJobDirectory);
+        File sourceFileTemp = getTmpFile(sourceFile, "catSources_Short", ".txt");
+        File sinkFileTemp = getTmpFile(sinkFile, "catSinks_Short", ".txt");
+        File easyTaintWrapperSourceTemp = getTmpFile(easyTaintWrapperSource, "EasyTaintWrapperSource", ".txt");
+        File fileToInstrumentTemp = getTmpFile(apkFile, "fileToInstrument", ".apk");
 
         try {
             Ini ini = new Ini(new File("config.ini"));
@@ -70,26 +66,27 @@ public class InstrumentationRunner {
             String infoflowAndroidDirectory = ini.get("Infoflow Android", "PathSootInfoflowAndroid", String.class);
             String androidPlatformDirectory = ini.get("Android", "PlatformsPath", String.class);
             String androidJarDirectory = ini.get("Android Jar", "androidJarPath", String.class);
-            String keystoreDirectory = ini.get("Keystore", "keyStorePath", String.class);
+            //TODO implement keystore signing
+/*            String keystoreDirectory = ini.get("Keystore", "keyStorePath", String.class);
             String keystoreAlias = ini.get("Keystore", "mykeystore", String.class);
-            String keystorePass = ini.get("Keystore", "laurent", String.class);
+            String keystorePass = ini.get("Keystore", "laurent", String.class);*/
             String outputDirectory = instrumentationPepDirectory + directory.getAbsolutePath();
 
             String mainMethod = "de.ecspride.Main";
 
             //TODO introduce constants for separators
-            return javaPath + encodingOption + "-classpath" + instrumentationPepDirectory + "/bin:" + instrumentationPepDirectory + "/libs/*" +
-                    ":" + sootDirectory + "/testclasses:" + sootDirectory + "/classes:" + sootDirectory + "/libs/*" +
-                    ":" + jasminDirectory + "classes:" + jasminDirectory + "/libs/*" +
-                    ":" + herosDirectory + "target/classes:" + herosDirectory + "target/testclasses:" + herosDirectory + "/*" +
+            return javaPath + " " + encodingOption + " " + "-classpath" + instrumentationPepDirectory + "bin:" + instrumentationPepDirectory + "libs/*" +
+                    ":" + sootDirectory + "testclasses:" + sootDirectory + "classes:" + sootDirectory + "libs/*" +
+                    ":" + jasminDirectory + "classes:" + jasminDirectory + "libs/*" +
+                    ":" + herosDirectory + "target/classes:" + herosDirectory + "target/testclasses:" + herosDirectory + "*" +
                     ":" + functionalJavaDirectory +
-                    ":" + infoflowDirectory + "/bin:" + infoflowDirectory + "/lib/*" +
-                    ":" + infoflowAndroidDirectory + "/bin:" + "/lib/*" +
+                    ":" + infoflowDirectory + "bin:" + infoflowDirectory + "lib/*" +
+                    ":" + infoflowAndroidDirectory + "bin:" + infoflowAndroidDirectory + "/lib/*" +
                     " " + mainMethod +
-                    " " + "-sourceFile " + sourceFileInJobDirectory +
-                    " " + "-sinkFile" + sinkFileInJobDirectory +
-                    " " + "-apkFile" + apkFileInJobDirectory +
-                    " " + "-taintWrapper" + easyTaintWrapperSourceInJobDirectory +
+                    " " + "-sourceFile " + sourceFileTemp.getAbsolutePath() +
+                    " " + "-sinkFile" + sinkFileTemp.getAbsolutePath() +
+                    " " + "-apkFile" + fileToInstrumentTemp.getAbsolutePath() +
+                    " " + "-taintWrapper" + easyTaintWrapperSourceTemp.getAbsolutePath() +
                     " " + "-androidPlatforms" + androidPlatformDirectory +
                     " " + "-androidJar" + androidJarDirectory +
                     " " + "-j -o" + outputDirectory;
@@ -102,18 +99,20 @@ public class InstrumentationRunner {
 
     }
 
-    private void writeFileToDisk(Object fileData, File file) {
+    private File getTmpFile(InputStream fileData, String prefix, String suffix) {
         try {
-            file.createNewFile();
-            FileOutputStream fos = new FileOutputStream(file);
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-            objectOutputStream.writeObject(fileData);
-            fos.write(byteArrayOutputStream.toByteArray());
-            fos.close();
+
+            final File tempFile = File.createTempFile(prefix, suffix);
+            tempFile.deleteOnExit();
+            try (FileOutputStream fileOutputStream = new FileOutputStream(tempFile)) {
+                IOUtils.copy(fileData, fileOutputStream);
+            }
+            return tempFile;
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
 }

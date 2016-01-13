@@ -42,11 +42,12 @@ public class InstrumentResourceImpl implements InstrumentResource {
     @Produces({
             "application/json"
     })
-    public PostInstrumentResponse postInstrument(@FormDataParam("file")InputStream file1) throws Exception {
+    public PostInstrumentResponse postInstrument(@FormDataParam("sourceFile")InputStream sourceFile, @FormDataParam("sinkFile")InputStream sinkFile,
+    @FormDataParam("easyTaintWrapperSource")InputStream easyTaintWrapperSource, @FormDataParam("apkFile")InputStream apkFile) throws Exception {
 
-/*        if (InstrumentationServerManager.getInstance().handleMultipartPost(entity.getBodyParts())) {
+        if (InstrumentationServerManager.getInstance().handleMultipartPost(sourceFile, sinkFile, easyTaintWrapperSource, apkFile)) {
             return PostInstrumentResponse.withJsonAccepted(new Apk());
-        }*/
+        }
 
 
         return PostInstrumentResponse.withJsonAccepted(new Apk());

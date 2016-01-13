@@ -5,6 +5,7 @@ import org.glassfish.jersey.media.multipart.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,23 +90,16 @@ public class InstrumentationServerManager {
         }
     }
 
-    public boolean handleMultipartPost(List<BodyPart> mimeMultipart) {
-      /*  InstrumentationRunner instrumentationRunner = new InstrumentationRunner();
-        try {
-            if (!isMimeMultipartOK(mimeMultipart)) {
+    public boolean handleMultipartPost(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource, InputStream apkFile) {
+        InstrumentationRunner instrumentationRunner = new InstrumentationRunner();
+/*            if (!isMimeMultipartOK(mimeMultipart)) {
                 return false;
-            }
+            }*/
 
-            instrumentationRunner.run(mimeMultipart.getBodyPart(1).getContent(),
-                    mimeMultipart.getBodyPart(2).getContent(), mimeMultipart.getBodyPart(3).getContent(),
-                    mimeMultipart.getBodyPart(4).getContent());
+            instrumentationRunner.run(sourceFile,
+                    sinkFile, easyTaintWrapperSource,
+                    apkFile);
 
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return true;*/
         return true;
     }
 

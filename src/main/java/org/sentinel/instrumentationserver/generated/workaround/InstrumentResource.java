@@ -213,7 +213,8 @@ public interface InstrumentResource {
     @Produces({
             "application/json"
     })
-    InstrumentResource.PostInstrumentResponse postInstrument(@FormDataParam("file") InputStream file1)
+    InstrumentResource.PostInstrumentResponse postInstrument(@FormDataParam("file")InputStream sourceFile, @FormDataParam("file")InputStream sinkFile,
+                                                             @FormDataParam("file")InputStream easyTaintWrapperSource, @FormDataParam("file")InputStream apkFile)
         throws Exception
     ;
 
