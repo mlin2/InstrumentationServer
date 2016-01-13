@@ -28,3 +28,4 @@ raml/target
 # Project specific
 sootOutput
 test.db
+config.ini

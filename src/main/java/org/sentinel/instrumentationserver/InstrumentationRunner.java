@@ -70,18 +70,19 @@ public class InstrumentationRunner {
 /*            String keystoreDirectory = ini.get("Keystore", "keyStorePath", String.class);
             String keystoreAlias = ini.get("Keystore", "mykeystore", String.class);
             String keystorePass = ini.get("Keystore", "laurent", String.class);*/
-            String outputDirectory = instrumentationPepDirectory + directory.getAbsolutePath();
+            String outputDirectory = instrumentationPepDirectory + directory.getName();
 
             String mainMethod = "de.ecspride.Main";
+            String javaExecutionDirectory = "-Duser.dir=" + instrumentationPepDirectory;
 
             //TODO introduce constants for separators
-            return javaPath + " " + encodingOption + " " + "-classpath" + instrumentationPepDirectory + "bin:" + instrumentationPepDirectory + "libs/*" +
+            return javaPath + " " + encodingOption + " " + javaExecutionDirectory + " " + "-classpath " + instrumentationPepDirectory + "bin:" + instrumentationPepDirectory + "libs/*" +
                     ":" + sootDirectory + "testclasses:" + sootDirectory + "classes:" + sootDirectory + "libs/*" +
                     ":" + jasminDirectory + "classes:" + jasminDirectory + "libs/*" +
                     ":" + herosDirectory + "target/classes:" + herosDirectory + "target/testclasses:" + herosDirectory + "*" +
                     ":" + functionalJavaDirectory +
                     ":" + infoflowDirectory + "bin:" + infoflowDirectory + "lib/*" +
-                    ":" + infoflowAndroidDirectory + "bin:" + infoflowAndroidDirectory + "/lib/*" +
+                    ":" + infoflowAndroidDirectory + "bin:" + infoflowAndroidDirectory + "lib/*" +
                     " " + mainMethod +
                     " " + "-sourceFile " + sourceFileTemp.getAbsolutePath() +
                     " " + "-sinkFile " + sinkFileTemp.getAbsolutePath() +
