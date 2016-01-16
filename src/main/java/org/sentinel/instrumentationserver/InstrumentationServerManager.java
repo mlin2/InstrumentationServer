@@ -1,10 +1,7 @@
 package org.sentinel.instrumentationserver;
 
-import org.glassfish.jersey.media.multipart.BodyPart;
-
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
-import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;

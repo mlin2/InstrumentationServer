@@ -1,13 +1,11 @@
 package org.sentinel.instrumentationserver.resource.impl;
 
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.glassfish.jersey.media.multipart.MultiPart;
 import org.sentinel.instrumentationserver.InstrumentationServerManager;
-import org.sentinel.instrumentationserver.generated.workaround.InstrumentResource;
 import org.sentinel.instrumentationserver.generated.model.Apk;
 import org.sentinel.instrumentationserver.generated.model.Apks;
+import org.sentinel.instrumentationserver.generated.workaround.InstrumentResource;
 
-import javax.mail.internet.MimeMultipart;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;

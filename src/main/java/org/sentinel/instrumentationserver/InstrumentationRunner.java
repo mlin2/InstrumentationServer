@@ -19,20 +19,15 @@ public class InstrumentationRunner {
         }
     }
 
-    private static void runProcess(String command) throws Exception {
-        Process pro = Runtime.getRuntime().exec(command);
-        printLines(command + " stdout:", pro.getInputStream());
-        printLines(command + " stderr:", pro.getErrorStream());
-        pro.waitFor();
-        System.out.println(command + " exitValue() " + pro.exitValue());
-    }
-
     public void run(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource, InputStream apkFile) {
         try {
+            ProcessBuilder processBuilder = buildCommand(sourceFile, sinkFile, easyTaintWrapperSource, apkFile);
+            Process process = processBuilder.start();
+            printLines(" STDOUT:", process.getInputStream());
+            printLines(" STDERR:", process.getErrorStream());
+            process.waitFor();
+            System.out.println(" EXITVALUE " + process.exitValue());
 
-
-            //runProcess("javac");
-            runProcess(buildCommand(sourceFile, sinkFile, easyTaintWrapperSource, apkFile));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -41,7 +36,7 @@ public class InstrumentationRunner {
     }
 
     //TODO do something better than returning null
-    private String buildCommand(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource, InputStream apkFile) {
+    private ProcessBuilder buildCommand(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource, InputStream apkFile) {
         String instrumentJobDirectoryName = String.valueOf(Math.random());
         File directory = new File("sootOutput/" + instrumentJobDirectoryName);
         directory.mkdir();
@@ -54,31 +49,19 @@ public class InstrumentationRunner {
         try {
             Ini ini = new Ini(new File("config.ini"));
 
-            String javaPath = ini.get("Global Java", "JavaPath", String.class);
-            String encodingOption = ini.get("Global Java", "EncodingOption", String.class);
-
             String instrumentationPepDirectory = ini.get("InstrumentationPEP", "InstrumentationPepDirectory", String.class);
-            String sootDirectory = ini.get("Soot", "SootDirectory", String.class);
-            String jasminDirectory = ini.get("Jasmin", "JasminDirectory", String.class);
-            String herosDirectory = ini.get("Heros", "HerosDirectory", String.class);
-            String functionalJavaDirectory = ini.get("FunctionalJava", "PathToFunctional", String.class);
-            String infoflowDirectory = ini.get("Infoflow", "PathSootInfoflow", String.class);
-            String infoflowAndroidDirectory = ini.get("Infoflow Android", "PathSootInfoflowAndroid", String.class);
-            String androidPlatformDirectory = ini.get("Android", "PlatformsPath", String.class);
-            String androidJarDirectory = ini.get("Android Jar", "androidJarPath", String.class);
             //TODO implement keystore signing
 /*            String keystoreDirectory = ini.get("Keystore", "keyStorePath", String.class);
             String keystoreAlias = ini.get("Keystore", "mykeystore", String.class);
             String keystorePass = ini.get("Keystore", "laurent", String.class);*/
-            String outputDirectory = instrumentationPepDirectory + directory.getName();
+            String outputDirectoryAbsolutePath = instrumentationPepDirectory + directory.getName();
+            String androidJarDirectory = ini.get("Android Jar", "androidJarPath", String.class);
+            String currentDirectory = System.getProperty("user.dir");
 
-            String mainMethod = "de.ecspride.Main";
-            String javaExecutionDirectory = "-Duser.dir=" + instrumentationPepDirectory;
-            String jarName = "-jar bit.jar";
+            ProcessBuilder processBuilder = new ProcessBuilder(currentDirectory + "/instrumentation.sh", sourceFileTemp.getAbsolutePath(), sinkFileTemp.getAbsolutePath(),
+                    fileToInstrumentTemp.getAbsolutePath(), easyTaintWrapperSourceTemp.getAbsolutePath(), outputDirectoryAbsolutePath, androidJarDirectory);
 
-            //TODO introduce constants for separators
-            return "instrumentation.sh ./files/catSources_Short.txt ./files/catSinks_Short.txt /Users/laurentmeyer/Downloads/PolicyTester-release.apk ./files/EasyTaintWrapperSource.txt ./sootOutput";
-
+            return processBuilder;
 
         } catch (IOException e) {
             e.printStackTrace();
