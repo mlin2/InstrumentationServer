@@ -1,8 +1,13 @@
 package org.sentinel.instrumentationserver;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMultipart;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.IOUtils;
+
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -93,23 +98,29 @@ public class InstrumentationServerManager {
                 return false;
             }*/
 
-            instrumentationRunner.run(sourceFile,
-                    sinkFile, easyTaintWrapperSource,
-                    apkFile);
-
-        return true;
-    }
-
-    //TODO make this more smart
-    private boolean isMimeMultipartOK(MimeMultipart mimeMultipart) {
         try {
-            if (mimeMultipart.getCount() != 4) {
-                return false;
-            }
-        } catch (MessagingException e) {
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
+                String sha512Hash = Hex.encodeHex(messageDigest.digest(IOUtils.toByteArray(apkFile))).toString();
+
+
+        instrumentationRunner.run(sourceFile,
+                    sinkFile, easyTaintWrapperSource,
+                    apkFile, sha512Hash);
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
         return true;
     }
 
+    public String saveInstrumentedApk(File apk) {
+
+        return "test";
+    }
+
+    public void saveInstrumentedApkToDatabase(String instrumentedApkPath, String sha512Hash) {
+
+
+
+    }
 }

@@ -10,6 +10,8 @@ import java.io.*;
  */
 public class InstrumentationRunner {
 
+    private String instrumentedApkPath;
+
     private static void printLines(String name, InputStream ins) throws Exception {
         String line = null;
         BufferedReader in = new BufferedReader(
@@ -19,7 +21,8 @@ public class InstrumentationRunner {
         }
     }
 
-    public void run(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource, InputStream apkFile) {
+    public void run(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource, InputStream apkFile, String sha512Hash) {
+
         try {
             ProcessBuilder processBuilder = buildCommand(sourceFile, sinkFile, easyTaintWrapperSource, apkFile);
             Process process = processBuilder.start();
@@ -27,6 +30,9 @@ public class InstrumentationRunner {
             printLines(" STDERR:", process.getErrorStream());
             process.waitFor();
             System.out.println(" EXITVALUE " + process.exitValue());
+
+            InstrumentationServerManager instrumentationServerManager = InstrumentationServerManager.getInstance();
+            instrumentationServerManager.saveInstrumentedApkToDatabase(instrumentedApkPath, sha512Hash);
 
         } catch (Exception e) {
             e.printStackTrace();
