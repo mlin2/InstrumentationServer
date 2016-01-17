@@ -1,11 +1,11 @@
 package org.sentinel.instrumentationserver;
 
-import org.glassfish.jersey.media.multipart.BodyPart;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.IOUtils;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMultipart;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -96,23 +96,48 @@ public class InstrumentationServerManager {
                 return false;
             }*/
 
-            instrumentationRunner.run(sourceFile,
-                    sinkFile, easyTaintWrapperSource,
-                    apkFile);
-
-        return true;
-    }
-
-    //TODO make this more smart
-    private boolean isMimeMultipartOK(MimeMultipart mimeMultipart) {
         try {
-            if (mimeMultipart.getCount() != 4) {
-                return false;
-            }
-        } catch (MessagingException e) {
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
+            byte[] apkFileBytes = IOUtils.toByteArray(apkFile);
+            String sha512Hash = String.valueOf(Hex.encodeHex(messageDigest.digest(apkFileBytes)));
+
+
+            String instrumentedApkPath = instrumentationRunner.run(sourceFile,
+                    sinkFile, easyTaintWrapperSource,
+                    apkFileBytes, sha512Hash);
+
+            saveInstrumentedApkToDatabase(instrumentedApkPath, sha512Hash);
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
         return true;
     }
 
+    public void saveInstrumentedApkToDatabase(String instrumentedApkPath, String sha512Hash) {
+
+        setDatabaseConnection();
+
+        try {
+            String sqlStatementGetAllApkPackageNamesAndHashes = DAO.getQueryToInsertInstrumentedApkIntoDatabase(sha512Hash);
+
+            InputStream inputstream = new FileInputStream( (new File(instrumentedApkPath)));
+
+            PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatementGetAllApkPackageNamesAndHashes);
+            preparedStatement.setBytes(1, IOUtils.toByteArray(inputstream));
+            preparedStatement.execute();
+
+            preparedStatement.close();
+            databaseConnection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 }
