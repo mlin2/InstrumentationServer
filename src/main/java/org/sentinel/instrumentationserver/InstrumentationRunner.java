@@ -46,6 +46,7 @@ public class InstrumentationRunner {
 
     //TODO do something better than returning null
     private ProcessBuilder buildCommand(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource, byte[] apkFile, String sha512Hash) {
+
         File sourceFileTemp = getTmpFile(sourceFile, "catSources_Short", ".txt");
         File sinkFileTemp = getTmpFile(sinkFile, "catSinks_Short", ".txt");
         File easyTaintWrapperSourceTemp = getTmpFile(easyTaintWrapperSource, "EasyTaintWrapperSource", ".txt");
@@ -57,7 +58,6 @@ public class InstrumentationRunner {
         fileOutputStream.write(apkFile);
 
             Ini ini = new Ini(new File("config.ini"));
-
             //TODO implement keystore signing
 /*            String keystoreDirectory = ini.get("Keystore", "keyStorePath", String.class);
             String keystoreAlias = ini.get("Keystore", "mykeystore", String.class);
@@ -66,8 +66,6 @@ public class InstrumentationRunner {
             String currentDirectory = System.getProperty("user.dir");
             String instrumentationPepDirectory = currentDirectory + "/InstrumentationPEP/instrumentation-server-jobs";
             String outputDirectoryAbsolutePath = instrumentationPepDirectory + "/" + sha512Hash;
-
-
 
             instrumentedApkPath = instrumentationPepDirectory + "/" + sha512Hash + "/" + fileToInstrumentTemp.getName();
 
