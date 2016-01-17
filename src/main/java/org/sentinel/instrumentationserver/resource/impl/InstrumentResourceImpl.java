@@ -41,7 +41,7 @@ public class InstrumentResourceImpl implements InstrumentResource {
             "application/json"
     })
     public PostInstrumentResponse postInstrument(@FormDataParam("sourceFile")InputStream sourceFile, @FormDataParam("sinkFile")InputStream sinkFile,
-    @FormDataParam("easyTaintWrapperSource")InputStream easyTaintWrapperSource, @FormDataParam("apkFile")InputStream apkFile) throws Exception {
+                                                 @FormDataParam("easyTaintWrapperSource")InputStream easyTaintWrapperSource, @FormDataParam("apkFile")InputStream apkFile) throws Exception {
 
         if (InstrumentationServerManager.getInstance().handleMultipartPost(sourceFile, sinkFile, easyTaintWrapperSource, apkFile)) {
             return PostInstrumentResponse.withJsonAccepted(new Apk());
@@ -53,6 +53,8 @@ public class InstrumentResourceImpl implements InstrumentResource {
 
     @Override
     public GetInstrumentByApkHashResponse getInstrumentByApkHash(@PathParam("apkHash") String apkHash) throws Exception {
+
+
         return null;
     }
 }

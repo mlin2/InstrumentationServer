@@ -2,6 +2,7 @@ package org.sentinel.instrumentationserver;
 
 import org.apache.commons.io.IOUtils;
 import org.ini4j.Ini;
+import org.ini4j.InvalidFileFormatException;
 
 import java.io.*;
 
@@ -21,10 +22,10 @@ public class InstrumentationRunner {
         }
     }
 
-    public void run(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource, InputStream apkFile, String sha512Hash) {
+    public String run(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource, byte[] apkFile, String sha512Hash) {
 
         try {
-            ProcessBuilder processBuilder = buildCommand(sourceFile, sinkFile, easyTaintWrapperSource, apkFile);
+            ProcessBuilder processBuilder = buildCommand(sourceFile, sinkFile, easyTaintWrapperSource, apkFile, sha512Hash);
             Process process = processBuilder.start();
             printLines(" STDOUT:", process.getInputStream());
             printLines(" STDERR:", process.getErrorStream());
@@ -33,42 +34,52 @@ public class InstrumentationRunner {
 
             InstrumentationServerManager instrumentationServerManager = InstrumentationServerManager.getInstance();
             instrumentationServerManager.saveInstrumentedApkToDatabase(instrumentedApkPath, sha512Hash);
+            return instrumentedApkPath;
+
+/*            InstrumentationServerManager instrumentationServerManager = InstrumentationServerManager.getInstance();
+            instrumentationServerManager.saveInstrumentedApkToDatabase(instrumentedApkPath, sha512Hash);*/
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-
+        return null;
     }
 
     //TODO do something better than returning null
-    private ProcessBuilder buildCommand(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource, InputStream apkFile) {
-        String instrumentJobDirectoryName = String.valueOf(Math.random());
-        File directory = new File("sootOutput/" + instrumentJobDirectoryName);
-        directory.mkdir();
+    private ProcessBuilder buildCommand(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource, byte[] apkFile, String sha512Hash) {
 
         File sourceFileTemp = getTmpFile(sourceFile, "catSources_Short", ".txt");
         File sinkFileTemp = getTmpFile(sinkFile, "catSinks_Short", ".txt");
         File easyTaintWrapperSourceTemp = getTmpFile(easyTaintWrapperSource, "EasyTaintWrapperSource", ".txt");
-        File fileToInstrumentTemp = getTmpFile(apkFile, "fileToInstrument", ".apk");
 
         try {
-            Ini ini = new Ini(new File("config.ini"));
+        final File fileToInstrumentTemp = File.createTempFile("fileToInstrument", ".apk");
+        fileToInstrumentTemp.deleteOnExit();
+        FileOutputStream fileOutputStream = new FileOutputStream(fileToInstrumentTemp);
+        fileOutputStream.write(apkFile);
 
-            String instrumentationPepDirectory = ini.get("InstrumentationPEP", "InstrumentationPepDirectory", String.class);
+            Ini ini = new Ini(new File("config.ini"));
             //TODO implement keystore signing
 /*            String keystoreDirectory = ini.get("Keystore", "keyStorePath", String.class);
             String keystoreAlias = ini.get("Keystore", "mykeystore", String.class);
             String keystorePass = ini.get("Keystore", "laurent", String.class);*/
-            String outputDirectoryAbsolutePath = instrumentationPepDirectory + directory.getName();
             String androidJarDirectory = ini.get("Android Jar", "androidJarPath", String.class);
             String currentDirectory = System.getProperty("user.dir");
+            String instrumentationPepDirectory = currentDirectory + "/InstrumentationPEP/instrumentation-server-jobs";
+            String outputDirectoryAbsolutePath = instrumentationPepDirectory + "/" + sha512Hash;
+
+            instrumentedApkPath = instrumentationPepDirectory + "/" + sha512Hash + "/" + fileToInstrumentTemp.getName();
 
             ProcessBuilder processBuilder = new ProcessBuilder(currentDirectory + "/instrumentation.sh", sourceFileTemp.getAbsolutePath(), sinkFileTemp.getAbsolutePath(),
                     fileToInstrumentTemp.getAbsolutePath(), easyTaintWrapperSourceTemp.getAbsolutePath(), outputDirectoryAbsolutePath, androidJarDirectory);
 
             return processBuilder;
 
+        } catch (InvalidFileFormatException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -81,9 +92,8 @@ public class InstrumentationRunner {
 
             final File tempFile = File.createTempFile(prefix, suffix);
             tempFile.deleteOnExit();
-            try (FileOutputStream fileOutputStream = new FileOutputStream(tempFile)) {
-                IOUtils.copy(fileData, fileOutputStream);
-            }
+            FileOutputStream fileOutputStream = new FileOutputStream(tempFile);
+            IOUtils.copy(fileData, fileOutputStream);
             return tempFile;
 
         } catch (IOException e) {
