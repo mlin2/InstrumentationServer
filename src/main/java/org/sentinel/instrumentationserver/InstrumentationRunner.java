@@ -32,8 +32,6 @@ public class InstrumentationRunner {
             process.waitFor();
             System.out.println(" EXITVALUE " + process.exitValue());
 
-            InstrumentationServerManager instrumentationServerManager = InstrumentationServerManager.getInstance();
-            instrumentationServerManager.saveInstrumentedApkToDatabase(instrumentedApkPath, sha512Hash);
             return instrumentedApkPath;
 
 /*            InstrumentationServerManager instrumentationServerManager = InstrumentationServerManager.getInstance();

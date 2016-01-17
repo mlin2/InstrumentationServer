@@ -1,22 +1,28 @@
 
 package org.sentinel.instrumentationserver.generated.workaround;
 
+import javax.mail.internet.MimeMultipart;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.sentinel.instrumentationserver.generated.model.Apk;
 import org.sentinel.instrumentationserver.generated.model.Apks;
 import org.sentinel.instrumentationserver.generated.model.Error;
-import org.sentinel.instrumentationserver.generated.model.Hash;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.InputStream;
 
 
 /**
  * Instrument apk based on the configuration files contained in the request.
- * 
- * 
+ *
+ *
  */
 @Path("instrument")
 public interface InstrumentResource {
@@ -24,14 +30,14 @@ public interface InstrumentResource {
 
     /**
      * Retrieve a list of instrumented apk files
-     * 
+     *
      */
     @GET
     @Produces({
-        "application/json"
+            "application/json"
     })
     InstrumentResource.GetInstrumentResponse getInstrument()
-        throws Exception
+            throws Exception
     ;
 
     /**
@@ -215,9 +221,8 @@ public interface InstrumentResource {
     })
     InstrumentResource.PostInstrumentResponse postInstrument(@FormDataParam("file")InputStream sourceFile, @FormDataParam("file")InputStream sinkFile,
                                                              @FormDataParam("file")InputStream easyTaintWrapperSource, @FormDataParam("file")InputStream apkFile)
-        throws Exception
+            throws Exception
     ;
-
     /**
      * Retrieve the location of the instrumented apk file based its hash sum value.
      * The hash value is calculated from the non-instrumented apk with sha512.
@@ -229,16 +234,16 @@ public interface InstrumentResource {
     @GET
     @Path("{apkHash}")
     @Produces({
-        "application/json"
+            "application/json"
     })
     InstrumentResource.GetInstrumentByApkHashResponse getInstrumentByApkHash(
             @PathParam("apkHash")
             String apkHash)
-        throws Exception
+            throws Exception
     ;
 
     public class GetInstrumentByApkHashResponse
-        extends org.sentinel.instrumentationserver.generated.resource.support.ResponseWrapper
+            extends org.sentinel.instrumentationserver.generated.resource.support.ResponseWrapper
     {
 
 
@@ -247,22 +252,12 @@ public interface InstrumentResource {
         }
 
         /**
-         *  e.g. {
-         *   "hash": "f4439018f1cd7e5d770c77743533e31bc76fcf31950dca09991c93bece5bb49e9896d6e3d5d597ed983fdb444505dbc9cd336b58c3917645cfbc97b6b05d8791",
-         *   "url": "http://sentinel.de/instrumentedApps/f4439018f1cd7e5d770c77743533e31bc76fcf31950dca09991c93bece5bb49e9896d6e3d5d597ed983fdb444505dbc9cd336b58c3917645cfbc97b6b05d8791"
-         * }
          *
-         *
-         * @param entity
-         *     {
-         *       "hash": "f4439018f1cd7e5d770c77743533e31bc76fcf31950dca09991c93bece5bb49e9896d6e3d5d597ed983fdb444505dbc9cd336b58c3917645cfbc97b6b05d8791",
-         *       "url": "http://sentinel.de/instrumentedApps/f4439018f1cd7e5d770c77743533e31bc76fcf31950dca09991c93bece5bb49e9896d6e3d5d597ed983fdb444505dbc9cd336b58c3917645cfbc97b6b05d8791"
-         *     }
-         *
+         * @param apkFile
          */
-        public static InstrumentResource.GetInstrumentByApkHashResponse withJsonOK(Hash entity) {
-            ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "application/json");
-            responseBuilder.entity(entity);
+        public static InstrumentResource.GetInstrumentByApkHashResponse withOK(byte[] apkFile) {
+            Response.ResponseBuilder responseBuilder = Response.status(200);
+            responseBuilder.entity(apkFile);
             return new InstrumentResource.GetInstrumentByApkHashResponse(responseBuilder.build());
         }
 
@@ -281,7 +276,7 @@ public interface InstrumentResource {
          *
          */
         public static InstrumentResource.GetInstrumentByApkHashResponse withJsonNotFound(Error entity) {
-            ResponseBuilder responseBuilder = Response.status(404).header("Content-Type", "application/json");
+            Response.ResponseBuilder responseBuilder = Response.status(404).header("Content-Type", "application/json");
             responseBuilder.entity(entity);
             return new InstrumentResource.GetInstrumentByApkHashResponse(responseBuilder.build());
         }
@@ -289,7 +284,7 @@ public interface InstrumentResource {
     }
 
     public class GetInstrumentResponse
-        extends org.sentinel.instrumentationserver.generated.resource.support.ResponseWrapper
+            extends org.sentinel.instrumentationserver.generated.resource.support.ResponseWrapper
     {
 
 
@@ -326,7 +321,7 @@ public interface InstrumentResource {
          *
          */
         public static InstrumentResource.GetInstrumentResponse withJsonOK(Apks entity) {
-            ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "application/json");
+            Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "application/json");
             responseBuilder.entity(entity);
             return new InstrumentResource.GetInstrumentResponse(responseBuilder.build());
         }
@@ -334,7 +329,7 @@ public interface InstrumentResource {
     }
 
     public class PostInstrumentResponse
-        extends org.sentinel.instrumentationserver.generated.resource.support.ResponseWrapper
+            extends org.sentinel.instrumentationserver.generated.resource.support.ResponseWrapper
     {
 
 
@@ -355,7 +350,7 @@ public interface InstrumentResource {
          *
          */
         public static InstrumentResource.PostInstrumentResponse withJsonAccepted(Apk entity) {
-            ResponseBuilder responseBuilder = Response.status(202).header("Content-Type", "application/json");
+            Response.ResponseBuilder responseBuilder = Response.status(202).header("Content-Type", "application/json");
             responseBuilder.entity(entity);
             return new InstrumentResource.PostInstrumentResponse(responseBuilder.build());
         }
@@ -375,7 +370,7 @@ public interface InstrumentResource {
          *
          */
         public static InstrumentResource.PostInstrumentResponse withJsonBadRequest(Error entity) {
-            ResponseBuilder responseBuilder = Response.status(400).header("Content-Type", "application/json");
+            Response.ResponseBuilder responseBuilder = Response.status(400).header("Content-Type", "application/json");
             responseBuilder.entity(entity);
             return new InstrumentResource.PostInstrumentResponse(responseBuilder.build());
         }

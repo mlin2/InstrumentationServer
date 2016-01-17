@@ -71,9 +71,13 @@ schemas:
       responses:
         200:
           body:
-            application/json:
-              schema: hash
-              example: !include examples/instrumentApkHashGet-response.json
+            multipart/form-data:
+                    formParameters:
+                        apkFile:
+                            description: The instrumented APK file
+                            displayName: APK File
+                            type: file
+                            required: true
         404:
           body:
             application/json:

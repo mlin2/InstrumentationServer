@@ -5,6 +5,7 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.security.MessageDigest;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +69,6 @@ public class InstrumentationServerManager {
 
             statement.executeUpdate(DAO.SQL_STATEMENT_DROP_TABLE);
             statement.executeUpdate(DAO.SQL_STATEMENT_CREATE_TABLE);
-            statement.executeUpdate(DAO.SQL_STATEMENT_INSERT_APK);
             statement.close();
             databaseConnection.close();
         } catch (SQLException e) {
@@ -111,15 +111,8 @@ public class InstrumentationServerManager {
             e.printStackTrace();
         }
 
-
         return true;
     }
-
-    public String saveInstrumentedApk(File apk) {
-
-        return "test";
-    }
-
 
     public void saveInstrumentedApkToDatabase(String instrumentedApkPath, String sha512Hash) {
 
@@ -144,5 +137,27 @@ public class InstrumentationServerManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+    }
+
+    public byte[] retrieveInstrumentedApkFromDatabase(String apkHash) {
+        setDatabaseConnection();
+
+        try {
+            String sqlStatementGetApkFromHash = DAO.getQueryToRetrieveApkFile(apkHash);
+            PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatementGetApkFromHash);
+            preparedStatement.setString(1, apkHash);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            byte[] apk = resultSet.getBytes(1);
+            resultSet.close();
+            preparedStatement.close();
+            databaseConnection.close();
+            return apk;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

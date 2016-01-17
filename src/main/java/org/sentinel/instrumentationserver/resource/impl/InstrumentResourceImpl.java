@@ -6,10 +6,7 @@ import org.sentinel.instrumentationserver.generated.model.Apk;
 import org.sentinel.instrumentationserver.generated.model.Apks;
 import org.sentinel.instrumentationserver.generated.workaround.InstrumentResource;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.InputStream;
 import java.util.Iterator;
@@ -52,9 +49,16 @@ public class InstrumentResourceImpl implements InstrumentResource {
     }
 
     @Override
+    @GET
+    @Path("{apkHash}")
+    @Produces({
+            "application/json"
+    })
     public GetInstrumentByApkHashResponse getInstrumentByApkHash(@PathParam("apkHash") String apkHash) throws Exception {
 
-
-        return null;
+        InstrumentationServerManager instrumentationServerManager = InstrumentationServerManager.getInstance();
+        byte[] apkFile = instrumentationServerManager.retrieveInstrumentedApkFromDatabase(apkHash);
+        System.out.println(apkFile);
+        return GetInstrumentByApkHashResponse.withOK(apkFile);
     }
 }
