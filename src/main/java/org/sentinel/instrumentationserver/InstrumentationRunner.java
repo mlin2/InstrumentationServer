@@ -11,7 +11,7 @@ import java.io.*;
  */
 public class InstrumentationRunner implements Runnable {
 
-    private String instrumentedApkPath;
+    private String signedApkPath;
 
     InputStream sourceFile;
     InputStream sinkFile;
@@ -45,25 +45,28 @@ public class InstrumentationRunner implements Runnable {
         File easyTaintWrapperSourceTemp = getTmpFile(easyTaintWrapperSource, "EasyTaintWrapperSource", ".txt");
 
         try {
-        final File fileToInstrumentTemp = File.createTempFile("fileToInstrument", ".apk");
-        fileToInstrumentTemp.deleteOnExit();
-        FileOutputStream fileOutputStream = new FileOutputStream(fileToInstrumentTemp);
-        fileOutputStream.write(apkFile);
+            final File fileToInstrumentTemp = File.createTempFile("fileToInstrument", ".apk");
+            fileToInstrumentTemp.deleteOnExit();
+            FileOutputStream fileOutputStream = new FileOutputStream(fileToInstrumentTemp);
+            fileOutputStream.write(apkFile);
 
             Ini ini = new Ini(new File("config.ini"));
             //TODO implement keystore signing
-/*            String keystoreDirectory = ini.get("Keystore", "keyStorePath", String.class);
-            String keystoreAlias = ini.get("Keystore", "mykeystore", String.class);
-            String keystorePass = ini.get("Keystore", "laurent", String.class);*/
+            String keystoreDirectory = ini.get("Keystore", "keyStorePath", String.class);
+            String keystoreAlias = ini.get("Keystore", "alias", String.class);
+            String keystorePass = ini.get("Keystore", "storePass", String.class);
             String androidJarDirectory = ini.get("Android Jar", "androidJarPath", String.class);
             String currentDirectory = System.getProperty("user.dir");
-            String instrumentationPepDirectory = currentDirectory + "/InstrumentationPEP/instrumentation-server-jobs";
-            String outputDirectoryAbsolutePath = instrumentationPepDirectory + "/" + sha512Hash;
+            String instrumentationJobsDirectory = currentDirectory + "/InstrumentationPEP/instrumentation-server-jobs";
+            String outputDirectoryAbsolutePath = instrumentationJobsDirectory + "/" + sha512Hash;
+            String instrumentedApkPath = instrumentationJobsDirectory + "/" + sha512Hash + "/" + fileToInstrumentTemp.getName();
 
-            instrumentedApkPath = instrumentationPepDirectory + "/" + sha512Hash + "/" + fileToInstrumentTemp.getName();
+            signedApkPath = instrumentationJobsDirectory + "/" + sha512Hash + "/signedApk.jar";
+
 
             ProcessBuilder processBuilder = new ProcessBuilder(currentDirectory + "/instrumentation.sh", sourceFileTemp.getAbsolutePath(), sinkFileTemp.getAbsolutePath(),
-                    fileToInstrumentTemp.getAbsolutePath(), easyTaintWrapperSourceTemp.getAbsolutePath(), outputDirectoryAbsolutePath, androidJarDirectory);
+                    fileToInstrumentTemp.getAbsolutePath(), easyTaintWrapperSourceTemp.getAbsolutePath(), outputDirectoryAbsolutePath, androidJarDirectory, instrumentedApkPath, keystoreDirectory,
+                    keystoreAlias, keystorePass, signedApkPath);
 
             return processBuilder;
 
@@ -104,9 +107,9 @@ public class InstrumentationRunner implements Runnable {
             System.out.println(" EXITVALUE " + process.exitValue());
 
 /*            InstrumentationServerManager instrumentationServerManager = InstrumentationServerManager.getInstance();
-            instrumentationServerManager.saveInstrumentedApkToDatabase(instrumentedApkPath, sha512Hash);*/
+            instrumentationServerManager.saveInstrumentedApkToDatabase(signedApkPath, sha512Hash);*/
 
-            InstrumentationServerManager.getInstance().saveApk(instrumentedApkPath, sha512Hash);
+            InstrumentationServerManager.getInstance().saveApk(signedApkPath, sha512Hash);
 
 
         } catch (Exception e) {
@@ -114,7 +117,7 @@ public class InstrumentationRunner implements Runnable {
         }
     }
 
-    public String getInstrumentedApkPath() {
-        return instrumentedApkPath;
+    public String getSignedApkPath() {
+        return signedApkPath;
     }
 }

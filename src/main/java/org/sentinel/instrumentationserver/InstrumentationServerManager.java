@@ -1,11 +1,8 @@
 package org.sentinel.instrumentationserver;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
-import java.security.MessageDigest;
-import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
