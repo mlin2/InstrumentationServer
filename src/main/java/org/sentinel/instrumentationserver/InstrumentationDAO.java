@@ -7,29 +7,32 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InstrumentationServerManager {
+/** This class manages the database connections.*/
+public class InstrumentationDAO {
 
-    private static InstrumentationServerManager instrumentationServerManager;
+    /** The database manager.*/
+    private static InstrumentationDAO InstrumentationDAO;
+
+    /** The Connection to the database.*/
     private Connection databaseConnection = null;
-    public static final String APK_URL = "localhost:8080/myapp/";
 
-    protected InstrumentationServerManager() {
+    protected InstrumentationDAO() {
 
     }
 
-    public static InstrumentationServerManager getInstance() {
-        if (instrumentationServerManager == null) {
-            instrumentationServerManager = new InstrumentationServerManager();
+    /** Singleton pattern.*/
+    public static InstrumentationDAO getInstance() {
+        if (InstrumentationDAO == null) {
+            InstrumentationDAO = new InstrumentationDAO();
         }
 
-        return instrumentationServerManager;
+        return InstrumentationDAO;
     }
 
+    /** Retrieve the hashes of all instrumented APKs in the database.*/
     public List<String> getAllInstrumentedApkHashes() {
-        setDatabaseConnection();
+        connectToDatabase();
         List<String> instrumentedApkHashes = new ArrayList<String>();
-
-
         try {
             Statement statement;
             statement = databaseConnection.createStatement();
@@ -53,70 +56,25 @@ public class InstrumentationServerManager {
         return instrumentedApkHashes;
     }
 
-    public void setupDatabase() {
-        Statement statement = null;
-
-        setDatabaseConnection();
-
-        System.out.println("Opened database successfully");
-
-        // TODO make this parameterized.
-        try {
-            statement = databaseConnection.createStatement();
-
-            statement.executeUpdate(DAO.SQL_STATEMENT_DROP_TABLE);
-            statement.executeUpdate(DAO.SQL_STATEMENT_CREATE_TABLE);
-            statement.close();
-            databaseConnection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
-    public void setDatabaseConnection() {
-        try {
-            if (databaseConnection == null || databaseConnection.isClosed()) {
-                Class.forName("org.sqlite.JDBC");
-                databaseConnection = DriverManager.getConnection("jdbc:sqlite:test.db");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public boolean saveApk(String instrumentedApkPath, String sha512Hash) {
-
-        try {
-            saveInstrumentedApkToDatabase(instrumentedApkPath, sha512Hash);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return true;
-    }
-
+    /** Store the APK and its hash in the database.*/
     public void saveInstrumentedApkToDatabase(String instrumentedApkPath, String sha512Hash) {
-
-        setDatabaseConnection();
+        connectToDatabase();
 
         try {
-            String sqlStatementGetAllApkPackageNamesAndHashes = DAO.getQueryToInsertInstrumentedApkIntoDatabase(sha512Hash);
+            String sqlStatementGetAllApkPackageNamesAndHashes = QueryBuilder.getQueryToInsertInstrumentedApkIntoDatabase();
+            InputStream inputstream = new FileInputStream((new File(instrumentedApkPath)));
+            PreparedStatement preparedStatement = databaseConnection.prepareStatement(
+                    sqlStatementGetAllApkPackageNamesAndHashes);
 
-            InputStream inputstream = new FileInputStream( (new File(instrumentedApkPath)));
-
-            PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatementGetAllApkPackageNamesAndHashes);
-            preparedStatement.setBytes(1, IOUtils.toByteArray(inputstream));
+            preparedStatement.setString(1, sha512Hash);
+            preparedStatement.setBytes(2, IOUtils.toByteArray(inputstream));
             preparedStatement.execute();
 
             preparedStatement.close();
             databaseConnection.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
@@ -124,11 +82,12 @@ public class InstrumentationServerManager {
 
     }
 
+    /** Retrieves the binary blob of an APK by its hash.*/
     public byte[] retrieveInstrumentedApkFromDatabase(String apkHash) {
-        setDatabaseConnection();
+        connectToDatabase();
 
         try {
-            String sqlStatementGetApkFromHash = DAO.getQueryToRetrieveApkFile();
+            String sqlStatementGetApkFromHash = QueryBuilder.getQueryToRetrieveApkFile();
             PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatementGetApkFromHash);
             preparedStatement.setString(1, apkHash);
 
@@ -145,17 +104,19 @@ public class InstrumentationServerManager {
         return null;
     }
 
+    /** Checks if the APK has already been instrumented and saved to the database. If not, an instrumentation
+    * will be run.*/
     public boolean checkIfApkAlreadyInstrumented(String sha512Hash) {
         boolean alreadyInstrumented = false;
-        setDatabaseConnection();
-        String sqlStatementCheckIfApkAlreadyInstrumented = DAO.getQueryToCheckIfApkAlreadyInstrumented();
+        connectToDatabase();
+        String sqlStatementCheckIfApkAlreadyInstrumented = QueryBuilder.getQueryToCheckIfApkAlreadyInstrumented();
         try {
             PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatementCheckIfApkAlreadyInstrumented);
             preparedStatement.setString(1, sha512Hash);
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            //Check if the ResultSet contains results first
+            //Check if the ResultSet contains results first by calling next()
             if (resultSet.next() && resultSet.getString(1).equals(sha512Hash)) {
                 alreadyInstrumented = true;
             }
@@ -167,5 +128,37 @@ public class InstrumentationServerManager {
             e.printStackTrace();
         }
         return alreadyInstrumented;
+    }
+
+    /** Initialize the database.*/
+    public void initializeDatabase() {
+        Statement statement;
+        connectToDatabase();
+        System.out.println("Opened database successfully");
+
+        // TODO make this parameterized.
+        try {
+            statement = databaseConnection.createStatement();
+
+            // Used to test with fresh database.
+            //statement.executeUpdate(QueryBuilder.SQL_STATEMENT_DROP_TABLE);
+            statement.executeUpdate(QueryBuilder.SQL_STATEMENT_CREATE_TABLE_IF_NOT_EXISTS);
+            statement.close();
+            databaseConnection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /** Set up database connection to interact with the database. */
+    public void connectToDatabase() {
+        try {
+            if (databaseConnection == null || databaseConnection.isClosed()) {
+                Class.forName("org.sqlite.JDBC");
+                databaseConnection = DriverManager.getConnection("jdbc:sqlite:test.db");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
