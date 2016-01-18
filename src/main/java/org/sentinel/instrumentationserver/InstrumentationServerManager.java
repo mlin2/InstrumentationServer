@@ -128,7 +128,7 @@ public class InstrumentationServerManager {
         setDatabaseConnection();
 
         try {
-            String sqlStatementGetApkFromHash = DAO.getQueryToRetrieveApkFile(apkHash);
+            String sqlStatementGetApkFromHash = DAO.getQueryToRetrieveApkFile();
             PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatementGetApkFromHash);
             preparedStatement.setString(1, apkHash);
 
@@ -143,5 +143,29 @@ public class InstrumentationServerManager {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public boolean checkIfApkAlreadyInstrumented(String sha512Hash) {
+        boolean alreadyInstrumented = false;
+        setDatabaseConnection();
+        String sqlStatementCheckIfApkAlreadyInstrumented = DAO.getQueryToCheckIfApkAlreadyInstrumented();
+        try {
+            PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatementCheckIfApkAlreadyInstrumented);
+            preparedStatement.setString(1, sha512Hash);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            //Check if the ResultSet contains results first
+            if (resultSet.next() && resultSet.getString(1).equals(sha512Hash)) {
+                alreadyInstrumented = true;
+            }
+            resultSet.close();
+            preparedStatement.close();
+            databaseConnection.close();
+            return alreadyInstrumented;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return alreadyInstrumented;
     }
 }

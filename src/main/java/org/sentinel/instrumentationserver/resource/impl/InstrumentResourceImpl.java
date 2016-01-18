@@ -44,14 +44,17 @@ public class InstrumentResourceImpl implements InstrumentResource {
     public PostInstrumentResponse postInstrument(@FormDataParam("sourceFile")InputStream sourceFile, @FormDataParam("sinkFile")InputStream sinkFile,
                                                  @FormDataParam("easyTaintWrapperSource")InputStream easyTaintWrapperSource, @FormDataParam("apkFile")InputStream apkFile) throws Exception {
 
-        InstrumentationRunner instrumentationRunner = null;
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
         byte[] apkFileBytes = IOUtils.toByteArray(apkFile);
         String sha512Hash = String.valueOf(Hex.encodeHex(messageDigest.digest(apkFileBytes)));
 
-        instrumentationRunner = new InstrumentationRunner(sourceFile, sinkFile, easyTaintWrapperSource, apkFileBytes, sha512Hash);
-        Thread thread = new Thread(instrumentationRunner);
-        thread.start();
+        InstrumentationServerManager instrumentationServerManager = InstrumentationServerManager.getInstance();
+
+        if(!instrumentationServerManager.checkIfApkAlreadyInstrumented(sha512Hash)) {
+            InstrumentationRunner instrumentationRunner = new InstrumentationRunner(sourceFile, sinkFile, easyTaintWrapperSource, apkFileBytes, sha512Hash);
+            Thread thread = new Thread(instrumentationRunner);
+            thread.start();
+        }
 
         return PostInstrumentResponse.withJsonAccepted(new Apk());
     }
