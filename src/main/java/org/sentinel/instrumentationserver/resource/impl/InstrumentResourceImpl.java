@@ -1,6 +1,9 @@
 package org.sentinel.instrumentationserver.resource.impl;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.IOUtils;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.sentinel.instrumentationserver.InstrumentationRunner;
 import org.sentinel.instrumentationserver.InstrumentationServerManager;
 import org.sentinel.instrumentationserver.generated.model.Apk;
 import org.sentinel.instrumentationserver.generated.model.Apks;
@@ -9,6 +12,7 @@ import org.sentinel.instrumentationserver.generated.workaround.InstrumentResourc
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.InputStream;
+import java.security.MessageDigest;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,10 +44,14 @@ public class InstrumentResourceImpl implements InstrumentResource {
     public PostInstrumentResponse postInstrument(@FormDataParam("sourceFile")InputStream sourceFile, @FormDataParam("sinkFile")InputStream sinkFile,
                                                  @FormDataParam("easyTaintWrapperSource")InputStream easyTaintWrapperSource, @FormDataParam("apkFile")InputStream apkFile) throws Exception {
 
-        if (InstrumentationServerManager.getInstance().handleMultipartPost(sourceFile, sinkFile, easyTaintWrapperSource, apkFile)) {
-            return PostInstrumentResponse.withJsonAccepted(new Apk());
-        }
+        InstrumentationRunner instrumentationRunner = null;
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
+        byte[] apkFileBytes = IOUtils.toByteArray(apkFile);
+        String sha512Hash = String.valueOf(Hex.encodeHex(messageDigest.digest(apkFileBytes)));
 
+        instrumentationRunner = new InstrumentationRunner(sourceFile, sinkFile, easyTaintWrapperSource, apkFileBytes, sha512Hash);
+        Thread thread = new Thread(instrumentationRunner);
+        thread.start();
 
         return PostInstrumentResponse.withJsonAccepted(new Apk());
     }

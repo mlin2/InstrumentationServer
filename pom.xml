@@ -146,6 +146,30 @@
                     </execution>
                 </executions>
             </plugin>
+<!--
+            Generating jars
+-->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>org.sentinel.instrumentationserver.Main</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptor>descriptor.xml</descriptor>
+
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

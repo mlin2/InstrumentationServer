@@ -89,22 +89,9 @@ public class InstrumentationServerManager {
         }
     }
 
-    public boolean handleMultipartPost(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource, InputStream apkFile) {
-        InstrumentationRunner instrumentationRunner = new InstrumentationRunner();
-/*            if (!isMimeMultipartOK(mimeMultipart)) {
-                return false;
-            }*/
+    public boolean saveApk(String instrumentedApkPath, String sha512Hash) {
 
         try {
-            MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
-            byte[] apkFileBytes = IOUtils.toByteArray(apkFile);
-            String sha512Hash = String.valueOf(Hex.encodeHex(messageDigest.digest(apkFileBytes)));
-
-
-            String instrumentedApkPath = instrumentationRunner.run(sourceFile,
-                    sinkFile, easyTaintWrapperSource,
-                    apkFileBytes, sha512Hash);
-
             saveInstrumentedApkToDatabase(instrumentedApkPath, sha512Hash);
 
         } catch (Exception e) {

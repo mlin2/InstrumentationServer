@@ -9,9 +9,24 @@ import java.io.*;
 /**
  * Created by sebastian on 1/12/16.
  */
-public class InstrumentationRunner {
+public class InstrumentationRunner implements Runnable {
 
     private String instrumentedApkPath;
+
+    InputStream sourceFile;
+    InputStream sinkFile;
+    InputStream easyTaintWrapperSource;
+    byte[] apkFile;
+    String sha512Hash;
+
+    public InstrumentationRunner(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource,
+                                 byte[] apkFile, String sha512Hash) {
+        this.sourceFile = sourceFile;
+        this.sinkFile = sinkFile;
+        this.easyTaintWrapperSource = easyTaintWrapperSource;
+        this.apkFile = apkFile;
+        this.sha512Hash = sha512Hash;
+    }
 
     private static void printLines(String name, InputStream ins) throws Exception {
         String line = null;
@@ -20,28 +35,6 @@ public class InstrumentationRunner {
         while ((line = in.readLine()) != null) {
             System.out.println(name + " " + line);
         }
-    }
-
-    public String run(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource, byte[] apkFile, String sha512Hash) {
-
-        try {
-            ProcessBuilder processBuilder = buildCommand(sourceFile, sinkFile, easyTaintWrapperSource, apkFile, sha512Hash);
-            Process process = processBuilder.start();
-            printLines(" STDOUT:", process.getInputStream());
-            printLines(" STDERR:", process.getErrorStream());
-            process.waitFor();
-            System.out.println(" EXITVALUE " + process.exitValue());
-
-            return instrumentedApkPath;
-
-/*            InstrumentationServerManager instrumentationServerManager = InstrumentationServerManager.getInstance();
-            instrumentationServerManager.saveInstrumentedApkToDatabase(instrumentedApkPath, sha512Hash);*/
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
     }
 
     //TODO do something better than returning null
@@ -100,4 +93,28 @@ public class InstrumentationRunner {
         return null;
     }
 
+    @Override
+    public void run() {
+        try {
+            ProcessBuilder processBuilder = buildCommand(sourceFile, sinkFile, easyTaintWrapperSource, apkFile, sha512Hash);
+            Process process = processBuilder.start();
+            printLines(" STDOUT:", process.getInputStream());
+            printLines(" STDERR:", process.getErrorStream());
+            process.waitFor();
+            System.out.println(" EXITVALUE " + process.exitValue());
+
+/*            InstrumentationServerManager instrumentationServerManager = InstrumentationServerManager.getInstance();
+            instrumentationServerManager.saveInstrumentedApkToDatabase(instrumentedApkPath, sha512Hash);*/
+
+            InstrumentationServerManager.getInstance().saveApk(instrumentedApkPath, sha512Hash);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getInstrumentedApkPath() {
+        return instrumentedApkPath;
+    }
 }
