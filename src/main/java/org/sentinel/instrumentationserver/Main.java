@@ -6,6 +6,7 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.sentinel.instrumentationserver.resource.impl.InstrumentResourceImpl;
+import org.sentinel.instrumentationserver.resource.impl.MetadataResourceImpl;
 
 import java.io.IOException;
 import java.net.URI;
@@ -28,6 +29,7 @@ public class Main {
         // in org.sentinel.instrumentationserver package
         final ResourceConfig rc = new ResourceConfig().packages("org.sentinel.instrumentationserver.resource");
         rc.register(InstrumentResourceImpl.class);
+        rc.register(MetadataResourceImpl.class);
         rc.register(MultiPartFeature.class);
         rc.register(JacksonFeature.class);
 

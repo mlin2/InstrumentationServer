@@ -25,10 +25,11 @@ public interface InstrumentResource {
      * Retrieve a list of instrumented apk files
      */
     @GET
+    @Path("all")
     @Produces({
             "application/json"
     })
-    InstrumentResource.GetInstrumentResponse getInstrument()
+    InstrumentResource.GetInstrumentAllResponse getInstrumentAll()
             throws Exception
     ;
 
@@ -73,7 +74,7 @@ public interface InstrumentResource {
     InstrumentResource.PostInstrumentResponse postInstrument(@FormDataParam("file") InputStream sourceFile, @FormDataParam("file") InputStream sinkFile,
                                                              @FormDataParam("file") InputStream easyTaintWrapperSource, @FormDataParam("file") InputStream apkFile,
                                                              @FormDataParam("file") InputStream logo, @FormDataParam("text") String appName,
-                                                             @FormDataParam("text") String packageName)
+                                                             @FormDataParam("text") String packageName, @FormDataParam("makeAppPublic") boolean makeAppPublic)
             throws Exception
     ;
 
@@ -137,13 +138,14 @@ public interface InstrumentResource {
     }
 
     /**
-     * The response for using GET on the /instrument resource. It lists all instrumented APKs.
+     * The response for using GET on the /instrument/all resource. It lists all instrumented APKs.
      */
-    class GetInstrumentResponse
-            extends org.sentinel.instrumentationserver.generated.resource.support.ResponseWrapper {
+    class GetInstrumentAllResponse
+            extends org.sentinel.instrumentationserver.generated.resource.support.ResponseWrapper
+    {
 
 
-        private GetInstrumentResponse(Response delegate) {
+        private GetInstrumentAllResponse(Response delegate) {
             super(delegate);
         }
 
@@ -161,10 +163,10 @@ public interface InstrumentResource {
          *               ]
          *               }
          */
-        public static InstrumentResource.GetInstrumentResponse withJsonOK(Apks entity) {
+        public static InstrumentResource.GetInstrumentAllResponse withJsonOK(Apks entity) {
             Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "application/json");
             responseBuilder.entity(entity);
-            return new InstrumentResource.GetInstrumentResponse(responseBuilder.build());
+            return new InstrumentResource.GetInstrumentAllResponse(responseBuilder.build());
         }
 
     }

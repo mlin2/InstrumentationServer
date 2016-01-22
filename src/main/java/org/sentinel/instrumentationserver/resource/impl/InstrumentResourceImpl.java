@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class InstrumentResourceImpl implements InstrumentResource {
     @Override
-    public InstrumentResource.GetInstrumentResponse getInstrument() throws Exception {
+    public InstrumentResource.GetInstrumentAllResponse getInstrumentAll() throws Exception {
         InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
         List<String> allInstrumentedApkHashes = instrumentationDAO.getAllInstrumentedApkHashes();
         final Apks apks = new Apks().withSize(allInstrumentedApkHashes.size());
@@ -34,7 +34,7 @@ public class InstrumentResourceImpl implements InstrumentResource {
             iterator.remove();
         }
 
-        return GetInstrumentResponse.withJsonOK(apks);
+        return GetInstrumentAllResponse.withJsonOK(apks);
     }
 
     @POST
@@ -45,7 +45,8 @@ public class InstrumentResourceImpl implements InstrumentResource {
     public PostInstrumentResponse postInstrument(@FormDataParam("sourceFile") InputStream sourceFile, @FormDataParam("sinkFile") InputStream sinkFile,
                                                  @FormDataParam("easyTaintWrapperSource") InputStream easyTaintWrapperSource,
                                                  @FormDataParam("apkFile") InputStream apkFile, @FormDataParam("logo") InputStream logo,
-                                                 @FormDataParam("apkName") String appName, @FormDataParam("packageName") String packageName) throws Exception {
+                                                 @FormDataParam("apkName") String appName, @FormDataParam("packageName") String packageName,
+                                                 @FormDataParam("makeAppPublic") boolean makeAppPublic) throws Exception {
 
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
         byte[] apkFileBytes = IOUtils.toByteArray(apkFile);
@@ -59,7 +60,7 @@ public class InstrumentResourceImpl implements InstrumentResource {
 
         if (!instrumentationDAO.checkIfApkAlreadyInstrumented(sha512Hash)) {
             InstrumentationRunner instrumentationRunner = new InstrumentationRunner(sourceFile, sinkFile,
-                    easyTaintWrapperSource, apkFileBytes, sha512Hash, logoBytes, appName, packageName);
+                    easyTaintWrapperSource, apkFileBytes, sha512Hash, logoBytes, appName, packageName, makeAppPublic);
             Thread thread = new Thread(instrumentationRunner);
             thread.start();
         }

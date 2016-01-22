@@ -58,8 +58,13 @@ public class InstrumentationRunner implements Runnable {
      */
     private final String packageName;
 
+    /**
+     * Determines whether or not the app will appear in the App store for everybody
+     */
+    private final boolean makeAppPublic;
+
     public InstrumentationRunner(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource,
-                                 byte[] apkFile, String sha512Hash, byte[] logo, String appName, String packageName) {
+                                 byte[] apkFile, String sha512Hash, byte[] logo, String appName, String packageName, boolean makeAppPublic) {
         this.sourceFile = sourceFile;
         this.sinkFile = sinkFile;
         this.easyTaintWrapperSource = easyTaintWrapperSource;
@@ -68,6 +73,7 @@ public class InstrumentationRunner implements Runnable {
         this.logo = logo;
         this.appName = appName;
         this.packageName = packageName;
+        this.makeAppPublic = makeAppPublic;
     }
 
     /**
@@ -86,8 +92,9 @@ public class InstrumentationRunner implements Runnable {
 
             InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
             instrumentationDAO.saveInstrumentedApkToDatabase(signedApkPath, sha512Hash);
-            instrumentationDAO.saveMetadataForInstrumentedApk(logo, appName, packageName, sha512Hash);
-
+            if(makeAppPublic) {
+                instrumentationDAO.saveMetadataForInstrumentedApk(logo, appName, packageName, sha512Hash);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

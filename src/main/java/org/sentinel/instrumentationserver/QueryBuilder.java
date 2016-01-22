@@ -21,13 +21,32 @@ public class QueryBuilder {
             "LOGO                   BLOB                                                ," +
             "APPNAME                TEXT                                                ," +
             "PACKAGENAME            TEXT                                                ," +
-            "APKID                  INTEGER     UNIQUE                          NOT NULL," +
+            "APPURL                 TEXT                                                ," +
+            "HASH                   TEXT                                                ," +
+            "SUMMARY                TEXT                                                ," +
+            "DESCRIPTION            TEXT                                                ," +
+            "LICENSE                TEXT                                                ," +
+            "APPCATEGORY            TEXT                                                ," +
+            "WEBLINK                TEXT                                                ," +
+            "SOURCECODELINK         TEXT                                                ," +
+            "MARKETVERSION          TEXT                                                ," +
+            "SHA256HASH             TEXT                                                ," +
+            "SIZEINBYTES            INTEGER                                             ," +
+            "SDKVERSION             TEXT                                                ," +
+            "PERMISSIONS            TEXT                                                ," +
+            "FEATURES               TEXT                                                ," +
+            "APKID                  INTEGER                                             ," +
             "FOREIGN KEY(APKID)     REFERENCES  APKS(ID)                                )";
 
     /**
-     * Get a fresh database to test instrumentation.
+     * Get a fresh database without the APKS table to test instrumentation.
      */
-    public static final String SQL_STATEMENT_DROP_TABLE = "DROP TABLE IF EXISTS APKS;";
+    public static final String SQL_STATEMENT_DROP_TABLE_APKS = "DROP TABLE IF EXISTS APKS;";
+
+    /**
+     * Get a database without the METADATA table to test instrumentation.
+     */
+    public static final String SQL_STATEMENT_DROP_TABLE_METADATA = "DROP TABLE IF EXISTS METADATA;";
 
     public static String getQueryToInsertInstrumentedApkIntoDatabase() {
         return "INSERT INTO APKS(HASH, INSTRUMENTEDAPK)" +
@@ -59,5 +78,9 @@ public class QueryBuilder {
 
     public static String getQueryGetAllMetadata() {
         return "SELECT * FROM METADATA";
+    }
+
+    public static String getQueryListAllMetadataIds() {
+        return "SELECT ID FROM METADATA";
     }
 }

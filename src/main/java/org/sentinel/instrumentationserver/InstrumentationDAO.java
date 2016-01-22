@@ -1,6 +1,8 @@
 package org.sentinel.instrumentationserver;
 
 import org.apache.commons.io.IOUtils;
+import org.sentinel.instrumentationserver.generated.model.MetadataList;
+import org.sentinel.instrumentationserver.generated.model.Metadatum;
 
 import java.io.*;
 import java.sql.*;
@@ -130,6 +132,8 @@ public class InstrumentationDAO {
             preparedStatement.setString(3, packageName);
             preparedStatement.setLong(4, apkId);
 
+            preparedStatement.executeUpdate();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -151,7 +155,6 @@ public class InstrumentationDAO {
 
         //TODO handle this better
         return -1;
-
     }
 
     /**
@@ -182,6 +185,60 @@ public class InstrumentationDAO {
         return alreadyInstrumented;
     }
 
+    /**
+     * Get the metadata of all instrumented apps saved on the server.
+     */
+    public MetadataList getAllMetadata() {
+        connectToDatabase();
+        //List<Long> metadataIdList = getAllDatabaseMetadataIds();
+
+        String sqlStatementGetAllMetadata = QueryBuilder.getQueryGetAllMetadata();
+        try {
+
+            Statement statement = databaseConnection.createStatement();
+
+            List<Metadatum> metadataList = new ArrayList<Metadatum>();
+            ResultSet resultSet = statement.executeQuery(sqlStatementGetAllMetadata);
+
+            while (resultSet.next()) {
+                //TODO make URL parameterized
+                Metadatum metadatum = new Metadatum().withLogoUrl("localhost:8080/metadata/logo/" + resultSet.getString("HASH")).
+                        withAppName(resultSet.getString("APPNAME")).withPackageName(resultSet.getString("PACKAGENAME"))
+                        .withAppUrl(resultSet.getString("APPURL")).withHash(resultSet.getString("HASH"))
+                        .withSummary(resultSet.getString("SUMMARY")).withDescription(resultSet.getString("DESCRIPTION"))
+                        .withLicense(resultSet.getString("LICENSE")).withAppCategory(resultSet.getString("APPCATEGORY"))
+                        .withWebLink(resultSet.getString("WEBLINK")).withSourceCodeLink(resultSet.getString("SOURCECODELINK"))
+                        .withMarketVersion(resultSet.getString("MARKETVERSION")).withSha256hash(resultSet.getString("SHA256HASH"))
+                        .withSizeInBytes(resultSet.getDouble("SIZEINBYTES")).withSdkVersion(resultSet.getString("SDKVERSION"))
+                        .withPermissions(resultSet.getString("PERMISSIONS")).withFeatures(resultSet.getString("FEATURES"));
+                metadataList.add(metadatum);
+            }
+
+            return new MetadataList().withMetadata(metadataList);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+/*    private List<Long> getAllDatabaseMetadataIds() {
+        connectToDatabase();
+        String sqlQueryListAllMetadataIds = QueryBuilder.getQueryListAllMetadataIds();
+
+        try {
+            PreparedStatement preparedStatement = databaseConnection.prepareStatement();
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            resultSet.get
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+    }*/
 
 
     /**
@@ -197,7 +254,9 @@ public class InstrumentationDAO {
             statement = databaseConnection.createStatement();
 
             // Used to test with fresh database.
-            statement.executeUpdate(QueryBuilder.SQL_STATEMENT_DROP_TABLE);
+            statement.executeUpdate(QueryBuilder.SQL_STATEMENT_DROP_TABLE_APKS);
+            // Used to test with fresh database.
+            statement.executeUpdate(QueryBuilder.SQL_STATEMENT_DROP_TABLE_METADATA);
             statement.executeUpdate(QueryBuilder.SQL_STATEMENT_CREATE_TABLE_APKS_IF_NOT_EXISTS);
             statement.executeUpdate(QueryBuilder.SQL_STATEMENT_CREATE_TABLE_METADATA_IF_NOT_EXISTS);
             statement.close();
