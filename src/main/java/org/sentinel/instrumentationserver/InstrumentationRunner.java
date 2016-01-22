@@ -23,33 +23,51 @@ public class InstrumentationRunner implements Runnable {
     private String sha512Hash;
 
     /**
-     * Source file containing the android's source methods
+     * Source file containing the android's source methods.
      */
     private InputStream sourceFile;
 
     /**
-     * Sink file containing the android's sink methods
+     * Sink file containing the android's sink methods.
      */
     private InputStream sinkFile;
 
     /**
      * Taint wrapper file containing the android's package names that
-     * should be considered during the instrumentation phase
+     * should be considered during the instrumentation phase.
      */
     private InputStream easyTaintWrapperSource;
 
     /**
-     * APK file that should be instrumented
+     * APK file that should be instrumented.
      */
     private byte[] apkFile;
 
+    /**
+     * The logo of the app.
+     */
+    private final byte[] logo;
+
+    /**
+     * The name of the app.
+     */
+    private final String appName;
+
+    /**
+     * The package name of the app.
+     */
+    private final String packageName;
+
     public InstrumentationRunner(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource,
-                                 byte[] apkFile, String sha512Hash) {
+                                 byte[] apkFile, String sha512Hash, byte[] logo, String appName, String packageName) {
         this.sourceFile = sourceFile;
         this.sinkFile = sinkFile;
         this.easyTaintWrapperSource = easyTaintWrapperSource;
         this.apkFile = apkFile;
         this.sha512Hash = sha512Hash;
+        this.logo = logo;
+        this.appName = appName;
+        this.packageName = packageName;
     }
 
     /**
@@ -66,7 +84,10 @@ public class InstrumentationRunner implements Runnable {
             process.waitFor();
             System.out.println(" EXITVALUE " + process.exitValue());
 
-            InstrumentationDAO.getInstance().saveInstrumentedApkToDatabase(signedApkPath, sha512Hash);
+            InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
+            instrumentationDAO.saveInstrumentedApkToDatabase(signedApkPath, sha512Hash);
+            instrumentationDAO.saveMetadataForInstrumentedApk(logo, appName, packageName, sha512Hash);
+
 
         } catch (Exception e) {
             e.printStackTrace();

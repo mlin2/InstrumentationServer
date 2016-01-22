@@ -71,7 +71,9 @@ public interface InstrumentResource {
             "application/json"
     })
     InstrumentResource.PostInstrumentResponse postInstrument(@FormDataParam("file") InputStream sourceFile, @FormDataParam("file") InputStream sinkFile,
-                                                             @FormDataParam("file") InputStream easyTaintWrapperSource, @FormDataParam("file") InputStream apkFile)
+                                                             @FormDataParam("file") InputStream easyTaintWrapperSource, @FormDataParam("file") InputStream apkFile,
+                                                             @FormDataParam("file") InputStream logo, @FormDataParam("text") String appName,
+                                                             @FormDataParam("text") String packageName)
             throws Exception
     ;
 

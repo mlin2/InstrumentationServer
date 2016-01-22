@@ -43,16 +43,23 @@ public class InstrumentResourceImpl implements InstrumentResource {
             "application/json"
     })
     public PostInstrumentResponse postInstrument(@FormDataParam("sourceFile") InputStream sourceFile, @FormDataParam("sinkFile") InputStream sinkFile,
-                                                 @FormDataParam("easyTaintWrapperSource") InputStream easyTaintWrapperSource, @FormDataParam("apkFile") InputStream apkFile) throws Exception {
+                                                 @FormDataParam("easyTaintWrapperSource") InputStream easyTaintWrapperSource,
+                                                 @FormDataParam("apkFile") InputStream apkFile, @FormDataParam("logo") InputStream logo,
+                                                 @FormDataParam("apkName") String appName, @FormDataParam("packageName") String packageName) throws Exception {
 
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
         byte[] apkFileBytes = IOUtils.toByteArray(apkFile);
         String sha512Hash = String.valueOf(Hex.encodeHex(messageDigest.digest(apkFileBytes)));
 
+        // Save the logo as an array of bytes because the InputStream for the logo will
+        // be closed after instrumentation.
+        byte[] logoBytes = IOUtils.toByteArray(logo);
+
         InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
 
         if (!instrumentationDAO.checkIfApkAlreadyInstrumented(sha512Hash)) {
-            InstrumentationRunner instrumentationRunner = new InstrumentationRunner(sourceFile, sinkFile, easyTaintWrapperSource, apkFileBytes, sha512Hash);
+            InstrumentationRunner instrumentationRunner = new InstrumentationRunner(sourceFile, sinkFile,
+                    easyTaintWrapperSource, apkFileBytes, sha512Hash, logoBytes, appName, packageName);
             Thread thread = new Thread(instrumentationRunner);
             thread.start();
         }

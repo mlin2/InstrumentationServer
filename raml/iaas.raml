@@ -52,6 +52,21 @@ schemas:
             displayName: APK File
             type: file
             required: true
+          logo:
+            description: The logo of the app
+            displayName: Logo
+            type: file
+            required: false
+          appName:
+            description: The name of the app
+            displayName: App Name
+            type: string
+            required: false
+          packagename:
+            description: The packagename of the app
+            displayName: Package Name
+            type: string
+            required: false
     responses:
       202:
         body:

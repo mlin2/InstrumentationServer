@@ -8,10 +8,21 @@ public class QueryBuilder {
     /**
      * Create the table for storage of APKs
      */
-    public static final String SQL_STATEMENT_CREATE_TABLE_IF_NOT_EXISTS = "CREATE TABLE IF NOT EXISTS APKS" +
+    public static final String SQL_STATEMENT_CREATE_TABLE_APKS_IF_NOT_EXISTS = "CREATE TABLE IF NOT EXISTS APKS" +
             "(ID                    INTEGER     PRIMARY KEY     AUTOINCREMENT   NOT NULL," +
             "HASH                   TEXT        UNIQUE                          NOT NULL," +
             "INSTRUMENTEDAPK        BLOB                                        NOT NULL)";
+
+    /**
+     * Create the table for storage of Metadata for instrumented APKs
+     */
+    public static final String SQL_STATEMENT_CREATE_TABLE_METADATA_IF_NOT_EXISTS = "CREATE TABLE IF NOT EXISTS METADATA" +
+            "(ID                    INTEGER     PRIMARY KEY     AUTOINCREMENT   NOT NULL," +
+            "LOGO                   BLOB                                                ," +
+            "APPNAME                TEXT                                                ," +
+            "PACKAGENAME            TEXT                                                ," +
+            "APKID                  INTEGER     UNIQUE                          NOT NULL," +
+            "FOREIGN KEY(APKID)     REFERENCES  APKS(ID)                                )";
 
     /**
      * Get a fresh database to test instrumentation.
@@ -36,5 +47,17 @@ public class QueryBuilder {
      */
     public static String getQueryToCheckIfApkAlreadyInstrumented() {
         return "SELECT HASH FROM APKS WHERE HASH=?";
+    }
+
+    public static String getQuerySaveMetadataForInstrumentedApk() {
+        return "INSERT INTO METADATA(LOGO, APPNAME, PACKAGENAME, APKID) VALUES(?, ?, ?, ?)";
+    }
+
+    public static String getQueryGetApkIdFromHash() {
+        return "SELECT ID FROM APKS WHERE HASH=?";
+    }
+
+    public static String getQueryGetAllMetadata() {
+        return "SELECT * FROM METADATA";
     }
 }
