@@ -254,9 +254,9 @@ public class InstrumentationDAO {
             statement = databaseConnection.createStatement();
 
             // Used to test with fresh database.
-            statement.executeUpdate(QueryBuilder.SQL_STATEMENT_DROP_TABLE_APKS);
+            //statement.executeUpdate(QueryBuilder.SQL_STATEMENT_DROP_TABLE_APKS);
             // Used to test with fresh database.
-            statement.executeUpdate(QueryBuilder.SQL_STATEMENT_DROP_TABLE_METADATA);
+            //statement.executeUpdate(QueryBuilder.SQL_STATEMENT_DROP_TABLE_METADATA);
             statement.executeUpdate(QueryBuilder.SQL_STATEMENT_CREATE_TABLE_APKS_IF_NOT_EXISTS);
             statement.executeUpdate(QueryBuilder.SQL_STATEMENT_CREATE_TABLE_METADATA_IF_NOT_EXISTS);
             statement.close();
