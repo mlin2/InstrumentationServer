@@ -273,9 +273,9 @@ public class InstrumentationDAO {
             statement = databaseConnection.createStatement();
 
             // Used to test with fresh database.
-            statement.executeUpdate(QueryBuilder.SQL_STATEMENT_DROP_TABLE_APKS);
+            //statement.executeUpdate(QueryBuilder.SQL_STATEMENT_DROP_TABLE_APKS);
             // Used to test with fresh database.
-            statement.executeUpdate(QueryBuilder.SQL_STATEMENT_DROP_TABLE_METADATA);
+            //statement.executeUpdate(QueryBuilder.SQL_STATEMENT_DROP_TABLE_METADATA);
             statement.executeUpdate(QueryBuilder.SQL_STATEMENT_CREATE_TABLE_APKS_IF_NOT_EXISTS);
             statement.executeUpdate(QueryBuilder.SQL_STATEMENT_CREATE_TABLE_METADATA_IF_NOT_EXISTS);
             statement.close();
@@ -297,5 +297,26 @@ public class InstrumentationDAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public byte[] retrieveLogoFromDatabase(String apkHash) {
+        connectToDatabase();
+
+        try {
+            String sqlStatementGetLogoFromHash = QueryBuilder.getQueryToRetrieveLogoFile();
+            PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatementGetLogoFromHash);
+            preparedStatement.setString(1, apkHash);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            byte[] logo = resultSet.getBytes(1);
+            resultSet.close();
+            preparedStatement.close();
+            databaseConnection.close();
+            return logo;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

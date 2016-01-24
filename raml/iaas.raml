@@ -113,3 +113,22 @@ schemas:
             application/json:
               schema: metadataList
 
+  /logo/{apkHash}:
+      get:
+        description: |
+          Retrieve the logo of the APK corresponding to the hash.
+        responses:
+          200:
+            body:
+              multipart/form-data:
+                      formParameters:
+                          logoFile:
+                              description: The logo for the APK
+                              displayName: Logo File
+                              type: file
+                              required: true
+          404:
+            body:
+              application/json:
+                schema: error
+                example: !include examples/error-response.json

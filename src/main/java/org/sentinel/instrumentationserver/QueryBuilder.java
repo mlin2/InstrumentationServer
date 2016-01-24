@@ -87,4 +87,8 @@ public class QueryBuilder {
     public static String getQueryGetSha512HashFromApkId() {
         return "SELECT HASH FROM APKS WHERE ID=?";
     }
+
+    public static String getQueryToRetrieveLogoFile() {
+        return "SELECT m.LOGO FROM METADATA m INNER JOIN APKS a ON (m.APKID = a.ID) WHERE a.HASH=?";
+    }
 }
