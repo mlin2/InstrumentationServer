@@ -63,6 +63,11 @@ public class InstrumentationRunner implements Runnable {
      */
     private final boolean makeAppPublic;
 
+    /**
+     * The path where the signed, instrumented and aligned APK gets saved.
+     */
+    private String alignedApkPath;
+
     public InstrumentationRunner(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource,
                                  byte[] apkFile, String sha512Hash, byte[] logo, String appName, String packageName, boolean makeAppPublic) {
         this.sourceFile = sourceFile;
@@ -91,7 +96,7 @@ public class InstrumentationRunner implements Runnable {
             System.out.println(" EXITVALUE " + process.exitValue());
 
             InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
-            instrumentationDAO.saveInstrumentedApkToDatabase(signedApkPath, sha512Hash);
+            instrumentationDAO.saveInstrumentedApkToDatabase(alignedApkPath, sha512Hash);
             if(makeAppPublic) {
                 instrumentationDAO.saveMetadataForInstrumentedApk(logo, appName, packageName, sha512Hash);
             }
@@ -130,11 +135,12 @@ public class InstrumentationRunner implements Runnable {
             String instrumentedApkPath = instrumentationJobsDirectory + "/" + sha512Hash + "/" + fileToInstrumentTemp.getName();
 
             signedApkPath = instrumentationJobsDirectory + "/" + sha512Hash + "/signedApk.jar";
+            alignedApkPath = instrumentationJobsDirectory + "/" + sha512Hash + "/alignedApk.jar";
 
 
             ProcessBuilder processBuilder = new ProcessBuilder(currentDirectory + "/instrumentation.sh", sourceFileTemp.getAbsolutePath(), sinkFileTemp.getAbsolutePath(),
                     fileToInstrumentTemp.getAbsolutePath(), easyTaintWrapperSourceTemp.getAbsolutePath(), outputDirectoryAbsolutePath, androidJarDirectory, instrumentedApkPath, keystoreDirectory,
-                    keystoreAlias, keystorePass, signedApkPath);
+                    keystoreAlias, keystorePass, signedApkPath, alignedApkPath);
 
             return processBuilder;
 

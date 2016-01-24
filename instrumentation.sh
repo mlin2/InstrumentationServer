@@ -27,4 +27,4 @@ jarsigner -verbose -keystore $8 -storepass ${10} -signedjar ${11} $3 $9
 echo Previous signatures are now removed from the APK
 #TODO is this needed?
 #Delete previous signatures
-zipalign -v 4 ${11} ${11}
+zipalign -v 4 ${11} ${12}
