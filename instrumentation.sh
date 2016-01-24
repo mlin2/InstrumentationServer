@@ -27,4 +27,4 @@ jarsigner -verbose -keystore $8 -storepass ${10} -signedjar ${11} $3 $9
 echo Previous signatures are now removed from the APK
 #TODO is this needed?
 #Delete previous signatures
-zip -d $7 "META-INF/"
+zipalign -v 4 $7 $7
