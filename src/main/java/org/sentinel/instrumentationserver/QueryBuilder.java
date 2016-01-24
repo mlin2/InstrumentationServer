@@ -83,4 +83,8 @@ public class QueryBuilder {
     public static String getQueryListAllMetadataIds() {
         return "SELECT ID FROM METADATA";
     }
+
+    public static String getQueryGetSha512HashFromApkId() {
+        return "SELECT HASH FROM APKS WHERE ID=?";
+    }
 }

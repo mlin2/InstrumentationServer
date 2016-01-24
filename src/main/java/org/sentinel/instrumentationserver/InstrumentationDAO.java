@@ -202,9 +202,10 @@ public class InstrumentationDAO {
 
             while (resultSet.next()) {
                 //TODO make URL parameterized
+                String sha512Hash = getSha512Hash(resultSet.getDouble("APKID"));
                 Metadatum metadatum = new Metadatum().withLogoUrl("localhost:8080/metadata/logo/" + resultSet.getString("HASH")).
                         withAppName(resultSet.getString("APPNAME")).withPackageName(resultSet.getString("PACKAGENAME"))
-                        .withAppUrl(resultSet.getString("APPURL")).withHash(resultSet.getString("HASH"))
+                        .withAppUrl(resultSet.getString("APPURL")).withHash(sha512Hash)
                         .withSummary(resultSet.getString("SUMMARY")).withDescription(resultSet.getString("DESCRIPTION"))
                         .withLicense(resultSet.getString("LICENSE")).withAppCategory(resultSet.getString("APPCATEGORY"))
                         .withWebLink(resultSet.getString("WEBLINK")).withSourceCodeLink(resultSet.getString("SOURCECODELINK"))
@@ -215,6 +216,24 @@ public class InstrumentationDAO {
             }
 
             return new MetadataList().withMetadata(metadataList);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String getSha512Hash(double apkid) {
+        connectToDatabase();
+
+        String sqlStatementGetSha512HashFromApkId = QueryBuilder.getQueryGetSha512HashFromApkId();
+
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = databaseConnection.prepareStatement(sqlStatementGetSha512HashFromApkId);
+            preparedStatement.setDouble(1, apkid);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            return resultSet.getString("HASH");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -254,9 +273,9 @@ public class InstrumentationDAO {
             statement = databaseConnection.createStatement();
 
             // Used to test with fresh database.
-            //statement.executeUpdate(QueryBuilder.SQL_STATEMENT_DROP_TABLE_APKS);
+            statement.executeUpdate(QueryBuilder.SQL_STATEMENT_DROP_TABLE_APKS);
             // Used to test with fresh database.
-            //statement.executeUpdate(QueryBuilder.SQL_STATEMENT_DROP_TABLE_METADATA);
+            statement.executeUpdate(QueryBuilder.SQL_STATEMENT_DROP_TABLE_METADATA);
             statement.executeUpdate(QueryBuilder.SQL_STATEMENT_CREATE_TABLE_APKS_IF_NOT_EXISTS);
             statement.executeUpdate(QueryBuilder.SQL_STATEMENT_CREATE_TABLE_METADATA_IF_NOT_EXISTS);
             statement.close();
