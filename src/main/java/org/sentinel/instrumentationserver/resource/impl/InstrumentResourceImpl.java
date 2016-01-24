@@ -7,6 +7,7 @@ import org.sentinel.instrumentationserver.InstrumentationDAO;
 import org.sentinel.instrumentationserver.InstrumentationRunner;
 import org.sentinel.instrumentationserver.generated.model.Apk;
 import org.sentinel.instrumentationserver.generated.model.Apks;
+import org.sentinel.instrumentationserver.generated.model.Error;
 import org.sentinel.instrumentationserver.generated.workaround.InstrumentResource;
 
 import javax.ws.rs.*;
@@ -79,6 +80,9 @@ public class InstrumentResourceImpl implements InstrumentResource {
         InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
         byte[] apkFile = instrumentationDAO.retrieveInstrumentedApkFromDatabase(apkHash);
         System.out.println(apkFile);
+        if(apkFile.length == 0) {
+            return GetInstrumentByApkHashResponse.withJsonNotFound(new Error().withMsg("APK file not stored in the database"));
+        }
         return GetInstrumentByApkHashResponse.withOK(apkFile);
     }
 }
