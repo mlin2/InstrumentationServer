@@ -134,8 +134,8 @@ public class InstrumentationRunner implements Runnable {
             String outputDirectoryAbsolutePath = instrumentationJobsDirectory + "/" + sha512Hash;
             String instrumentedApkPath = instrumentationJobsDirectory + "/" + sha512Hash + "/" + fileToInstrumentTemp.getName();
 
-            signedApkPath = instrumentationJobsDirectory + "/" + sha512Hash + "/signedApk.jar";
-            alignedApkPath = instrumentationJobsDirectory + "/" + sha512Hash + "/alignedApk.jar";
+            signedApkPath = instrumentationJobsDirectory + "/" + sha512Hash + "/signedApk.apk";
+            alignedApkPath = instrumentationJobsDirectory + "/" + sha512Hash + "/alignedApk.apk";
 
 
             ProcessBuilder processBuilder = new ProcessBuilder(currentDirectory + "/instrumentation.sh", sourceFileTemp.getAbsolutePath(), sinkFileTemp.getAbsolutePath(),
