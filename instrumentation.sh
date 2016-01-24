@@ -20,11 +20,11 @@ echo java -jar ../bit.jar -sourceFile $1 -sinkFile $2 -taintWrapper $4 -apkFile 
 java -jar ../bit.jar -sourceFile $1 -sinkFile $2 -taintWrapper $4 -apkFile $3 -o $5 -j -androidJar $6
 
 
+echo The APK gets now signed
+# Sign the APK
+jarsigner -verbose -keystore $8 -storepass ${10} -signedjar ${11} $3 $9
+
 echo Previous signatures are now removed from the APK
 #TODO is this needed?
 #Delete previous signatures
 zip -d $7 "META-INF/"
-
-echo The APK gets now signed
-# Sign the APK
-jarsigner -verbose -keystore $8 -storepass ${10} -signedjar ${11} $3 $9
