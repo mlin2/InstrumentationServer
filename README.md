@@ -66,7 +66,8 @@ mvn raml:generate
 This command will run the server with the configuration specified in the config file.
 mvn exec:java
 ```
-
-
+Limitations:
+* As the wrong resource interfaces were generated for form-data multiparts out of the RAML file, we introduced the workaround.resource package with the fixed resource interfaces.
+* The project both includes a jar of the DroidForce project and also a folder for the Instrumentation-PEPs files.
 
 
