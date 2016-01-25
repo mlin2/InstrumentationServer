@@ -45,10 +45,17 @@ public class Main {
         }
         String serverUrl = ini.get("URL", "ServerUrl", String.class);
         int serverPort = ini.get("Port", "ServerPort", Integer.class);
-        BASE_URI = serverUrl + ":" + serverPort + "/";
+        int forwardedPort = 0;
+        if (ini.get("Port", "ForwardedPort", Integer.class) != null) {
+            forwardedPort = ini.get("Port", "ForwardedPort", Integer.class);
+        }
 
-        InstrumentationDAO.getInstance().setServerUrlAndPort(BASE_URI);
 
+        if(forwardedPort != 0) {
+            BASE_URI = serverUrl + ":" + forwardedPort + "/";
+        } else {
+            BASE_URI = serverUrl + ":" + serverPort + "/";
+        }
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);

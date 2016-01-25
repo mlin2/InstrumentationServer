@@ -24,19 +24,6 @@ public class InstrumentationDAO {
      */
     private Connection databaseConnection = null;
 
-    public String getServerUrlAndPort() {
-        return serverUrlAndPort;
-    }
-
-    public void setServerUrlAndPort(String serverUrlAndPort) {
-        this.serverUrlAndPort = serverUrlAndPort;
-    }
-
-    /**
-     * The URL the server runs on.
-     */
-    private String serverUrlAndPort = null;
-
     protected InstrumentationDAO() {
 
     }
@@ -216,7 +203,7 @@ public class InstrumentationDAO {
             while (resultSet.next()) {
                 //TODO make URL parameterized
                 String sha512Hash = getSha512Hash(resultSet.getDouble("APKID"));
-                Metadatum metadatum = new Metadatum().withLogoUrl("http://lapbroyg58.informatik.tu-muenchen.de:443/" + "metadata/logo/" + sha512Hash + ".png").
+                Metadatum metadatum = new Metadatum().withLogoUrl(Main.BASE_URI + "metadata/logo/" + sha512Hash + ".png").
                         withAppName(resultSet.getString("APPNAME")).withPackageName(resultSet.getString("PACKAGENAME"))
                         .withAppUrl(resultSet.getString("APPURL")).withHash(sha512Hash)
                         .withSummary(resultSet.getString("SUMMARY")).withDescription(resultSet.getString("DESCRIPTION"))
