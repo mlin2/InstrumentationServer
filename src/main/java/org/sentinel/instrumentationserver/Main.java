@@ -21,6 +21,7 @@ public class Main {
 
     // Base URI the Grizzly HTTP server will listen on
     public static String BASE_URI;
+    public static String FORWARDED_URI;
 
     /**
      * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
@@ -49,12 +50,12 @@ public class Main {
         if (ini.get("Port", "ForwardedPort", Integer.class) != null) {
             forwardedPort = ini.get("Port", "ForwardedPort", Integer.class);
         }
-
+        BASE_URI = serverUrl + ":" + serverPort + "/";
 
         if(forwardedPort != 0) {
-            BASE_URI = serverUrl + ":" + forwardedPort + "/";
+            FORWARDED_URI = serverUrl + ":" + forwardedPort + "/";
         } else {
-            BASE_URI = serverUrl + ":" + serverPort + "/";
+            FORWARDED_URI = BASE_URI;
         }
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI
