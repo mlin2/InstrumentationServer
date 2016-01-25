@@ -25,7 +25,7 @@ public class MetadataResourceImpl implements MetadataResource {
     @GET
     @Path("logo/{apkHash}")
     @Produces({
-            "application/json"
+            "image/png"
     })
     public GetMetadataLogoByApkHashResponse getMetadataLogoByApkHash(@PathParam("apkHash") String apkHash) throws Exception {
         InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();

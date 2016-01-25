@@ -37,7 +37,7 @@ public interface MetadataResource {
     @GET
     @Path("logo/{apkHash}")
     @Produces({
-        "application/json"
+        "image/png"
     })
     MetadataResource.GetMetadataLogoByApkHashResponse getMetadataLogoByApkHash(
         @PathParam("apkHash")
