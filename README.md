@@ -45,9 +45,14 @@ storePass: your_password
 PlatformsPath: yourpath/android-sdk-linux/platforms/
 
 Run the following commands from your terminal
+
 This will download all the maven dependencies and execute the tests.
 mvn test
+
+This will generate all the model classes and endpoint interfaces defined in InstrumentationServer/raml/iaas.raml
 mvn raml:generate
+
+This will run the server
 mvn exec:java
 
 
