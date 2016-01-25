@@ -23,7 +23,7 @@ public class MetadataResourceImpl implements MetadataResource {
 
     @Override
     @GET
-    @Path("logo/{apkHash}")
+    @Path("logo/{apkHash}.png")
     @Produces({
             "image/png"
     })

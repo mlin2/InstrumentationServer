@@ -35,7 +35,7 @@ public interface MetadataResource {
      *     
      */
     @GET
-    @Path("logo/{apkHash}")
+    @Path("logo/{apkHash}.png")
     @Produces({
         "image/png"
     })
