@@ -6,14 +6,19 @@ This project uses the jersey Jax-RS implementation, a grizzly server and SQLite 
 
 Ok so here is how you run the server:
 
-```
-We used this instrumentation server implementation on a debian server. For most of the dependencies below you can use "apt-get install packagename" to install them.
+
+We used this instrumentation server implementation on a debian server. For most of the dependencies below you can use "apt-get install packagename" to install them. 
 Install Java http://openjdk.java.net/install/
 Install Maven https://maven.apache.org/install.html
 Install SQLite https://www.sqlite.org/download.html
 Install zipalign http://developer.android.com/tools/help/zipalign.html
 Get an android jar http://developer.android.com/sdk/index.html
+Furthermore, the operating system running the instrumentation server has to be able to run bash scripts.
 
+All of the above except the android jar file have to be added to your PATH. Alternatively, you can change the bash script "instrumentation.sh" in the projects root folder and add your individual program paths to all the programs that get executed there.
+
+Now, please run following commands:
+```
 git clone https://github.com/mlin2/InstrumentationServer.git
 
 cd InstrumentationServer
@@ -52,17 +57,9 @@ mvn test
 This will generate all the model classes and endpoint interfaces defined in InstrumentationServer/raml/iaas.raml
 mvn raml:generate
 
-This will run the server
+This command will run the server with the configuration specified in the config file.
 mvn exec:java
-
-
-happy coding!
 ```
-
-
-
-To run it, import as maven project in IntelliJ IDEA. Then run the main method in Main.java
-
 
 
 
