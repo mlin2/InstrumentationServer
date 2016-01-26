@@ -77,8 +77,8 @@ public class Main {
 
         if (configIni.get("Fetch", "fetchFdroidApks", Boolean.class)) {
             System.out.println("Fetching F-Droid APKs in the background");
-            Thread thread = new Thread(new ApkFetcher());
-            thread.run();
+            ApkFetcher apkFetcher = new ApkFetcher();
+            apkFetcher.fetch();
         }
 
         final HttpServer server = startServer();
