@@ -70,9 +70,9 @@ public class Main {
 
         InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
         instrumentationDAO.initializeDatabase();
-/*        MetadataFetcher metadataFetcher = new MetadataFetcher();
+        MetadataFetcher metadataFetcher = new MetadataFetcher();
         Thread thread = new Thread(metadataFetcher);
-        thread.start();*/
+        thread.start();
 
         System.in.read();
         server.stop();

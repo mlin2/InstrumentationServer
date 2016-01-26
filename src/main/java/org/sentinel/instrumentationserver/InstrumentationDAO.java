@@ -1,6 +1,7 @@
 package org.sentinel.instrumentationserver;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.*;
 import org.sentinel.instrumentationserver.generated.model.MetadataList;
 import org.sentinel.instrumentationserver.generated.model.Metadatum;
 import org.w3c.dom.Element;
@@ -8,6 +9,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -295,7 +299,7 @@ public class InstrumentationDAO {
         try {
             if (databaseConnection == null || databaseConnection.isClosed()) {
                 Class.forName("org.sqlite.JDBC");
-                databaseConnection = DriverManager.getConnection("jdbc:sqlite:test.db");
+                databaseConnection = DriverManager.getConnection("jdbc:sqlite:instrumentation-server-database.db");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -349,7 +353,7 @@ public class InstrumentationDAO {
             String sourceCodeLink = null;
             String marketVersion = null;
             String sha256Hash = null;
-            String sizeInBytes = null;
+            double sizeInBytes = 0;
             String sdkVersion = null;
             String permissions = null;
             String features = null;
@@ -391,7 +395,7 @@ public class InstrumentationDAO {
                 sha256Hash = applicationNodeElement.getElementsByTagName("hash").item(0).getTextContent();
             }
             if (applicationNodeElement.getElementsByTagName("size").item(0) != null) {
-                sizeInBytes = applicationNodeElement.getElementsByTagName("size").item(0).getTextContent();
+                sizeInBytes = Double.parseDouble(applicationNodeElement.getElementsByTagName("size").item(0).getTextContent());
             }
             if (applicationNodeElement.getElementsByTagName("sdkver").item(0) != null) {
                 sdkVersion = applicationNodeElement.getElementsByTagName("sdkver").item(0).getTextContent();
@@ -403,8 +407,10 @@ public class InstrumentationDAO {
                 features = applicationNodeElement.getElementsByTagName("features").item(0).getTextContent();
             }
 
+            byte[] logoBytes = fetchLogo(logo);
 
-            preparedStatement.setString(1, logo);
+
+            preparedStatement.setBytes(1, logoBytes);
             preparedStatement.setString(2, appName);
             preparedStatement.setString(3, packageName);
             preparedStatement.setString(4, appUrl);
@@ -416,7 +422,7 @@ public class InstrumentationDAO {
             preparedStatement.setString(10, sourceCodeLink);
             preparedStatement.setString(11, marketVersion);
             preparedStatement.setString(12, sha256Hash);
-            preparedStatement.setString(13, sizeInBytes);
+            preparedStatement.setDouble(13, sizeInBytes);
             preparedStatement.setString(14, sdkVersion);
             preparedStatement.setString(15, permissions);
             preparedStatement.setString(16, features);
@@ -429,5 +435,21 @@ public class InstrumentationDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private byte[] fetchLogo(String logoUrl) {
+        try {
+            if(logoUrl != null) {
+                URL url = new URL(logoUrl);
+                InputStream inputStream = new BufferedInputStream(url.openStream());
+                return IOUtils.toByteArray(inputStream);
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return new byte[0];
     }
 }

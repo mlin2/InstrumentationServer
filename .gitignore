@@ -27,6 +27,6 @@ raml/target
 
 # Project specific
 sootOutput
-test.db
+/instrumentation-server-database.db
 config.ini
 /InstrumentationPEP/instrumentation-server-jobs
