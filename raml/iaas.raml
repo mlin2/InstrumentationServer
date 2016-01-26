@@ -112,6 +112,16 @@ schemas:
           body:
             application/json:
               schema: metadataList
+  /instrumented:
+      description: |
+        Get a list of the metadata of instrumented apps saved on the server.
+      get:
+        description: Retrieve a list of all the metadata of all instrumented apps
+        responses:
+          200:
+            body:
+              application/json:
+                schema: metadataList
 
   /logo/{apkHash}:
       get:

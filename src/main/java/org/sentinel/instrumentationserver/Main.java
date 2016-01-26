@@ -6,6 +6,7 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.ini4j.Ini;
+import org.sentinel.instrumentationserver.fetch.ApkFetcher;
 import org.sentinel.instrumentationserver.metadata.MetadataFetcher;
 import org.sentinel.instrumentationserver.resource.impl.InstrumentResourceImpl;
 import org.sentinel.instrumentationserver.resource.impl.MetadataResourceImpl;
@@ -68,10 +69,16 @@ public class Main {
         InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
         instrumentationDAO.initializeDatabase();
 
-        if (configIni.get("Metadata", "fetchMetadata", Boolean.class)) {
+        if (configIni.get("Fetch", "fetchMetadata", Boolean.class)) {
             System.out.println("Fetching metadata...");
             MetadataFetcher metadataFetcher = new MetadataFetcher();
             metadataFetcher.fetch();
+        }
+
+        if (configIni.get("Fetch", "fetchFdroidApks", Boolean.class)) {
+            System.out.println("Fetching F-Droid APKs in the background");
+            Thread thread = new Thread(new ApkFetcher());
+            thread.run();
         }
 
         final HttpServer server = startServer();

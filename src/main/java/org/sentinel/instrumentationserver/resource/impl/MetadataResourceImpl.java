@@ -22,6 +22,13 @@ public class MetadataResourceImpl implements MetadataResource {
     }
 
     @Override
+    public GetMetadataInstrumentedResponse getMetadataInstrumented() throws Exception {
+        InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
+        MetadataList metadataList = instrumentationDAO.getInstrumentedMetadata();
+
+        return GetMetadataInstrumentedResponse.withJsonOK(metadataList);    }
+
+    @Override
     @GET
     @Path("logo/{apkHash}.png")
     @Produces({

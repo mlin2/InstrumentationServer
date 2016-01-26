@@ -28,6 +28,19 @@ public interface MetadataResource {
     ;
 
     /**
+     * Retrieve a list of all the metadata of all instrumented apps
+     *
+     */
+    @GET
+    @Path("instrumented")
+    @Produces({
+            "application/json"
+    })
+    MetadataResource.GetMetadataInstrumentedResponse getMetadataInstrumented()
+            throws Exception
+    ;
+
+    /**
      * Retrieve the logo of the APK corresponding to the hash.
      * 
      * 
@@ -63,6 +76,28 @@ public interface MetadataResource {
             Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "application/json");
             responseBuilder.entity(entity);
             return new MetadataResource.GetMetadataAllResponse(responseBuilder.build());
+        }
+
+    }
+
+    public class GetMetadataInstrumentedResponse
+            extends org.sentinel.instrumentationserver.generated.resource.support.ResponseWrapper
+    {
+
+
+        private GetMetadataInstrumentedResponse(Response delegate) {
+            super(delegate);
+        }
+
+        /**
+         *
+         * @param entity
+         *
+         */
+        public static MetadataResource.GetMetadataInstrumentedResponse withJsonOK(MetadataList entity) {
+            Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "application/json");
+            responseBuilder.entity(entity);
+            return new MetadataResource.GetMetadataInstrumentedResponse(responseBuilder.build());
         }
 
     }

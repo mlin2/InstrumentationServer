@@ -235,7 +235,7 @@ public class InstrumentationDAO {
     }
 
     /**
-     * Get the metadata of all instrumented apps saved on the server.
+     * Get the metadata of all apps saved on the server.
      */
     public MetadataList getAllMetadata() {
         connectToDatabase();
@@ -259,7 +259,48 @@ public class InstrumentationDAO {
                         .withWebLink(resultSet.getString("WEBLINK")).withSourceCodeLink(resultSet.getString("SOURCECODELINK"))
                         .withMarketVersion(resultSet.getString("MARKETVERSION")).withSha256hash(resultSet.getString("SHA256HASH"))
                         .withSizeInBytes(resultSet.getDouble("SIZEINBYTES")).withSdkVersion(resultSet.getString("SDKVERSION"))
-                        .withPermissions(resultSet.getString("PERMISSIONS")).withFeatures(resultSet.getString("FEATURES"));
+                        .withPermissions(resultSet.getString("PERMISSIONS")).withFeatures(resultSet.getString("FEATURES"))
+                        ;
+                metadataList.add(metadatum);
+            }
+            resultSet.close();
+            databaseConnection.close();
+            return new MetadataList().withMetadata(metadataList);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Get the metadata of all instrumented apps saved on the server.
+     */
+    public MetadataList getInstrumentedMetadata() {
+        connectToDatabase();
+        //List<Long> metadataIdList = getAllDatabaseMetadataIds();
+
+        String sqlStatementGetInstrumentedMetadata = QueryBuilder.getQueryGetInstrumentedMetadata();
+        try {
+
+            Statement statement = databaseConnection.createStatement();
+
+            List<Metadatum> metadataList = new ArrayList<Metadatum>();
+            ResultSet resultSet = statement.executeQuery(sqlStatementGetInstrumentedMetadata);
+
+            while (resultSet.next()) {
+                String sha512Hash = resultSet.getString("HASH");
+                Metadatum metadatum = new Metadatum().withDownloadUrl(Main.FORWARDED_URI + "instrument/" + sha512Hash )
+                        .withLogoUrl(Main.FORWARDED_URI + "metadata/logo/" + sha512Hash + ".png").
+                        withAppName(resultSet.getString("APPNAME")).withPackageName(resultSet.getString("PACKAGENAME"))
+                        .withAppUrl(resultSet.getString("APPURL")).withHash(sha512Hash)
+                        .withSummary(resultSet.getString("SUMMARY")).withDescription(resultSet.getString("DESCRIPTION"))
+                        .withLicense(resultSet.getString("LICENSE")).withAppCategory(resultSet.getString("APPCATEGORY"))
+                        .withWebLink(resultSet.getString("WEBLINK")).withSourceCodeLink(resultSet.getString("SOURCECODELINK"))
+                        .withMarketVersion(resultSet.getString("MARKETVERSION")).withSha256hash(resultSet.getString("SHA256HASH"))
+                        .withSizeInBytes(resultSet.getDouble("SIZEINBYTES")).withSdkVersion(resultSet.getString("SDKVERSION"))
+                        .withPermissions(resultSet.getString("PERMISSIONS")).withFeatures(resultSet.getString("FEATURES"))
+                        ;
                 metadataList.add(metadatum);
             }
             resultSet.close();
@@ -467,6 +508,7 @@ public class InstrumentationDAO {
             preparedStatement.setString(14, sdkVersion);
             preparedStatement.setString(15, permissions);
             preparedStatement.setString(16, features);
+            preparedStatement.setString(17, sha256Hash);
 
             preparedStatement.execute();
 
@@ -498,5 +540,31 @@ public class InstrumentationDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public List<String> getAllRepositoryApkLinks() {
+
+        connectToDatabase();
+
+        String sqlStatementGetAllRepositoryApkLinks = QueryBuilder.getQueryGetAllRepositoryApkLinks();
+        try {
+
+            Statement statement = databaseConnection.createStatement();
+
+            List<String> repositoryApkLinkList = new ArrayList<String>();
+            ResultSet resultSet = statement.executeQuery(sqlStatementGetAllRepositoryApkLinks);
+
+            while (resultSet.next()) {
+                String link = resultSet.getString("APPURL");
+                repositoryApkLinkList.add(link);
+            }
+            resultSet.close();
+            databaseConnection.close();
+            return repositoryApkLinkList;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

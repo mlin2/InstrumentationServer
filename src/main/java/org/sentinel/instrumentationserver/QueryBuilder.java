@@ -30,7 +30,7 @@ public class QueryBuilder {
             "WEBLINK                TEXT                                                ," +
             "SOURCECODELINK         TEXT                                                ," +
             "MARKETVERSION          TEXT                                                ," +
-            "SHA256HASH             TEXT                                                ," +
+            "SHA256HASH             TEXT        UNIQUE                                        ," +
             "SIZEINBYTES            INTEGER                                             ," +
             "SDKVERSION             TEXT                                                ," +
             "PERMISSIONS            TEXT                                                ," +
@@ -95,7 +95,9 @@ public class QueryBuilder {
     public static String getQueryToSaveMetadataFromXml() {
         return "INSERT INTO METADATA(LOGO, APPNAME, PACKAGENAME, APPURL, SUMMARY, DESCRIPTION, LICENSE, " +
                 "APPCATEGORY, WEBLINK, SOURCECODELINK, MARKETVERSION, SHA256HASH, SIZEINBYTES, SDKVERSION," +
-                "PERMISSIONS, FEATURES) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "PERMISSIONS, FEATURES) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?  " +
+                "WHERE NOT EXISTS (SELECT 1 FROM METADATA WHERE SHA256HASH = ?)"
+                ;
     }
 
     public static String getQueryLinkApkToMetadata() {
@@ -110,4 +112,11 @@ public class QueryBuilder {
         return "SELECT ID FROM METADATA m WHERE m.SHA256HASH = ?";
     }
 
+    public static String getQueryGetAllRepositoryApkLinks() {
+        return "SELECT APPURL FROM METADATA m WHERE m.APKID IS NULL";
+    }
+
+    public static String getQueryGetInstrumentedMetadata() {
+        return "SELECT * FROM METADATA m WHERE m.APKID IS NOT NULL";
+    }
 }

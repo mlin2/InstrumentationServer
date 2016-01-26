@@ -83,6 +83,19 @@ public class InstrumentationRunner implements Runnable {
         this.makeAppPublic = makeAppPublic;
     }
 
+    public InstrumentationRunner(FileInputStream sourceFile, FileInputStream sinkFile, FileInputStream easyTaintWrapperSource,
+                                 byte[] apkFile, String sha512Hash, boolean makeAppPublic) {
+        this.sourceFile = sourceFile;
+        this.sinkFile = sinkFile;
+        this.easyTaintWrapperSource = easyTaintWrapperSource;
+        this.apkFile = apkFile;
+        this.sha512Hash = sha512Hash;
+        this.logo = null;
+        this.appName = null;
+        this.packageName = null;
+        this.makeAppPublic = makeAppPublic;
+    }
+
     /**
      * The Runnable interface gets implemented in order to return an OK response to the instrumentation POST request
      * immediately. The instrumentation gets executed through this method in a new thread.
