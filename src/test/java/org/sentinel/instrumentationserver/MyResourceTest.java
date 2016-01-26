@@ -29,7 +29,11 @@ public class MyResourceTest {
         // --
         // c.configuration().enable(new org.glassfish.jersey.media.json.JsonJaxbFeature());
 
-        target = c.target(Main.BASE_URI);
+        if (Main.FORWARDED_URI != "") {
+            target = c.target(Main.FORWARDED_URI);
+        } else {
+            target = c.target(Main.BASE_URI);
+        }
     }
 
     @After

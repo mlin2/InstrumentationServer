@@ -29,8 +29,10 @@ public class MetadataFetcher {
             InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
 
             for(int i = 0; i < nodelist.getLength(); i++) {
+                instrumentationDAO.connectToDatabase();
                 //System.out.println(nodelist.item(i).getTextContent());
                 instrumentationDAO.saveMetadataFromXml(nodelist.item(i));
+                instrumentationDAO.disconnectFromDatabase();
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();

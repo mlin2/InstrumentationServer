@@ -372,7 +372,6 @@ public class InstrumentationDAO {
     public void saveMetadataFromXml(Node applicationNode) {
         String LOGO_BASE_URI = "https://f-droid.org/repo/icons/";
         String APP_BASE_URI = "https://f-droid.org/repo/";
-        connectToDatabase();
         String sqlStatementGetMetadataFromXml = QueryBuilder.getQueryToSaveMetadataFromXml();
         PreparedStatement preparedStatement = null;
         try {
@@ -472,7 +471,6 @@ public class InstrumentationDAO {
             preparedStatement.execute();
 
             preparedStatement.close();
-            databaseConnection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -492,5 +490,13 @@ public class InstrumentationDAO {
         }
 
         return new byte[0];
+    }
+
+    public void disconnectFromDatabase() {
+        try {
+            databaseConnection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
