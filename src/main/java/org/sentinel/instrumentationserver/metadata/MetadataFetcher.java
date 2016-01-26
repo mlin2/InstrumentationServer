@@ -17,9 +17,8 @@ import java.net.URLConnection;
 /**
  * Created by sebastian on 1/26/16.
  */
-public class MetadataFetcher implements Runnable {
-    @Override
-    public void run() {
+public class MetadataFetcher {
+    public void fetch() {
         try {
             URL url = new URL("https://f-droid.org/repo/index.xml");
             URLConnection urlConnection = url.openConnection();

@@ -65,18 +65,18 @@ public class Main {
             e.printStackTrace();
         }
 
-        final HttpServer server = startServer();
-        System.out.println(String.format("Jersey app started with WADL available at "
-                + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
-
         InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
         instrumentationDAO.initializeDatabase();
 
         if (configIni.get("Metadata", "fetchMetadata", Boolean.class)) {
+            System.out.println("Fetching metadata...");
             MetadataFetcher metadataFetcher = new MetadataFetcher();
-            Thread thread = new Thread(metadataFetcher);
-            thread.start();
+            metadataFetcher.fetch();
         }
+
+        final HttpServer server = startServer();
+        System.out.println(String.format("Jersey app started with WADL available at "
+                + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
 
         System.in.read();
         server.stop();

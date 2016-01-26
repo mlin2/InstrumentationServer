@@ -141,6 +141,8 @@ public class InstrumentationDAO {
                 preparedStatement.setString(2, sha512Hash);
                 preparedStatement.setString(3, sha256hash);
                 preparedStatement.executeUpdate();
+                preparedStatement.close();
+                databaseConnection.close();
             } else {
                 PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatementSaveMetadataForInstrumentedApk);
                 preparedStatement.setBytes(1, logo);
@@ -148,6 +150,8 @@ public class InstrumentationDAO {
                 preparedStatement.setString(3, packageName);
                 preparedStatement.setLong(4, apkId);
                 preparedStatement.executeUpdate();
+                preparedStatement.close();
+                databaseConnection.close();
 
             }
 
@@ -164,7 +168,13 @@ public class InstrumentationDAO {
             PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatementGetMetadataIdFromHash);
             preparedStatement.setString(1, sha256Hash);
             ResultSet resultSet = preparedStatement.executeQuery();
-            return resultSet.getLong(1);
+            long id = -1;
+            if (!resultSet.isClosed()) {
+                id = resultSet.getLong(1);
+                resultSet.close();
+            }
+            preparedStatement.close();
+            return id;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -182,7 +192,11 @@ public class InstrumentationDAO {
             PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatementGetApkIdFromHash);
             preparedStatement.setString(1, sha512Hash);
             ResultSet resultSet = preparedStatement.executeQuery();
-            return resultSet.getLong(1);
+            long id = resultSet.getLong(1);
+            resultSet.close();
+            preparedStatement.close();
+            databaseConnection.close();
+            return id;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -248,7 +262,8 @@ public class InstrumentationDAO {
                         .withPermissions(resultSet.getString("PERMISSIONS")).withFeatures(resultSet.getString("FEATURES"));
                 metadataList.add(metadatum);
             }
-
+            resultSet.close();
+            databaseConnection.close();
             return new MetadataList().withMetadata(metadataList);
 
         } catch (SQLException e) {
@@ -257,7 +272,7 @@ public class InstrumentationDAO {
         return null;
     }
 
-    private String getSha512Hash(double apkid) {
+/*    private String getSha512Hash(double apkid) {
         connectToDatabase();
 
         String sqlStatementGetSha512HashFromApkId = QueryBuilder.getQueryGetSha512HashFromApkId();
@@ -273,7 +288,7 @@ public class InstrumentationDAO {
             e.printStackTrace();
         }
         return null;
-    }
+    }*/
 
 /*    private List<Long> getAllDatabaseMetadataIds() {
         connectToDatabase();
@@ -453,7 +468,6 @@ public class InstrumentationDAO {
             preparedStatement.setString(14, sdkVersion);
             preparedStatement.setString(15, permissions);
             preparedStatement.setString(16, features);
-
 
             preparedStatement.execute();
 
