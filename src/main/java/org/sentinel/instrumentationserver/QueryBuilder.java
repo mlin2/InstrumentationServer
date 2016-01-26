@@ -97,4 +97,17 @@ public class QueryBuilder {
                 "APPCATEGORY, WEBLINK, SOURCECODELINK, MARKETVERSION, SHA256HASH, SIZEINBYTES, SDKVERSION," +
                 "PERMISSIONS, FEATURES) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     }
+
+    public static String getQueryLinkApkToMetadata() {
+        return "UPDATE METADATA SET APKID=?, HASH=? WHERE SHA256HASH=?";
+    }
+
+    public static String getQueryGetIdForApk() {
+        return "SELECT ID FROM APKS a WHERE a.HASH = ?";
+    }
+
+    public static String getQueryGetMetadataIdFromHash() {
+        return "SELECT ID FROM METADATA m WHERE m.SHA256HASH = ?";
+    }
+
 }

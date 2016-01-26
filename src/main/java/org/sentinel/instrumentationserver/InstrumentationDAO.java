@@ -1,6 +1,7 @@
 package org.sentinel.instrumentationserver;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.apache.commons.io.output.*;
 import org.sentinel.instrumentationserver.generated.model.MetadataList;
 import org.sentinel.instrumentationserver.generated.model.Metadatum;
@@ -8,6 +9,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.management.Query;
 import java.io.*;
 import java.io.ByteArrayOutputStream;
 import java.net.MalformedURLException;
@@ -78,7 +80,7 @@ public class InstrumentationDAO {
     /**
      * Store the APK and its hash in the database.
      */
-    public void saveInstrumentedApkToDatabase(String instrumentedApkPath, String sha512Hash) {
+    public void saveInstrumentedApkToDatabase(String instrumentedApkPath, String sha512Hash, String sha256hash) {
         connectToDatabase();
 
         try {
@@ -90,8 +92,8 @@ public class InstrumentationDAO {
             preparedStatement.setString(1, sha512Hash);
             preparedStatement.setBytes(2, IOUtils.toByteArray(inputstream));
             preparedStatement.execute();
-
             preparedStatement.close();
+
             databaseConnection.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -100,7 +102,6 @@ public class InstrumentationDAO {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     /**
@@ -127,23 +128,50 @@ public class InstrumentationDAO {
         return null;
     }
 
-    public void saveMetadataForInstrumentedApk(byte[] logo, String appName, String packageName, String sha512Hash) {
+    public void saveMetadataForInstrumentedApk(byte[] logo, String appName, String packageName, String sha512Hash, String sha256hash) {
         connectToDatabase();
         long apkId = getApkId(sha512Hash);
         String sqlStatementSaveMetadataForInstrumentedApk = QueryBuilder.getQuerySaveMetadataForInstrumentedApk();
 
         try {
-            PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatementSaveMetadataForInstrumentedApk);
-            preparedStatement.setBytes(1, logo);
-            preparedStatement.setString(2, appName);
-            preparedStatement.setString(3, packageName);
-            preparedStatement.setLong(4, apkId);
+            if (getMetadataId(sha256hash) != -1) {
+                String sqlStatementSaveInstrumentedApkIdForExistingMetadata = QueryBuilder.getQueryLinkApkToMetadata();
+                PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatementSaveInstrumentedApkIdForExistingMetadata);
+                preparedStatement.setLong(1, apkId);
+                preparedStatement.setString(2, sha512Hash);
+                preparedStatement.setString(3, sha256hash);
+                preparedStatement.executeUpdate();
+            } else {
+                PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatementSaveMetadataForInstrumentedApk);
+                preparedStatement.setBytes(1, logo);
+                preparedStatement.setString(2, appName);
+                preparedStatement.setString(3, packageName);
+                preparedStatement.setLong(4, apkId);
+                preparedStatement.executeUpdate();
 
-            preparedStatement.executeUpdate();
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private long getMetadataId(String sha256Hash) {
+        connectToDatabase();
+
+        String sqlStatementGetMetadataIdFromHash = QueryBuilder.getQueryGetMetadataIdFromHash();
+        try {
+            PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatementGetMetadataIdFromHash);
+            preparedStatement.setString(1, sha256Hash);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            return resultSet.getLong(1);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        //TODO handle this better
+        return -1;
     }
 
     private long getApkId(String sha512Hash) {
@@ -439,7 +467,7 @@ public class InstrumentationDAO {
 
     private byte[] fetchLogo(String logoUrl) {
         try {
-            if(logoUrl != null) {
+            if (logoUrl != null) {
                 URL url = new URL(logoUrl);
                 InputStream inputStream = new BufferedInputStream(url.openStream());
                 return IOUtils.toByteArray(inputStream);

@@ -23,6 +23,7 @@ public class Main {
     // Base URI the Grizzly HTTP server will listen on
     public static String BASE_URI;
     public static String FORWARDED_URI;
+    private static Ini configIni;
 
     /**
      * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
@@ -39,17 +40,11 @@ public class Main {
         rc.register(JacksonFeature.class);
 
         // Determine the URL and port the Grizzly HTTP server will listen on
-        Ini ini = null;
-        try {
-            ini = new Ini(new File("config.ini"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String serverUrl = ini.get("URL", "ServerUrl", String.class);
-        int serverPort = ini.get("Port", "ServerPort", Integer.class);
+        String serverUrl = configIni.get("URL", "ServerUrl", String.class);
+        int serverPort = configIni.get("Port", "ServerPort", Integer.class);
         int forwardedPort = 0;
-        if (ini.get("Port", "ForwardedPort", Integer.class) != null) {
-            forwardedPort = ini.get("Port", "ForwardedPort", Integer.class);
+        if (configIni.get("Port", "ForwardedPort", Integer.class) != null) {
+            forwardedPort = configIni.get("Port", "ForwardedPort", Integer.class);
         }
         BASE_URI = serverUrl + ":" + serverPort + "/";
 
@@ -64,15 +59,24 @@ public class Main {
     }
     
     public static void main(String[] args) throws IOException {
+        try {
+            configIni = new Ini(new File("config.ini"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         final HttpServer server = startServer();
         System.out.println(String.format("Jersey app started with WADL available at "
                 + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
 
         InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
         instrumentationDAO.initializeDatabase();
-        MetadataFetcher metadataFetcher = new MetadataFetcher();
-        Thread thread = new Thread(metadataFetcher);
-        thread.start();
+
+        if (configIni.get("Metadata", "fetchMetadata", Boolean.class)) {
+            MetadataFetcher metadataFetcher = new MetadataFetcher();
+            Thread thread = new Thread(metadataFetcher);
+            thread.start();
+        }
 
         System.in.read();
         server.stop();

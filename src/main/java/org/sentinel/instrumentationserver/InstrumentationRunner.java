@@ -1,10 +1,12 @@
 package org.sentinel.instrumentationserver;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.ini4j.Ini;
 import org.ini4j.InvalidFileFormatException;
 
 import java.io.*;
+import java.security.MessageDigest;
 
 /**
  * The instrumentation runner builds the command to execute the instrumentation.sh bash script, executes it and outputs information
@@ -96,9 +98,11 @@ public class InstrumentationRunner implements Runnable {
             System.out.println(" EXITVALUE " + process.exitValue());
 
             InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
-            instrumentationDAO.saveInstrumentedApkToDatabase(alignedApkPath, sha512Hash);
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+            String sha256hash = String.valueOf(Hex.encodeHex(messageDigest.digest(apkFile)));
+            instrumentationDAO.saveInstrumentedApkToDatabase(alignedApkPath, sha512Hash, sha256hash);
             if(makeAppPublic) {
-                instrumentationDAO.saveMetadataForInstrumentedApk(logo, appName, packageName, sha512Hash);
+                instrumentationDAO.saveMetadataForInstrumentedApk(logo, appName, packageName, sha512Hash, sha256hash);
             }
 
         } catch (Exception e) {
