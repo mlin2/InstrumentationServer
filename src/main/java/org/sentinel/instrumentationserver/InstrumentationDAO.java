@@ -236,8 +236,7 @@ public class InstrumentationDAO {
             ResultSet resultSet = statement.executeQuery(sqlStatementGetAllMetadata);
 
             while (resultSet.next()) {
-                //TODO make URL parameterized
-                String sha512Hash = getSha512Hash(resultSet.getDouble("APKID"));
+                String sha512Hash = resultSet.getString("HASH");
                 Metadatum metadatum = new Metadatum().withLogoUrl(Main.FORWARDED_URI + "metadata/logo/" + sha512Hash + ".png").
                         withAppName(resultSet.getString("APPNAME")).withPackageName(resultSet.getString("PACKAGENAME"))
                         .withAppUrl(resultSet.getString("APPURL")).withHash(sha512Hash)
