@@ -157,7 +157,6 @@
                             <mainClass>org.sentinel.instrumentationserver.Main</mainClass>
                         </manifest>
                     </archive>
-                    <descriptor>descriptor.xml</descriptor>
 
                 </configuration>
                 <executions>

@@ -91,4 +91,10 @@ public class QueryBuilder {
     public static String getQueryToRetrieveLogoFile() {
         return "SELECT m.LOGO FROM METADATA m INNER JOIN APKS a ON (m.APKID = a.ID) WHERE a.HASH=?";
     }
+
+    public static String getQueryToSaveMetadataFromXml() {
+        return "INSERT INTO METADATA(LOGO, APPNAME, PACKAGENAME, APPURL, SUMMARY, DESCRIPTION, LICENSE, " +
+                "APPCATEGORY, WEBLINK, SOURCECODELINK, MARKETVERSION, SHA256HASH, SIZEINBYTES, SDKVERSION," +
+                "PERMISSIONS, FEATURES) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    }
 }

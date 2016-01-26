@@ -6,6 +6,7 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.ini4j.Ini;
+import org.sentinel.instrumentationserver.metadata.MetadataFetcher;
 import org.sentinel.instrumentationserver.resource.impl.InstrumentResourceImpl;
 import org.sentinel.instrumentationserver.resource.impl.MetadataResourceImpl;
 
@@ -69,7 +70,9 @@ public class Main {
 
         InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
         instrumentationDAO.initializeDatabase();
-
+/*        MetadataFetcher metadataFetcher = new MetadataFetcher();
+        Thread thread = new Thread(metadataFetcher);
+        thread.start();*/
 
         System.in.read();
         server.stop();

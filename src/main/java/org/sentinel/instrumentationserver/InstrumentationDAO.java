@@ -3,6 +3,9 @@ package org.sentinel.instrumentationserver;
 import org.apache.commons.io.IOUtils;
 import org.sentinel.instrumentationserver.generated.model.MetadataList;
 import org.sentinel.instrumentationserver.generated.model.Metadatum;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import java.io.*;
 import java.sql.*;
@@ -318,5 +321,113 @@ public class InstrumentationDAO {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void saveMetadataFromXml(Node applicationNode) {
+        String LOGO_BASE_URI = "https://f-droid.org/repo/icons/";
+        String APP_BASE_URI = "https://f-droid.org/repo/";
+        connectToDatabase();
+        String sqlStatementGetMetadataFromXml = QueryBuilder.getQueryToSaveMetadataFromXml();
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = databaseConnection.prepareStatement(sqlStatementGetMetadataFromXml);
+
+            Element applicationNodeElement = null;
+            if (applicationNode instanceof Element) {
+                applicationNodeElement = (Element) applicationNode;
+            }
+
+            String logo = null;
+            String appName = null;
+            String packageName = null;
+            String appUrl = null;
+            String summary = null;
+            String description = null;
+            String license = null;
+            String appcategory = null;
+            String webLink = null;
+            String sourceCodeLink = null;
+            String marketVersion = null;
+            String sha256Hash = null;
+            String sizeInBytes = null;
+            String sdkVersion = null;
+            String permissions = null;
+            String features = null;
+
+            if (applicationNodeElement.getElementsByTagName("icon").item(0) != null) {
+                logo = LOGO_BASE_URI + applicationNodeElement.getElementsByTagName("icon").item(0).getTextContent();
+            }
+            if (applicationNodeElement.getElementsByTagName("name").item(0) != null) {
+                appName = applicationNodeElement.getElementsByTagName("name").item(0).getTextContent();
+            }
+            if (applicationNodeElement.getElementsByTagName("apkname").item(0) != null) {
+                packageName = applicationNodeElement.getElementsByTagName("apkname").item(0).getTextContent();
+            }
+            if (applicationNodeElement.getElementsByTagName("apkname").item(0) != null) {
+                appUrl = APP_BASE_URI + applicationNodeElement.getElementsByTagName("apkname").item(0).getTextContent();
+            }
+            if (applicationNodeElement.getElementsByTagName("summary").item(0) != null) {
+                summary = applicationNodeElement.getElementsByTagName("summary").item(0).getTextContent();
+            }
+            if (applicationNodeElement.getElementsByTagName("desc").item(0) != null) {
+                description = applicationNodeElement.getElementsByTagName("desc").item(0).getTextContent();
+            }
+            if (applicationNodeElement.getElementsByTagName("license").item(0) != null) {
+                license = applicationNodeElement.getElementsByTagName("license").item(0).getTextContent();
+            }
+            if (applicationNodeElement.getElementsByTagName("category").item(0) != null) {
+                appcategory = applicationNodeElement.getElementsByTagName("category").item(0).getTextContent();
+            }
+            if (applicationNodeElement.getElementsByTagName("web").item(0) != null) {
+                webLink = applicationNodeElement.getElementsByTagName("web").item(0).getTextContent();
+            }
+            if (applicationNodeElement.getElementsByTagName("source").item(0) != null) {
+                sourceCodeLink = applicationNodeElement.getElementsByTagName("source").item(0).getTextContent();
+            }
+            if (applicationNodeElement.getElementsByTagName("marketversion").item(0) != null) {
+                marketVersion = applicationNodeElement.getElementsByTagName("marketversion").item(0).getTextContent();
+            }
+            if (applicationNodeElement.getElementsByTagName("hash").item(0) != null) {
+                sha256Hash = applicationNodeElement.getElementsByTagName("hash").item(0).getTextContent();
+            }
+            if (applicationNodeElement.getElementsByTagName("size").item(0) != null) {
+                sizeInBytes = applicationNodeElement.getElementsByTagName("size").item(0).getTextContent();
+            }
+            if (applicationNodeElement.getElementsByTagName("sdkver").item(0) != null) {
+                sdkVersion = applicationNodeElement.getElementsByTagName("sdkver").item(0).getTextContent();
+            }
+            if (applicationNodeElement.getElementsByTagName("permissions").item(0) != null) {
+                permissions = applicationNodeElement.getElementsByTagName("permissions").item(0).getTextContent();
+            }
+            if (applicationNodeElement.getElementsByTagName("features").item(0) != null) {
+                features = applicationNodeElement.getElementsByTagName("features").item(0).getTextContent();
+            }
+
+
+            preparedStatement.setString(1, logo);
+            preparedStatement.setString(2, appName);
+            preparedStatement.setString(3, packageName);
+            preparedStatement.setString(4, appUrl);
+            preparedStatement.setString(5, summary);
+            preparedStatement.setString(6, description);
+            preparedStatement.setString(7, license);
+            preparedStatement.setString(8, appcategory);
+            preparedStatement.setString(9, webLink);
+            preparedStatement.setString(10, sourceCodeLink);
+            preparedStatement.setString(11, marketVersion);
+            preparedStatement.setString(12, sha256Hash);
+            preparedStatement.setString(13, sizeInBytes);
+            preparedStatement.setString(14, sdkVersion);
+            preparedStatement.setString(15, permissions);
+            preparedStatement.setString(16, features);
+
+
+            preparedStatement.execute();
+
+            preparedStatement.close();
+            databaseConnection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
