@@ -37,7 +37,7 @@ public class ApkFetcher implements Runnable {
                 if (!instrumentationDAO.checkIfApkAlreadyInstrumented(sha512Hash)) {
                     InstrumentationRunner instrumentationRunner = new InstrumentationRunner(new FileInputStream("InstrumentationPEP/files/catSources_Short.txt"),
                             new FileInputStream("InstrumentationPEP/files/catSinks_Short.txt"), new FileInputStream("InstrumentationPEP/files/EasyTaintWrapperSource.txt"), apkBytes, sha512Hash, true);
-                    ScheduledExecutorService executorService = Executors.newScheduledThreadPool(8);
+                    ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2);
                     final Future future = executorService.submit(instrumentationRunner);
 
                     executorService.schedule(new Runnable() {
