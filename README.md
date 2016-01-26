@@ -70,5 +70,5 @@ mvn exec:java
 Limitations:
 * As the wrong resource interfaces were generated for form-data multiparts out of the RAML file, we introduced the workaround.resource package with the fixed resource interfaces.
 * The project both includes a jar of the DroidForce project and also a folder for the Instrumentation-PEPs files.
-
+* When trying to use XML model classes to map the metadata from an XML file, Jersey only returns request failed for all requests. This is probably the case because JacksonFeature registers both the Json model classes and the XML model classes. Therefore, a manual mapping of the XML metadata was implemented. This may be improved by registering a custom ObjectMapper.
 
