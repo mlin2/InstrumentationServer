@@ -15,9 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Created by sebastian on 1/26/16.
@@ -39,16 +37,17 @@ public class ApkFetcher implements Runnable {
                 if (!instrumentationDAO.checkIfApkAlreadyInstrumented(sha512Hash)) {
                     InstrumentationRunner instrumentationRunner = new InstrumentationRunner(new FileInputStream("InstrumentationPEP/files/catSources_Short.txt"),
                             new FileInputStream("InstrumentationPEP/files/catSinks_Short.txt"), new FileInputStream("InstrumentationPEP/files/EasyTaintWrapperSource.txt"), apkBytes, sha512Hash, true);
-                    Thread thread = new Thread(instrumentationRunner);
-                    thread.start();
-                    thread.join(300);
-                    if(thread.isAlive()) {
-                        thread.interrupt();
-                    }
+                    ScheduledExecutorService executorService = Executors.newScheduledThreadPool(8);
+                    final Future future = executorService.submit(instrumentationRunner);
 
-/*                    ExecutorService executorService = Executors.newSingleThreadExecutor();
-                    executorService.invokeAll(Arrays.asList(thread), 5, TimeUnit.MINUTES);
-                    executorService.shutdown();*/
+                    executorService.schedule(new Runnable() {
+                        @Override
+                        public void run() {
+                            future.cancel(true);
+                        }
+                    }, 5, TimeUnit.MINUTES);
+                    //executorService.execute(instrumentationRunner);
+
                 }
 
             } catch (MalformedURLException e) {
@@ -56,8 +55,6 @@ public class ApkFetcher implements Runnable {
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
