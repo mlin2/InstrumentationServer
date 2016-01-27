@@ -80,22 +80,13 @@ public class Main {
             System.out.println("Fetching metadata...");
             MetadataFetcher metadataFetcher = new MetadataFetcher();
             metadataFetcher.fetch();
-        }
-
-        if (configIni.get("Fetch", "fetchFdroidApks", Boolean.class)) {
-            System.out.println("Fetching F-Droid APKs in the background");
             List<String> repositoryApkLinks = instrumentationDAO.getAllRepositoryApkLinks();
 
-            RemoteRepositoryApkFetcherRunner remoteRepositoryApkFetcherRunnerFirstHalf = new RemoteRepositoryApkFetcherRunner(timeoutForInstrumentation,
-                    repositoryApkLinks.subList(0, repositoryApkLinks.size() / 2));
-            Thread threadFirstHalf = new Thread(remoteRepositoryApkFetcherRunnerFirstHalf);
-            threadFirstHalf.start();
-
-            RemoteRepositoryApkFetcherRunner remoteRepositoryApkFetcherRunnerSecondHalf = new RemoteRepositoryApkFetcherRunner(timeoutForInstrumentation,
-                    repositoryApkLinks.subList(repositoryApkLinks.size() / 2 + 1, repositoryApkLinks.size()));
-            Thread threadSecondHalf = new Thread(remoteRepositoryApkFetcherRunnerSecondHalf);
-            threadSecondHalf.start();
+            RemoteRepositoryApkFetcherRunner remoteRepositoryApkFetcherRunner = new RemoteRepositoryApkFetcherRunner(timeoutForInstrumentation,repositoryApkLinks);
+            Thread thread = new Thread(remoteRepositoryApkFetcherRunner);
+            thread.start();
         }
+
 
         final HttpServer server = startServer();
         System.out.println(String.format("Jersey app started with WADL available at "
