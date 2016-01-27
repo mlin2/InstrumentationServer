@@ -4,11 +4,12 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.sentinel.instrumentationserver.InstrumentationDAO;
-import org.sentinel.instrumentationserver.InstrumentationRunner;
+import org.sentinel.instrumentationserver.Main;
 import org.sentinel.instrumentationserver.generated.model.Apk;
 import org.sentinel.instrumentationserver.generated.model.Apks;
 import org.sentinel.instrumentationserver.generated.model.Error;
 import org.sentinel.instrumentationserver.generated.workaround.InstrumentResource;
+import org.sentinel.instrumentationserver.instrumentation.InstrumentationManager;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -61,10 +62,9 @@ public class InstrumentResourceImpl implements InstrumentResource {
         InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
 
         if (!instrumentationDAO.checkIfApkAlreadyInstrumented(sha512Hash)) {
-            InstrumentationRunner instrumentationRunner = new InstrumentationRunner(sourceFile, sinkFile,
+            InstrumentationManager instrumentationManager = new InstrumentationManager(Main.timeoutForInstrumentation);
+            instrumentationManager.instrumentWithMetadata(sourceFile, sinkFile,
                     easyTaintWrapperSource, apkFileBytes, sha512Hash, logoBytes, appName, packageName, makeAppPublic);
-            Thread thread = new Thread(instrumentationRunner);
-            thread.start();
         }
 
         return PostInstrumentWithmetadataResponse.withJsonAccepted(new Apk().withHash(sha512Hash));
@@ -88,10 +88,9 @@ public class InstrumentResourceImpl implements InstrumentResource {
         InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
 
         if (!instrumentationDAO.checkIfApkAlreadyInstrumented(sha512Hash)) {
-            InstrumentationRunner instrumentationRunner = new InstrumentationRunner(sourceFile, sinkFile,
-                    easyTaintWrapperSource, apkFileBytes, sha512Hash, false);
-            Thread thread = new Thread(instrumentationRunner);
-            thread.start();
+            InstrumentationManager instrumentationManager = new InstrumentationManager(Main.timeoutForInstrumentation);
+            instrumentationManager.instrument(sourceFile, sinkFile,
+                    easyTaintWrapperSource, apkFileBytes, sha512Hash);
         }
 
         return PostInstrumentWithoutmetadataResponse.withJsonAccepted(new Apk().withHash(sha512Hash));

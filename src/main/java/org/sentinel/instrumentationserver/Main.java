@@ -6,7 +6,6 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.ini4j.Ini;
-import org.sentinel.instrumentationserver.fetch.ApkFetcher;
 import org.sentinel.instrumentationserver.metadata.MetadataFetcher;
 import org.sentinel.instrumentationserver.resource.impl.InstrumentResourceImpl;
 import org.sentinel.instrumentationserver.resource.impl.MetadataResourceImpl;
@@ -14,6 +13,7 @@ import org.sentinel.instrumentationserver.resource.impl.MetadataResourceImpl;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 
 /**
  * This Main class handles the configuration and startup of the Jersey framework, Grizzly NIO framework and
@@ -25,6 +25,7 @@ public class Main {
     public static String BASE_URI;
     public static String FORWARDED_URI;
     private static Ini configIni;
+    public static long timeoutForInstrumentation;
 
     /**
      * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
@@ -66,6 +67,12 @@ public class Main {
             e.printStackTrace();
         }
 
+        Ini ini = new Ini(new File("config.ini"));
+        Integer timeoutForInstrumentationInMinutes = ini.get("Fetch", "TimeoutForApkFetchingInMinutes", Integer.class);
+        // Convert the timeout in minutes of the config file to milliseconds to give the instrumentation process
+        // a timeout.
+        timeoutForInstrumentation = timeoutForInstrumentationInMinutes * 60 * 1000;
+
         InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
         instrumentationDAO.initializeDatabase();
 
@@ -77,8 +84,17 @@ public class Main {
 
         if (configIni.get("Fetch", "fetchFdroidApks", Boolean.class)) {
             System.out.println("Fetching F-Droid APKs in the background");
-            ApkFetcher apkFetcher = new ApkFetcher();
-            apkFetcher.fetch();
+            List<String> repositoryApkLinks = instrumentationDAO.getAllRepositoryApkLinks();
+
+            RemoteRepositoryApkFetcherRunner remoteRepositoryApkFetcherRunnerFirstHalf = new RemoteRepositoryApkFetcherRunner(timeoutForInstrumentation,
+                    repositoryApkLinks.subList(0, repositoryApkLinks.size() / 2));
+            Thread threadFirstHalf = new Thread(remoteRepositoryApkFetcherRunnerFirstHalf);
+            threadFirstHalf.start();
+
+            RemoteRepositoryApkFetcherRunner remoteRepositoryApkFetcherRunnerSecondHalf = new RemoteRepositoryApkFetcherRunner(timeoutForInstrumentation,
+                    repositoryApkLinks.subList(repositoryApkLinks.size() / 2 + 1, repositoryApkLinks.size()));
+            Thread threadSecondHalf = new Thread(remoteRepositoryApkFetcherRunnerSecondHalf);
+            threadSecondHalf.start();
         }
 
         final HttpServer server = startServer();

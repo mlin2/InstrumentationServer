@@ -55,7 +55,7 @@ public class QueryBuilder {
     }
 
     /**
-     * Get parameterized query to return an APK file for a GET request to /instrument/sha512sum.
+     * Get parameterized query to return an APK file for a GET request to /instrumentWithMetadata/sha512sum.
      */
     public static String getQueryToRetrieveApkFile() {
         return "SELECT INSTRUMENTEDAPK FROM APKS WHERE HASH=?";

@@ -109,7 +109,7 @@ public interface InstrumentResource {
     ;
 
     /**
-     * The response for using GET on the /instrument/apkhash resource where apkhash corresponds to the sha512sum of
+     * The response for using GET on the /instrumentWithMetadata/apkhash resource where apkhash corresponds to the sha512sum of
      * the not yet instrumented APK. An OK gets returned if the instrumented and signed APK
      * is already stored in the database and otherwise returns a Json not found error.
      */
@@ -184,7 +184,7 @@ public interface InstrumentResource {
     }
 
     /**
-     * The response for using POST on /instrument. The APK posted to the resource gets instrumented and signed and
+     * The response for using POST on /instrumentWithMetadata. The APK posted to the resource gets instrumented and signed and
      * stored in the database. As soon as instrumentation is done, the APK can be retrieved by using GET on
      * /instrument/apkhash where corresponds to the sha512sum of the not yet instrumented APK.
      */
