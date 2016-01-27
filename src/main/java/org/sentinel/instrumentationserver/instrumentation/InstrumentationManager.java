@@ -16,6 +16,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 public class InstrumentationManager {
 
@@ -42,7 +43,7 @@ public class InstrumentationManager {
 
     }
 
-    public void instrumentFromLinks(List<String> repositoryApkLinks) {
+    public void instrumentFromLinks(List<String> repositoryApkLinks) throws TimeoutException {
         {
             Iterator<String> repositoryApkLinkIterator = repositoryApkLinks.iterator();
             while (repositoryApkLinkIterator.hasNext()) {
@@ -70,6 +71,9 @@ public class InstrumentationManager {
                         InstrumentationWorker instrumentationWorker = new InstrumentationWorker(alignedApkPath, processBuilder, apkBytes, sha512Hash, true);
                         instrumentationWorker.start();
                         instrumentationWorker.join(timeoutForInstrumentation);
+                        if(instrumentationWorker.exit == null) {
+                            instrumentationWorker.interrupt();
+                        }
                     }
                 } catch (NoSuchAlgorithmException e) {
                     e.printStackTrace();

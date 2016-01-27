@@ -15,7 +15,7 @@ public class InstrumentationWorker extends Thread {
 
     private final ProcessBuilder processBuilder;
 
-    private Integer exit;
+    public Integer exit;
 
     /**
      * The sha512sum of the APK before instrumentation and signing.
