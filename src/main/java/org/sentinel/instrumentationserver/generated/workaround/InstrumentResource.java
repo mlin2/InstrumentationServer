@@ -67,16 +67,29 @@ public interface InstrumentResource {
      * @param apkFile                APK file that should be instrumented
      */
     @POST
+    @Path("withmetadata")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces({
             "application/json"
     })
-    InstrumentResource.PostInstrumentResponse postInstrument(@FormDataParam("file") InputStream sourceFile, @FormDataParam("file") InputStream sinkFile,
+    InstrumentResource.PostInstrumentWithmetadataResponse postInstrumentWithmetadata(@FormDataParam("file") InputStream sourceFile, @FormDataParam("file") InputStream sinkFile,
                                                              @FormDataParam("file") InputStream easyTaintWrapperSource, @FormDataParam("file") InputStream apkFile,
                                                              @FormDataParam("file") InputStream logo, @FormDataParam("text") String appName,
                                                              @FormDataParam("text") String packageName, @FormDataParam("makeAppPublic") boolean makeAppPublic)
             throws Exception
     ;
+
+
+    @POST
+    @Path("withoutmetadata")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces({
+            "application/json"
+    })
+    InstrumentResource.PostInstrumentWithoutmetadataResponse postInstrumentWithoutmetadata(@FormDataParam("file") InputStream sourceFile, @FormDataParam("file") InputStream sinkFile,
+                                                                                     @FormDataParam("file") InputStream easyTaintWrapperSource, @FormDataParam("file") InputStream apkFile)
+            throws Exception
+            ;
 
     /**
      * Retrieve the instrumented apk as a binary blob based on its hash sum value.
@@ -211,5 +224,104 @@ public interface InstrumentResource {
         }
 
     }
+
+    public class PostInstrumentWithmetadataResponse
+            extends org.sentinel.instrumentationserver.generated.resource.support.ResponseWrapper
+    {
+
+
+        private PostInstrumentWithmetadataResponse(Response delegate) {
+            super(delegate);
+        }
+
+        /**
+         *  e.g. {
+         *   "hash": "f4439018f1cd7e5d770c77743533e31bc76fcf31950dca09991c93bece5bb49e9896d6e3d5d597ed983fdb444505dbc9cd336b58c3917645cfbc97b6b05d8791"
+         * }
+         *
+         *
+         * @param entity
+         *     {
+         *       "hash": "f4439018f1cd7e5d770c77743533e31bc76fcf31950dca09991c93bece5bb49e9896d6e3d5d597ed983fdb444505dbc9cd336b58c3917645cfbc97b6b05d8791"
+         *     }
+         *
+         */
+        public static InstrumentResource.PostInstrumentWithmetadataResponse withJsonAccepted(Apk entity) {
+            Response.ResponseBuilder responseBuilder = Response.status(202).header("Content-Type", "application/json");
+            responseBuilder.entity(entity);
+            return new InstrumentResource.PostInstrumentWithmetadataResponse(responseBuilder.build());
+        }
+
+        /**
+         *  e.g. {
+         *   "errorId": "1",
+         *   "msg": "Bad format"
+         * }
+         *
+         *
+         * @param entity
+         *     {
+         *       "errorId": "1",
+         *       "msg": "Bad format"
+         *     }
+         *
+         */
+        public static InstrumentResource.PostInstrumentWithmetadataResponse withJsonBadRequest(Error entity) {
+            Response.ResponseBuilder responseBuilder = Response.status(400).header("Content-Type", "application/json");
+            responseBuilder.entity(entity);
+            return new InstrumentResource.PostInstrumentWithmetadataResponse(responseBuilder.build());
+        }
+
+    }
+
+    public class PostInstrumentWithoutmetadataResponse
+            extends org.sentinel.instrumentationserver.generated.resource.support.ResponseWrapper
+    {
+
+
+        private PostInstrumentWithoutmetadataResponse(Response delegate) {
+            super(delegate);
+        }
+
+        /**
+         *  e.g. {
+         *   "hash": "f4439018f1cd7e5d770c77743533e31bc76fcf31950dca09991c93bece5bb49e9896d6e3d5d597ed983fdb444505dbc9cd336b58c3917645cfbc97b6b05d8791"
+         * }
+         *
+         *
+         * @param entity
+         *     {
+         *       "hash": "f4439018f1cd7e5d770c77743533e31bc76fcf31950dca09991c93bece5bb49e9896d6e3d5d597ed983fdb444505dbc9cd336b58c3917645cfbc97b6b05d8791"
+         *     }
+         *
+         */
+        public static InstrumentResource.PostInstrumentWithoutmetadataResponse withJsonAccepted(Apk entity) {
+            Response.ResponseBuilder responseBuilder = Response.status(202).header("Content-Type", "application/json");
+            responseBuilder.entity(entity);
+            return new InstrumentResource.PostInstrumentWithoutmetadataResponse(responseBuilder.build());
+        }
+
+        /**
+         *  e.g. {
+         *   "errorId": "1",
+         *   "msg": "Bad format"
+         * }
+         *
+         *
+         * @param entity
+         *     {
+         *       "errorId": "1",
+         *       "msg": "Bad format"
+         *     }
+         *
+         */
+        public static InstrumentResource.PostInstrumentWithoutmetadataResponse withJsonBadRequest(Error entity) {
+            Response.ResponseBuilder responseBuilder = Response.status(400).header("Content-Type", "application/json");
+            responseBuilder.entity(entity);
+            return new InstrumentResource.PostInstrumentWithoutmetadataResponse(responseBuilder.build());
+        }
+
+    }
+
 
 }

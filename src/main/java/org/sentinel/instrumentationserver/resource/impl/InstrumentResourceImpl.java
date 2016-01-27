@@ -39,11 +39,12 @@ public class InstrumentResourceImpl implements InstrumentResource {
     }
 
     @POST
+    @Path("withmetadata")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces({
             "application/json"
     })
-    public PostInstrumentResponse postInstrument(@FormDataParam("sourceFile") InputStream sourceFile, @FormDataParam("sinkFile") InputStream sinkFile,
+    public InstrumentResource.PostInstrumentWithmetadataResponse postInstrumentWithmetadata(@FormDataParam("sourceFile") InputStream sourceFile, @FormDataParam("sinkFile") InputStream sinkFile,
                                                  @FormDataParam("easyTaintWrapperSource") InputStream easyTaintWrapperSource,
                                                  @FormDataParam("apkFile") InputStream apkFile, @FormDataParam("logo") InputStream logo,
                                                  @FormDataParam("apkName") String appName, @FormDataParam("packageName") String packageName,
@@ -66,7 +67,34 @@ public class InstrumentResourceImpl implements InstrumentResource {
             thread.start();
         }
 
-        return PostInstrumentResponse.withJsonAccepted(new Apk().withHash(sha512Hash));
+        return PostInstrumentWithmetadataResponse.withJsonAccepted(new Apk().withHash(sha512Hash));
+    }
+
+    @POST
+    @Path("withoutmetadata")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces({
+            "application/json"
+    })
+    public InstrumentResource.PostInstrumentWithoutmetadataResponse postInstrumentWithoutmetadata(@FormDataParam("sourceFile") InputStream sourceFile, @FormDataParam("sinkFile") InputStream sinkFile,
+                                                                                            @FormDataParam("easyTaintWrapperSource") InputStream easyTaintWrapperSource,
+                                                                                            @FormDataParam("apkFile") InputStream apkFile) throws Exception {
+
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
+        byte[] apkFileBytes = IOUtils.toByteArray(apkFile);
+        String sha512Hash = String.valueOf(Hex.encodeHex(messageDigest.digest(apkFileBytes)));
+
+
+        InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
+
+        if (!instrumentationDAO.checkIfApkAlreadyInstrumented(sha512Hash)) {
+            InstrumentationRunner instrumentationRunner = new InstrumentationRunner(sourceFile, sinkFile,
+                    easyTaintWrapperSource, apkFileBytes, sha512Hash, false);
+            Thread thread = new Thread(instrumentationRunner);
+            thread.start();
+        }
+
+        return PostInstrumentWithoutmetadataResponse.withJsonAccepted(new Apk().withHash(sha512Hash));
     }
 
     @Override

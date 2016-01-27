@@ -12,64 +12,109 @@ schemas:
   - metadata: !include schemas/metadata-schema.json
   - metadataList: !include schemas/metadataList-schema.json
 /instrument:
-  post:
-    description: |
-      Instrument an apk file based on the configuration files attached
-      to the request
-    body:
-      multipart/form-data:
-        formParameters:
-          sourceFile:
-            description: Source file containing the android's source methods
-            displayName: Source File
-            type: file
-            required: true
-            example: !include examples/sources.txt
-          sinkFile:
-            description: Sink file containing the android's sink methods
-            displayName: Sink File
-            type: file
-            required: true
-            example: !include examples/sinks.txt
-          easyTaintWrapperSource:
-            description: |
-              Taint wrapper file containing the android's package names that
-              should be considered during the instrumentation phase
-            displayName: Easy Taint Wrapper File
-            type: file
-            required: true
-            example: !include examples/taintWrapperSource.txt
-          apkFile:
-            description: APK file that should be instrumented
-            displayName: APK File
-            type: file
-            required: true
-          logo:
-            description: The logo of the app
-            displayName: Logo
-            type: file
-            required: false
-          appName:
-            description: The name of the app
-            displayName: App Name
-            type: string
-            required: false
-          packagename:
-            description: The packagename of the app
-            displayName: Package Name
-            type: string
-            required: false
-    responses:
-      202:
+  /withmetadata:
+      post:
+        description: |
+          Instrument an apk file based on the configuration files attached
+          to the request
         body:
-          application/json:
-            schema: apk
-            example: !include examples/instrumentPost-response.json
-      400:
-        body:
-          application/json:
-            schema: error
-            example: !include examples/error-response.json
+          multipart/form-data:
+            formParameters:
+              sourceFile:
+                description: Source file containing the android's source methods
+                displayName: Source File
+                type: file
+                required: true
+                example: !include examples/sources.txt
+              sinkFile:
+                description: Sink file containing the android's sink methods
+                displayName: Sink File
+                type: file
+                required: true
+                example: !include examples/sinks.txt
+              easyTaintWrapperSource:
+                description: |
+                  Taint wrapper file containing the android's package names that
+                  should be considered during the instrumentation phase
+                displayName: Easy Taint Wrapper File
+                type: file
+                required: true
+                example: !include examples/taintWrapperSource.txt
+              apkFile:
+                description: APK file that should be instrumented
+                displayName: APK File
+                type: file
+                required: true
+              logo:
+                description: The logo of the app
+                displayName: Logo
+                type: file
+                required: false
+              appName:
+                description: The name of the app
+                displayName: App Name
+                type: string
+                required: false
+              packagename:
+                description: The packagename of the app
+                displayName: Package Name
+                type: string
+                required: false
+        responses:
+          202:
+            body:
+              application/json:
+                schema: apk
+                example: !include examples/instrumentPost-response.json
+          400:
+            body:
+              application/json:
+                schema: error
+                example: !include examples/error-response.json
+  /withoutmetadata:
+    post:
+      description: |
+        Instrument an apk file based on the configuration files attached
+        to the request
+      body:
+        multipart/form-data:
+          formParameters:
+            sourceFile:
+              description: Source file containing the android's source methods
+              displayName: Source File
+              type: file
+              required: true
+              example: !include examples/sources.txt
+            sinkFile:
+              description: Sink file containing the android's sink methods
+              displayName: Sink File
+              type: file
+              required: true
+              example: !include examples/sinks.txt
+            easyTaintWrapperSource:
+              description: |
+                Taint wrapper file containing the android's package names that
+                should be considered during the instrumentation phase
+              displayName: Easy Taint Wrapper File
+              type: file
+              required: true
+              example: !include examples/taintWrapperSource.txt
+            apkFile:
+              description: APK file that should be instrumented
+              displayName: APK File
+              type: file
+              required: true
+      responses:
+        202:
+          body:
+            application/json:
+              schema: apk
+              example: !include examples/instrumentPost-response.json
+        400:
+          body:
+            application/json:
+              schema: error
+              example: !include examples/error-response.json
   /all:
     description: |
       Instrument apk based on the configuration files contained in the request.
@@ -114,7 +159,7 @@ schemas:
               schema: metadataList
   /instrumented:
       description: |
-        Get a list of the metadata of instrumented apps saved on the server.
+        Get a list of the metadata saved on the server.
       get:
         description: Retrieve a list of all the metadata of all instrumented apps
         responses:
