@@ -43,7 +43,7 @@ public class InstrumentationManager {
 
     }
 
-    public void instrumentFromLinks(List<String> repositoryApkLinks) throws TimeoutException {
+    public void instrumentFromLinks(List<String> repositoryApkLinks) {
         {
             Iterator<String> repositoryApkLinkIterator = repositoryApkLinks.iterator();
             while (repositoryApkLinkIterator.hasNext()) {
