@@ -16,20 +16,18 @@ public interface MetadataResource {
 
     /**
      * Retrieve a list of all the metadata of all instrumented apps
-     * 
      */
     @GET
     @Path("all")
     @Produces({
-        "application/json"
+            "application/json"
     })
     MetadataResource.GetMetadataAllResponse getMetadataAll()
-        throws Exception
+            throws Exception
     ;
 
     /**
      * Retrieve a list of all the metadata of all instrumented apps
-     *
      */
     @GET
     @Path("instrumented")
@@ -42,25 +40,22 @@ public interface MetadataResource {
 
     /**
      * Retrieve the logo of the APK corresponding to the hash.
-     * 
-     * 
+     *
      * @param apkHash
-     *     
      */
     @GET
     @Path("logo/{apkHash}.png")
     @Produces({
-        "image/png"
+            "image/png"
     })
     MetadataResource.GetMetadataLogoByApkHashResponse getMetadataLogoByApkHash(
-        @PathParam("apkHash")
-        String apkHash)
-        throws Exception
+            @PathParam("apkHash")
+            String apkHash)
+            throws Exception
     ;
 
     public class GetMetadataAllResponse
-        extends org.sentinel.instrumentationserver.generated.resource.support.ResponseWrapper
-    {
+            extends org.sentinel.instrumentationserver.generated.resource.support.ResponseWrapper {
 
 
         private GetMetadataAllResponse(Response delegate) {
@@ -68,9 +63,7 @@ public interface MetadataResource {
         }
 
         /**
-         * 
          * @param entity
-         *     
          */
         public static MetadataResource.GetMetadataAllResponse withJsonOK(MetadataList entity) {
             Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "application/json");
@@ -81,8 +74,7 @@ public interface MetadataResource {
     }
 
     public class GetMetadataInstrumentedResponse
-            extends org.sentinel.instrumentationserver.generated.resource.support.ResponseWrapper
-    {
+            extends org.sentinel.instrumentationserver.generated.resource.support.ResponseWrapper {
 
 
         private GetMetadataInstrumentedResponse(Response delegate) {
@@ -90,9 +82,7 @@ public interface MetadataResource {
         }
 
         /**
-         *
          * @param entity
-         *
          */
         public static MetadataResource.GetMetadataInstrumentedResponse withJsonOK(MetadataList entity) {
             Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "application/json");
@@ -103,8 +93,7 @@ public interface MetadataResource {
     }
 
     public class GetMetadataLogoByApkHashResponse
-        extends org.sentinel.instrumentationserver.generated.resource.support.ResponseWrapper
-    {
+            extends org.sentinel.instrumentationserver.generated.resource.support.ResponseWrapper {
 
 
         private GetMetadataLogoByApkHashResponse(Response delegate) {
@@ -112,9 +101,7 @@ public interface MetadataResource {
         }
 
         /**
-         *
          * @param logoFile
-         *     
          */
         public static MetadataResource.GetMetadataLogoByApkHashResponse withFormdataOK(byte[] logoFile) {
             Response.ResponseBuilder responseBuilder = Response.status(200);
@@ -123,18 +110,15 @@ public interface MetadataResource {
         }
 
         /**
-         *  e.g. {
-         *   "errorId": "1",
-         *   "msg": "Bad format"
+         * e.g. {
+         * "errorId": "1",
+         * "msg": "Bad format"
          * }
-         * 
-         * 
-         * @param entity
-         *     {
-         *       "errorId": "1",
-         *       "msg": "Bad format"
-         *     }
-         *     
+         *
+         * @param entity {
+         *               "errorId": "1",
+         *               "msg": "Bad format"
+         *               }
          */
         public static MetadataResource.GetMetadataLogoByApkHashResponse withJsonNotFound(Error entity) {
             Response.ResponseBuilder responseBuilder = Response.status(404).header("Content-Type", "application/json");

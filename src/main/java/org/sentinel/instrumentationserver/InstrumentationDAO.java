@@ -446,8 +446,8 @@ public class InstrumentationDAO {
             if (applicationNodeElement.getElementsByTagName("name").item(0) != null) {
                 appName = applicationNodeElement.getElementsByTagName("name").item(0).getTextContent();
             }
-            if (applicationNodeElement.getElementsByTagName("apkname").item(0) != null) {
-                packageName = applicationNodeElement.getElementsByTagName("apkname").item(0).getTextContent();
+            if (applicationNodeElement.getAttribute("id") != null) {
+                packageName = applicationNodeElement.getAttribute("id");
             }
             if (applicationNodeElement.getElementsByTagName("apkname").item(0) != null) {
                 appUrl = APP_BASE_URI + applicationNodeElement.getElementsByTagName("apkname").item(0).getTextContent();

@@ -45,10 +45,10 @@ public class InstrumentResourceImpl implements InstrumentResource {
             "application/json"
     })
     public InstrumentResource.PostInstrumentWithmetadataResponse postInstrumentWithmetadata(@FormDataParam("sourceFile") InputStream sourceFile, @FormDataParam("sinkFile") InputStream sinkFile,
-                                                 @FormDataParam("easyTaintWrapperSource") InputStream easyTaintWrapperSource,
-                                                 @FormDataParam("apkFile") InputStream apkFile, @FormDataParam("logo") InputStream logo,
-                                                 @FormDataParam("apkName") String appName, @FormDataParam("packageName") String packageName,
-                                                 @FormDataParam("makeAppPublic") boolean makeAppPublic) throws Exception {
+                                                                                            @FormDataParam("easyTaintWrapperSource") InputStream easyTaintWrapperSource,
+                                                                                            @FormDataParam("apkFile") InputStream apkFile, @FormDataParam("logo") InputStream logo,
+                                                                                            @FormDataParam("apkName") String appName, @FormDataParam("packageName") String packageName,
+                                                                                            @FormDataParam("makeAppPublic") boolean makeAppPublic) throws Exception {
 
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
         byte[] apkFileBytes = IOUtils.toByteArray(apkFile);
@@ -77,8 +77,8 @@ public class InstrumentResourceImpl implements InstrumentResource {
             "application/json"
     })
     public InstrumentResource.PostInstrumentWithoutmetadataResponse postInstrumentWithoutmetadata(@FormDataParam("sourceFile") InputStream sourceFile, @FormDataParam("sinkFile") InputStream sinkFile,
-                                                                                            @FormDataParam("easyTaintWrapperSource") InputStream easyTaintWrapperSource,
-                                                                                            @FormDataParam("apkFile") InputStream apkFile) throws Exception {
+                                                                                                  @FormDataParam("easyTaintWrapperSource") InputStream easyTaintWrapperSource,
+                                                                                                  @FormDataParam("apkFile") InputStream apkFile) throws Exception {
 
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
         byte[] apkFileBytes = IOUtils.toByteArray(apkFile);
@@ -108,7 +108,7 @@ public class InstrumentResourceImpl implements InstrumentResource {
         InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
         byte[] apkFile = instrumentationDAO.retrieveInstrumentedApkFromDatabase(apkHash);
         System.out.println(apkFile);
-        if(apkFile.length == 0) {
+        if (apkFile.length == 0) {
             return GetInstrumentByApkHashResponse.withJsonNotFound(new Error().withMsg("APK file not stored in the database"));
         }
         return GetInstrumentByApkHashResponse.withOK(apkFile);

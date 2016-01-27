@@ -70,8 +70,6 @@ public class InstrumentationRunner implements Runnable {
      */
     private String alignedApkPath;
 
-    public Process process;
-
     public InstrumentationRunner(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource,
                                  byte[] apkFile, String sha512Hash, byte[] logo, String appName, String packageName, boolean makeAppPublic) {
         this.sourceFile = sourceFile;
@@ -106,7 +104,7 @@ public class InstrumentationRunner implements Runnable {
     public void run() {
         try {
             ProcessBuilder processBuilder = createInstrumentationProcessBuilder(sourceFile, sinkFile, easyTaintWrapperSource, apkFile, sha512Hash);
-            process = processBuilder.start();
+            Process process = processBuilder.start();
             printLines(" STDOUT:", process.getInputStream());
             printLines(" STDERR:", process.getErrorStream());
             process.waitFor();
