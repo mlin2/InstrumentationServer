@@ -79,7 +79,7 @@ public class InstrumentationManager {
                         instrumentationWorker.start();
                         instrumentationWorker.join(timeoutForInstrumentation);
                         if(instrumentationWorker.exit == null) {
-                            process.destroy();
+                            process.destroyForcibly();
                         }
                     }
                 } catch (NoSuchAlgorithmException e) {
