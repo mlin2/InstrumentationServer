@@ -35,12 +35,18 @@ public class InstrumentationManager {
         String alignedApkPath = instrumentationJobsDirectory + "/" + sha512Hash + "/alignedApk.apk";
         ProcessBuilder processBuilder = createInstrumentationProcessBuilder(currentDirectory, instrumentationJobsDirectory, alignedApkPath, sourceFile,
                 sinkFile, easyTaintWrapperSource, apkFile, sha512Hash);
+        Process process = null;
+        try {
+            process = processBuilder.start();
 
-            InstrumentationWorker instrumentationWorker = new InstrumentationWorker(alignedApkPath, processBuilder, apkFile, sha512Hash, logo, appName, packageName, makeAppPublic);
+
+        InstrumentationWorker instrumentationWorker = new InstrumentationWorker(alignedApkPath, process, apkFile, sha512Hash, logo, appName, packageName, makeAppPublic);
             instrumentationWorker.start();
             //instrumentationWorker.join(timeoutForInstrumentation);
 
-
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void instrumentFromLinks(List<String> repositoryApkLinks) {
@@ -66,13 +72,14 @@ public class InstrumentationManager {
 
                     ProcessBuilder processBuilder = createInstrumentationProcessBuilder(currentDirectory, instrumentationJobsDirectory, alignedApkPath,
                             sourceFile, sinkFile, easyTaintWrapperSource, apkBytes, sha512Hash);
+                    Process process = processBuilder.start();
 
                     if (!instrumentationDAO.checkIfApkAlreadyInstrumented(sha512Hash)) {
-                        InstrumentationWorker instrumentationWorker = new InstrumentationWorker(alignedApkPath, processBuilder, apkBytes, sha512Hash, true);
+                        InstrumentationWorker instrumentationWorker = new InstrumentationWorker(alignedApkPath, process, apkBytes, sha512Hash, true);
                         instrumentationWorker.start();
                         instrumentationWorker.join(timeoutForInstrumentation);
                         if(instrumentationWorker.exit == null) {
-                            instrumentationWorker.stop();
+                            process.destroy();
                         }
                     }
                 } catch (NoSuchAlgorithmException e) {
@@ -161,11 +168,16 @@ public class InstrumentationManager {
         ProcessBuilder processBuilder = createInstrumentationProcessBuilder(currentDirectory, instrumentationJobsDirectory, alignedApkPath, sourceFile,
                 sinkFile, easyTaintWrapperSource, apkFile, sha512Hash);
 
+        Process process = null;
+        try {
+            process = processBuilder.start();
 
-            InstrumentationWorker instrumentationWorker = new InstrumentationWorker(alignedApkPath, processBuilder, apkFile, sha512Hash, false);
+        InstrumentationWorker instrumentationWorker = new InstrumentationWorker(alignedApkPath, process, apkFile, sha512Hash, false);
             instrumentationWorker.start();
             //instrumentationWorker.join(timeoutForInstrumentation);
-
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 }

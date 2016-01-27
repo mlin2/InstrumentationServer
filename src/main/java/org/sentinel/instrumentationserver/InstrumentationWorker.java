@@ -13,7 +13,7 @@ import java.security.MessageDigest;
  */
 public class InstrumentationWorker extends Thread {
 
-    private final ProcessBuilder processBuilder;
+    private final Process process;
 
     public Integer exit;
 
@@ -53,10 +53,10 @@ public class InstrumentationWorker extends Thread {
      */
     private String alignedApkPath;
 
-    public InstrumentationWorker(String alignedApkPath, ProcessBuilder processBuilder,
+    public InstrumentationWorker(String alignedApkPath, Process process,
                                  byte[] apkFile, String sha512Hash, byte[] logo, String appName, String packageName, boolean saveMetadata) {
         this.alignedApkPath = alignedApkPath;
-        this.processBuilder = processBuilder;
+        this.process = process;
         this.apkFile = apkFile;
         this.sha512Hash = sha512Hash;
         this.logo = logo;
@@ -65,10 +65,10 @@ public class InstrumentationWorker extends Thread {
         this.saveMetadata = saveMetadata;
     }
 
-    public InstrumentationWorker(String alignedApkPath, ProcessBuilder processBuilder,
+    public InstrumentationWorker(String alignedApkPath, Process process,
                                  byte[] apkFile, String sha512Hash, boolean saveMetadata) {
         this.alignedApkPath = alignedApkPath;
-        this.processBuilder = processBuilder;
+        this.process = process;
         this.apkFile = apkFile;
         this.sha512Hash = sha512Hash;
         this.logo = null;
@@ -84,7 +84,6 @@ public class InstrumentationWorker extends Thread {
     @Override
     public void run() {
         try {
-            Process process = processBuilder.start();
             printLines(" STDOUT:", process.getInputStream());
             printLines(" STDERR:", process.getErrorStream());
             exit = process.waitFor();
