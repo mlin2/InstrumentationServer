@@ -71,7 +71,7 @@ public class Main {
         Integer timeoutForInstrumentationInMinutes = ini.get("Fetch", "TimeoutForApkFetchingInMinutes", Integer.class);
         // Convert the timeout in minutes of the config file to milliseconds to give the instrumentation process
         // a timeout.
-        timeoutForInstrumentation = timeoutForInstrumentationInMinutes * 60 * 1000;
+        timeoutForInstrumentation = timeoutForInstrumentationInMinutes * 60;
 
         InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
         instrumentationDAO.initializeDatabase();

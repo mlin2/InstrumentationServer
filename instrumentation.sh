@@ -16,8 +16,8 @@ pwd
 
 ls
 
-echo java -jar ../DroidForce.jar -sourceFile $1 -sinkFile $2 -taintWrapper $4 -apkFile $3 -o $5 -j -androidJar $6
-java -jar ../DroidForce.jar -sourceFile $1 -sinkFile $2 -taintWrapper $4 -apkFile $3 -o $5 -j -androidJar $6
+echo timeout ${13} java -jar ../DroidForce.jar -sourceFile $1 -sinkFile $2 -taintWrapper $4 -apkFile $3 -o $5 -j -androidJar $6
+timeout ${13} java -jar ../DroidForce.jar -sourceFile $1 -sinkFile $2 -taintWrapper $4 -apkFile $3 -o $5 -j -androidJar $6
 
 
 echo The APK gets now signed

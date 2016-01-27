@@ -7,6 +7,7 @@ import org.ini4j.Ini;
 import org.ini4j.InvalidFileFormatException;
 import org.sentinel.instrumentationserver.InstrumentationDAO;
 import org.sentinel.instrumentationserver.InstrumentationWorker;
+import org.sentinel.instrumentationserver.Main;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -79,7 +80,7 @@ public class InstrumentationManager {
                         instrumentationWorker.start();
                         instrumentationWorker.join(timeoutForInstrumentation);
                         if(instrumentationWorker.exit == null) {
-                            process.destroyForcibly();
+                            //process.destroyForcibly();
                         }
                     }
                 } catch (NoSuchAlgorithmException e) {
@@ -130,7 +131,7 @@ public class InstrumentationManager {
 
             ProcessBuilder processBuilder = new ProcessBuilder(currentDirectory + "/instrumentation.sh", sourceFileTemp.getAbsolutePath(), sinkFileTemp.getAbsolutePath(),
                     fileToInstrumentTemp.getAbsolutePath(), easyTaintWrapperSourceTemp.getAbsolutePath(), outputDirectoryAbsolutePath, androidJarDirectory, instrumentedApkPath, keystoreDirectory,
-                    keystoreAlias, keystorePass, signedApkPath, alignedApkPath);
+                    keystoreAlias, keystorePass, signedApkPath, alignedApkPath, String.valueOf(Main.timeoutForInstrumentation));
 
             return processBuilder;
 
