@@ -30,7 +30,6 @@ public class Main {
     public static String FORWARDED_URI;
     public static long TIMEOUT_FOR_INSTRUMENTATION_IN_MINUTES;
     public static String DATA_DIRECTORY;
-    public static String INSTRUMENTATION_SCRIPT_ABSOLUTE_PATH;
     public static boolean DELETE_DATA_DIRECTORY;
 
     /**
@@ -70,7 +69,6 @@ public class Main {
 
         configIni = new Ini(new File("config.ini"));
         TIMEOUT_FOR_INSTRUMENTATION_IN_MINUTES = configIni.get("Fetch", "TimeoutForApkFetchingInMinutes", Integer.class);
-        INSTRUMENTATION_SCRIPT_ABSOLUTE_PATH = configIni.get("Instrumentation Script", "InstrumentationScriptPath", String.class);
         DATA_DIRECTORY = configIni.get("Directories", "DataDirectory", String.class);
         DELETE_DATA_DIRECTORY = configIni.get("Directories", "DeleteDataDirectory", Boolean.class);
 

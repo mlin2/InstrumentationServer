@@ -148,7 +148,7 @@ public class InstrumentationManager {
             String alignedApkPath = instrumentationJobPath + "/alignedApk.apk";
 
 
-            return new ProcessBuilder(Main.INSTRUMENTATION_SCRIPT_ABSOLUTE_PATH,
+            return new ProcessBuilder("instrument.sh",
                     sourceFileInstrumentationJob.getAbsolutePath(), sinkFileInstrumentationJob.getAbsolutePath(),
                     fileToInstrumentInstrumentationJob.getAbsolutePath(), easyTaintWrapperSourceInstrumentationJob.getAbsolutePath(),
                     outputDirectoryAbsolutePath, androidJarDirectory, instrumentedApkPath, keystoreDirectory,
