@@ -80,8 +80,10 @@ public class Main {
             System.out.println("Fetching metadata...");
             MetadataFetcher metadataFetcher = new MetadataFetcher();
             metadataFetcher.fetch();
-            List<String> repositoryApkLinks = instrumentationDAO.getAllRepositoryApkLinks();
+        }
 
+        if(configIni.get("Fetch", "fetchFdroidApks", Boolean.class)) {
+            List<String> repositoryApkLinks = instrumentationDAO.getAllRepositoryApkLinks();
             RemoteRepositoryApkFetcherRunner remoteRepositoryApkFetcherRunner = new RemoteRepositoryApkFetcherRunner(timeoutForInstrumentation,repositoryApkLinks);
             Thread thread = new Thread(remoteRepositoryApkFetcherRunner);
             thread.start();

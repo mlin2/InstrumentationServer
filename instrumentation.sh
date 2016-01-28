@@ -18,7 +18,7 @@ ls
 
 echo timeout ${13} java -jar ../DroidForce.jar -sourceFile $1 -sinkFile $2 -taintWrapper $4 -apkFile $3 -o $5 -j -androidJar $6
 timeout ${13} java -jar ../DroidForce.jar -sourceFile $1 -sinkFile $2 -taintWrapper $4 -apkFile $3 -o $5 -j -androidJar $6
-
+if [ $? == 0 ]; then
 
 echo The APK gets now signed
 # Sign the APK
@@ -28,3 +28,5 @@ echo Previous signatures are now removed from the APK
 #TODO is this needed?
 #Delete previous signatures
 zipalign -v 4 ${11} ${12}
+
+fi
