@@ -1,17 +1,12 @@
 package org.sentinel.instrumentationserver;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.PrefixFileFilter;
-import org.apache.commons.io.output.*;
 import org.sentinel.instrumentationserver.generated.model.MetadataList;
 import org.sentinel.instrumentationserver.generated.model.Metadatum;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
-import javax.management.Query;
 import java.io.*;
-import java.io.ByteArrayOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.*;
