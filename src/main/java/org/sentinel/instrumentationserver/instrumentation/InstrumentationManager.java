@@ -78,10 +78,11 @@ public class InstrumentationManager {
                     if (!instrumentationDAO.checkIfApkAlreadyInstrumented(sha512Hash)) {
                         InstrumentationWorker instrumentationWorker = new InstrumentationWorker(alignedApkPath, process, apkBytes, sha512Hash, true);
                         instrumentationWorker.start();
-                        instrumentationWorker.join(timeoutForInstrumentation);
+                        instrumentationWorker.join();
+/*                        instrumentationWorker.join(Main.timeoutForInstrumentation * 1000);
                         if(instrumentationWorker.exit == null) {
-                            //process.destroyForcibly();
-                        }
+                            process.destroy();
+                        }*/
                     }
                 } catch (NoSuchAlgorithmException e) {
                     e.printStackTrace();
