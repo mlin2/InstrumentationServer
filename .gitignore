@@ -29,4 +29,4 @@ raml/target
 sootOutput
 /instrumentation-server-database.db
 config.ini
-/InstrumentationDependencies/instrumentation-server-jobs
+instrumentation-server-jobs

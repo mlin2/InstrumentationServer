@@ -78,8 +78,7 @@ public class InstrumentationManager {
                     byte[] apkBytes = IOUtils.toByteArray(urlConnection.getInputStream());
                     String sha512Hash = String.valueOf(Hex.encodeHex(messageDigest.digest(apkBytes)));
 
-                    String currentDirectory = System.getProperty("user.dir");
-                    String instrumentationJobsDirectory = currentDirectory + "/InstrumentationDependencies/instrumentation-server-jobs";
+                    String instrumentationJobsDirectory = Main.DATA_DIRECTORY;
                     String alignedApkPath = instrumentationJobsDirectory + "/" + sha512Hash + "/alignedApk.apk";
 
                     ProcessBuilder processBuilder = createInstrumentationProcessBuilder(
@@ -148,7 +147,7 @@ public class InstrumentationManager {
             String alignedApkPath = instrumentationJobPath + "/alignedApk.apk";
 
 
-            return new ProcessBuilder("instrument.sh",
+            return new ProcessBuilder("./instrument.sh",
                     sourceFileInstrumentationJob.getAbsolutePath(), sinkFileInstrumentationJob.getAbsolutePath(),
                     fileToInstrumentInstrumentationJob.getAbsolutePath(), easyTaintWrapperSourceInstrumentationJob.getAbsolutePath(),
                     outputDirectoryAbsolutePath, androidJarDirectory, instrumentedApkPath, keystoreDirectory,
