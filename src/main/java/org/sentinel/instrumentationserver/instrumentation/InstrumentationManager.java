@@ -36,7 +36,7 @@ public class InstrumentationManager {
         ProcessBuilder processBuilder = createInstrumentationProcessBuilder(sourceFile,
                 sinkFile, easyTaintWrapperSource, apkFile, sha512Hash);
 
-        InstrumentationRunner instrumentationRunner = new InstrumentationRunner(alignedApkPath, processBuilder, apkFile, sha512Hash);
+        InstrumentationRunner instrumentationRunner = new InstrumentationRunner(alignedApkPath, processBuilder, apkFile, sha512Hash, false);
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(instrumentationRunner);
         executorService.shutdown();
@@ -85,7 +85,7 @@ public class InstrumentationManager {
                             sourceFile, sinkFile, easyTaintWrapperSource, apkBytes, sha512Hash);
 
                     if (!instrumentationDAO.checkIfApkAlreadyInstrumented(sha512Hash)) {
-                        InstrumentationRunner instrumentationRunner = new InstrumentationRunner(alignedApkPath, processBuilder, apkBytes, sha512Hash);
+                        InstrumentationRunner instrumentationRunner = new InstrumentationRunner(alignedApkPath, processBuilder, apkBytes, sha512Hash, true);
                         ExecutorService executorService = Executors.newSingleThreadExecutor();
                         executorService.execute(instrumentationRunner);
                         executorService.shutdown();

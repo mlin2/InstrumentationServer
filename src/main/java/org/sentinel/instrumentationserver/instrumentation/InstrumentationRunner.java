@@ -69,7 +69,7 @@ public class InstrumentationRunner implements Runnable {
     }
 
     public InstrumentationRunner(String alignedApkPath, ProcessBuilder processBuilder,
-                                 byte[] apkFile, String sha512Hash) {
+                                 byte[] apkFile, String sha512Hash, boolean saveMetadata) {
         this.alignedApkPath = alignedApkPath;
         this.processBuilder = processBuilder;
         this.apkFile = apkFile;
@@ -77,7 +77,7 @@ public class InstrumentationRunner implements Runnable {
         this.logo = null;
         this.appName = null;
         this.packageName = null;
-        this.saveMetadata = false;
+        this.saveMetadata = saveMetadata;
     }
 
     /**
