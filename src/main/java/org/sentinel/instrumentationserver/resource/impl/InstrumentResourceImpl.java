@@ -3,8 +3,7 @@ package org.sentinel.instrumentationserver.resource.impl;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.sentinel.instrumentationserver.InstrumentationDAO;
-import org.sentinel.instrumentationserver.Main;
+import org.sentinel.instrumentationserver.instrumentation.InstrumentationDAO;
 import org.sentinel.instrumentationserver.generated.model.Apk;
 import org.sentinel.instrumentationserver.generated.model.Apks;
 import org.sentinel.instrumentationserver.generated.model.Error;
@@ -62,7 +61,7 @@ public class InstrumentResourceImpl implements InstrumentResource {
         InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
 
         if (!instrumentationDAO.checkIfApkAlreadyInstrumented(sha512Hash)) {
-            InstrumentationManager instrumentationManager = new InstrumentationManager(Main.timeoutForInstrumentation);
+            InstrumentationManager instrumentationManager = new InstrumentationManager();
             instrumentationManager.instrumentWithMetadata(sourceFile, sinkFile,
                     easyTaintWrapperSource, apkFileBytes, sha512Hash, logoBytes, appName, packageName, makeAppPublic);
         }
@@ -88,7 +87,7 @@ public class InstrumentResourceImpl implements InstrumentResource {
         InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
 
         if (!instrumentationDAO.checkIfApkAlreadyInstrumented(sha512Hash)) {
-            InstrumentationManager instrumentationManager = new InstrumentationManager(Main.timeoutForInstrumentation);
+            InstrumentationManager instrumentationManager = new InstrumentationManager();
             instrumentationManager.instrument(sourceFile, sinkFile,
                     easyTaintWrapperSource, apkFileBytes, sha512Hash);
         }
@@ -106,7 +105,6 @@ public class InstrumentResourceImpl implements InstrumentResource {
 
         InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
         byte[] apkFile = instrumentationDAO.retrieveInstrumentedApkFromDatabase(apkHash);
-        System.out.println(apkFile);
         if (apkFile.length == 0) {
             return GetInstrumentByApkHashResponse.withJsonNotFound(new Error().withMsg("APK file not stored in the database"));
         }

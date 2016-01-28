@@ -1,8 +1,8 @@
 package org.sentinel.instrumentationserver.resource.impl;
 
-import org.sentinel.instrumentationserver.InstrumentationDAO;
 import org.sentinel.instrumentationserver.generated.model.MetadataList;
 import org.sentinel.instrumentationserver.generated.workaround.MetadataResource;
+import org.sentinel.instrumentationserver.metadata.MetadataDAO;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -15,18 +15,19 @@ import javax.ws.rs.Produces;
 public class MetadataResourceImpl implements MetadataResource {
     @Override
     public GetMetadataAllResponse getMetadataAll() throws Exception {
-        InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
-        MetadataList metadataList = instrumentationDAO.getAllMetadata();
+        MetadataDAO metadataDAO = MetadataDAO.getInstance();
+        MetadataList metadataList = metadataDAO.getAllMetadata();
 
         return GetMetadataAllResponse.withJsonOK(metadataList);
     }
 
     @Override
     public GetMetadataInstrumentedResponse getMetadataInstrumented() throws Exception {
-        InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
-        MetadataList metadataList = instrumentationDAO.getInstrumentedMetadata();
+        MetadataDAO metadataDAO = MetadataDAO.getInstance();
+        MetadataList metadataList = metadataDAO.getInstrumentedMetadata();
 
-        return GetMetadataInstrumentedResponse.withJsonOK(metadataList);    }
+        return GetMetadataInstrumentedResponse.withJsonOK(metadataList);
+    }
 
     @Override
     @GET
@@ -35,8 +36,8 @@ public class MetadataResourceImpl implements MetadataResource {
             "image/png"
     })
     public GetMetadataLogoByApkHashResponse getMetadataLogoByApkHash(@PathParam("apkHash") String apkHash) throws Exception {
-        InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
-        byte[] logoFile = instrumentationDAO.retrieveLogoFromDatabase(apkHash);
+        MetadataDAO metadataDAO = MetadataDAO.getInstance();
+        byte[] logoFile = metadataDAO.retrieveLogoFromDatabase(apkHash);
         return GetMetadataLogoByApkHashResponse.withFormdataOK(logoFile);
     }
 }

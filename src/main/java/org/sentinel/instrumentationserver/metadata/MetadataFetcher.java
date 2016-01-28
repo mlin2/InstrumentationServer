@@ -1,6 +1,7 @@
 package org.sentinel.instrumentationserver.metadata;
 
-import org.sentinel.instrumentationserver.InstrumentationDAO;
+import org.sentinel.instrumentationserver.DAOBase;
+import org.sentinel.instrumentationserver.instrumentation.InstrumentationDAO;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -26,13 +27,13 @@ public class MetadataFetcher {
             Document document = parseXML(urlConnection.getInputStream());
             NodeList nodelist = document.getElementsByTagName("application");
 
-            InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
+            MetadataDAO metadataDAO = MetadataDAO.getInstance();
 
-            for(int i = 0; i < nodelist.getLength(); i++) {
-                instrumentationDAO.connectToDatabase();
+            for (int i = 0; i < nodelist.getLength(); i++) {
+                metadataDAO.connectToDatabase();
                 //System.out.println(nodelist.item(i).getTextContent());
-                instrumentationDAO.saveMetadataFromXml(nodelist.item(i));
-                instrumentationDAO.disconnectFromDatabase();
+                metadataDAO.saveMetadataFromXml(nodelist.item(i));
+                metadataDAO.disconnectFromDatabase();
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();

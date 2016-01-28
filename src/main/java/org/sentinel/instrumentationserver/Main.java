@@ -6,6 +6,8 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.ini4j.Ini;
+import org.sentinel.instrumentationserver.instrumentation.InstrumentationDAO;
+import org.sentinel.instrumentationserver.instrumentation.RemoteRepositoryApkFetcherRunner;
 import org.sentinel.instrumentationserver.metadata.MetadataFetcher;
 import org.sentinel.instrumentationserver.resource.impl.InstrumentResourceImpl;
 import org.sentinel.instrumentationserver.resource.impl.MetadataResourceImpl;
@@ -21,11 +23,15 @@ import java.util.List;
  */
 public class Main {
 
+    private static Ini configIni;
+
     // Base URI the Grizzly HTTP server will listen on
     public static String BASE_URI;
     public static String FORWARDED_URI;
-    private static Ini configIni;
-    public static long timeoutForInstrumentation;
+    public static long TIMEOUT_FOR_INSTRUMENTATION_IN_MINUTES;
+    public static String DATA_DIRECTORY;
+    public static String INSTRUMENTATION_SCRIPT_ABSOLUTE_PATH;
+    public static boolean DELETE_DATA_DIRECTORY;
 
     /**
      * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
@@ -50,7 +56,7 @@ public class Main {
         }
         BASE_URI = serverUrl + ":" + serverPort + "/";
 
-        if(forwardedPort != 0) {
+        if (forwardedPort != 0) {
             FORWARDED_URI = serverUrl + ":" + forwardedPort + "/";
         } else {
             FORWARDED_URI = BASE_URI;
@@ -59,19 +65,14 @@ public class Main {
         // exposing the Jersey application at BASE_URI
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
     }
-    
-    public static void main(String[] args) throws IOException {
-        try {
-            configIni = new Ini(new File("config.ini"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        Ini ini = new Ini(new File("config.ini"));
-        Integer timeoutForInstrumentationInMinutes = ini.get("Fetch", "TimeoutForApkFetchingInMinutes", Integer.class);
-        // Convert the timeout in minutes of the config file to milliseconds to give the instrumentation process
-        // a timeout.
-        timeoutForInstrumentation = timeoutForInstrumentationInMinutes * 60;
+    public static void main(String[] args) throws IOException {
+
+        configIni = new Ini(new File("config.ini"));
+        TIMEOUT_FOR_INSTRUMENTATION_IN_MINUTES = configIni.get("Fetch", "TimeoutForApkFetchingInMinutes", Integer.class);
+        INSTRUMENTATION_SCRIPT_ABSOLUTE_PATH = configIni.get("Instrumentation Script", "InstrumentationScriptPath", String.class);
+        DATA_DIRECTORY = configIni.get("Directories", "DataDirectory", String.class);
+        DELETE_DATA_DIRECTORY = configIni.get("Directories", "DeleteDataDirectory", Boolean.class);
 
         InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
         instrumentationDAO.initializeDatabase();
@@ -82,13 +83,12 @@ public class Main {
             metadataFetcher.fetch();
         }
 
-        if(configIni.get("Fetch", "fetchFdroidApks", Boolean.class)) {
+        if (configIni.get("Fetch", "fetchFdroidApks", Boolean.class)) {
             List<String> repositoryApkLinks = instrumentationDAO.getAllRepositoryApkLinks();
-            RemoteRepositoryApkFetcherRunner remoteRepositoryApkFetcherRunner = new RemoteRepositoryApkFetcherRunner(timeoutForInstrumentation,repositoryApkLinks);
+            RemoteRepositoryApkFetcherRunner remoteRepositoryApkFetcherRunner = new RemoteRepositoryApkFetcherRunner(repositoryApkLinks);
             Thread thread = new Thread(remoteRepositoryApkFetcherRunner);
             thread.start();
         }
-
 
         final HttpServer server = startServer();
         System.out.println(String.format("Jersey app started with WADL available at "

@@ -1,21 +1,24 @@
-package org.sentinel.instrumentationserver;
+package org.sentinel.instrumentationserver.instrumentation;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.sentinel.instrumentationserver.Main;
+import org.sentinel.instrumentationserver.metadata.MetadataDAO;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.security.MessageDigest;
 
 /**
  * The instrumentation runner builds the command to execute the instrumentation.sh bash script, executes it and outputs information
  * while running the instrumentation.
  */
-public class InstrumentationWorker extends Thread {
+public class InstrumentationRunner implements Runnable {
 
-    private final Process process;
-
-    public Integer exit;
+    /**
+     * The process builder for the instrumentation process calling the bash script.
+     */
+    private final ProcessBuilder processBuilder;
 
     /**
      * The sha512sum of the APK before instrumentation and signing.
@@ -53,10 +56,10 @@ public class InstrumentationWorker extends Thread {
      */
     private String alignedApkPath;
 
-    public InstrumentationWorker(String alignedApkPath, Process process,
+    public InstrumentationRunner(String alignedApkPath, ProcessBuilder processBuilder,
                                  byte[] apkFile, String sha512Hash, byte[] logo, String appName, String packageName, boolean saveMetadata) {
         this.alignedApkPath = alignedApkPath;
-        this.process = process;
+        this.processBuilder = processBuilder;
         this.apkFile = apkFile;
         this.sha512Hash = sha512Hash;
         this.logo = logo;
@@ -65,16 +68,16 @@ public class InstrumentationWorker extends Thread {
         this.saveMetadata = saveMetadata;
     }
 
-    public InstrumentationWorker(String alignedApkPath, Process process,
-                                 byte[] apkFile, String sha512Hash, boolean saveMetadata) {
+    public InstrumentationRunner(String alignedApkPath, ProcessBuilder processBuilder,
+                                 byte[] apkFile, String sha512Hash) {
         this.alignedApkPath = alignedApkPath;
-        this.process = process;
+        this.processBuilder = processBuilder;
         this.apkFile = apkFile;
         this.sha512Hash = sha512Hash;
         this.logo = null;
         this.appName = null;
         this.packageName = null;
-        this.saveMetadata = saveMetadata;
+        this.saveMetadata = false;
     }
 
     /**
@@ -84,20 +87,26 @@ public class InstrumentationWorker extends Thread {
     @Override
     public void run() {
         try {
+            Process process = processBuilder.start();
             printLines(" STDOUT:", process.getInputStream());
             printLines(" STDERR:", process.getErrorStream());
-            exit = process.waitFor();
             System.out.println(" EXITVALUE " + process.exitValue());
 
 
             InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
+            MetadataDAO metadataDAO = MetadataDAO.getInstance();
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
             String sha256hash = String.valueOf(Hex.encodeHex(messageDigest.digest(apkFile)));
-            instrumentationDAO.saveInstrumentedApkToDatabase(alignedApkPath, sha512Hash, sha256hash);
-            if (saveMetadata) {
-                instrumentationDAO.saveMetadataForInstrumentedApk(logo, appName, packageName, sha512Hash, sha256hash);
-            }
+            InputStream instrumentedApkInputstream = new FileInputStream((new File(alignedApkPath)));
+            byte[] apkBytes = IOUtils.toByteArray(instrumentedApkInputstream);
 
+            instrumentationDAO.saveInstrumentedApkToDatabase(apkBytes, sha512Hash, sha256hash);
+            if (saveMetadata) {
+                metadataDAO.saveMetadataForInstrumentedApk(logo, appName, packageName, sha512Hash, sha256hash);
+            }
+            if (Main.DELETE_DATA_DIRECTORY) {
+                FileUtils.deleteDirectory(new File(Main.DATA_DIRECTORY + "/" + sha512Hash));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

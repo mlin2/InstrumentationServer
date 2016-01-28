@@ -10,14 +10,15 @@ echo The instrumentation service starts now
 
 echo Be ready $USER !
 
-cd InstrumentationPEP
+# Go to InstrumentationDependencies directory to provide all dependencies for DroidForce.jar
+cd InstrumentationDependencies
 
 pwd
 
 ls
-
-echo timeout ${13} java -jar ../DroidForce.jar -sourceFile $1 -sinkFile $2 -taintWrapper $4 -apkFile $3 -o $5 -j -androidJar $6
-timeout ${13} java -jar ../DroidForce.jar -sourceFile $1 -sinkFile $2 -taintWrapper $4 -apkFile $3 -o $5 -j -androidJar $6
+# "m" as a suffix of the timeout argument tells timeout that the time is in minutes
+echo timeout ${13}m java -jar /home/sebastian/code/sentinel/InstrumentationServer/DroidForce.jar -sourceFile $1 -sinkFile $2 -taintWrapper $4 -apkFile $3 -o $5 -j -androidJar $6
+/usr/bin/timeout ${13}m java -jar /home/sebastian/code/sentinel/InstrumentationServer/DroidForce.jar -sourceFile $1 -sinkFile $2 -taintWrapper $4 -apkFile $3 -o $5 -j -androidJar $6
 if [ $? == 0 ]; then
 
 echo The APK gets now signed
