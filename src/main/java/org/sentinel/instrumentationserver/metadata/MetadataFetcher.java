@@ -1,7 +1,6 @@
 package org.sentinel.instrumentationserver.metadata;
 
-import org.sentinel.instrumentationserver.DAOBase;
-import org.sentinel.instrumentationserver.instrumentation.InstrumentationDAO;
+import org.sentinel.instrumentationserver.Main;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -16,12 +15,16 @@ import java.net.URL;
 import java.net.URLConnection;
 
 /**
- * Created by sebastian on 1/26/16.
+ * This class fetches metadata from the metadata XML url.
  */
 public class MetadataFetcher {
+
+    /**
+     * Fetch the xml and use every application element for metadata fetching.
+     */
     public void fetch() {
         try {
-            URL url = new URL("https://f-droid.org/repo/index.xml");
+            URL url = new URL(Main.METADATA_XML_URI);
             URLConnection urlConnection = url.openConnection();
 
             Document document = parseXML(urlConnection.getInputStream());
@@ -31,8 +34,7 @@ public class MetadataFetcher {
 
             for (int i = 0; i < nodelist.getLength(); i++) {
                 metadataDAO.connectToDatabase();
-                //System.out.println(nodelist.item(i).getTextContent());
-                metadataDAO.saveMetadataFromXml(nodelist.item(i));
+                metadataDAO.saveMetadataFromXmlElement(nodelist.item(i));
                 metadataDAO.disconnectFromDatabase();
             }
         } catch (MalformedURLException e) {
@@ -43,6 +45,9 @@ public class MetadataFetcher {
 
     }
 
+    /**
+     * Create a document from the input stream.
+     */
     private Document parseXML(InputStream inputStream) {
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();

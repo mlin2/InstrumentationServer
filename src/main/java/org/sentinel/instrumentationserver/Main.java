@@ -6,8 +6,8 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.ini4j.Ini;
-import org.sentinel.instrumentationserver.instrumentation.InstrumentationDAO;
 import org.sentinel.instrumentationserver.instrumentation.RemoteRepositoryApkFetcherRunner;
+import org.sentinel.instrumentationserver.metadata.MetadataDAO;
 import org.sentinel.instrumentationserver.metadata.MetadataFetcher;
 import org.sentinel.instrumentationserver.resource.impl.InstrumentResourceImpl;
 import org.sentinel.instrumentationserver.resource.impl.MetadataResourceImpl;
@@ -19,24 +19,50 @@ import java.util.List;
 
 /**
  * This Main class handles the configuration and startup of the Jersey framework, Grizzly NIO framework and
- * instrumentation database components.
+ * instrumentation server components.
  */
 public class Main {
 
+    /**
+     * Object representation of the config.ini file.
+     */
     private static Ini configIni;
 
-    // Base URI the Grizzly HTTP server will listen on
+    /**
+     * Base URI the Grizzly HTTP server will listen on.
+     */
     public static String BASE_URI;
-    public static String FORWARDED_URI;
-    public static long TIMEOUT_FOR_INSTRUMENTATION_IN_MINUTES;
-    public static String DATA_DIRECTORY;
-    public static boolean DELETE_DATA_DIRECTORY;
 
     /**
-     * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
-     *
-     * @return Grizzly HTTP server.
+     * In case a port is forwarded e.g. to make the server publicly available, use this URI.
      */
+    public static String FORWARDED_URI;
+
+    /**
+     * After this time in minutes the instrumentation process will be cancelled.
+     */
+    public static long TIMEOUT_FOR_INSTRUMENTATION_IN_MINUTES;
+
+    /**
+     * The directory the instrumentation jobs will be stored in.
+     */
+    public static String INSTRUMENTATION_JOB_DIRECTORY;
+
+    /**
+     * Whether the instrumentation job directory should be deleted after instrumentation.
+     */
+    public static boolean DELETE_INSTRUMENTATION_JOB_DIRECTORY;
+
+    /**
+     * The Uniform Resource Identifier to the XML the metadata is retrieved from. The XML has to be in the format
+     * of https://f-droid.org/repo/index.xml.
+     */
+    public static String METADATA_XML_URI;
+
+    /**
+     * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application, read the config file
+     * and start all the configured services.
+     * */
     public static HttpServer startServer() {
         // create a resource config that scans for JAX-RS resources and providers
         // in org.sentinel.instrumentationserver package
@@ -69,11 +95,12 @@ public class Main {
 
         configIni = new Ini(new File("config.ini"));
         TIMEOUT_FOR_INSTRUMENTATION_IN_MINUTES = configIni.get("Fetch", "TimeoutForApkFetchingInMinutes", Integer.class);
-        DATA_DIRECTORY = configIni.get("Directories", "DataDirectory", String.class);
-        DELETE_DATA_DIRECTORY = configIni.get("Directories", "DeleteDataDirectory", Boolean.class);
+        INSTRUMENTATION_JOB_DIRECTORY = configIni.get("Directories", "DataDirectory", String.class);
+        DELETE_INSTRUMENTATION_JOB_DIRECTORY = configIni.get("Directories", "DeleteDataDirectory", Boolean.class);
+        METADATA_XML_URI = configIni.get("Fetch", "metadataXmlURL", String.class);
 
-        InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
-        instrumentationDAO.initializeDatabase();
+        MetadataDAO metadataDAO = MetadataDAO.getInstance();
+        metadataDAO.initializeDatabase();
 
         if (configIni.get("Fetch", "fetchMetadata", Boolean.class)) {
             System.out.println("Fetching metadata...");
@@ -82,7 +109,7 @@ public class Main {
         }
 
         if (configIni.get("Fetch", "fetchFdroidApks", Boolean.class)) {
-            List<String> repositoryApkLinks = instrumentationDAO.getAllRepositoryApkLinks();
+            List<String> repositoryApkLinks = metadataDAO.getAllRepositoryApkLinks();
             RemoteRepositoryApkFetcherRunner remoteRepositoryApkFetcherRunner = new RemoteRepositoryApkFetcherRunner(repositoryApkLinks);
             Thread thread = new Thread(remoteRepositoryApkFetcherRunner);
             thread.start();

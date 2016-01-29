@@ -42,7 +42,7 @@ public class InstrumentationDAO extends DAOBase {
         connectToDatabase();
 
         try {
-            String sqlStatementGetAllApkPackageNamesAndHashes = QueryBuilder.getQueryToInsertInstrumentedApkIntoDatabase();
+            String sqlStatementGetAllApkPackageNamesAndHashes = QueryBuilder.getQueryToInsertInstrumentedApk();
             PreparedStatement preparedStatement = databaseConnection.prepareStatement(
                     sqlStatementGetAllApkPackageNamesAndHashes);
 
@@ -134,34 +134,6 @@ public class InstrumentationDAO extends DAOBase {
             e.printStackTrace();
         }
 
-        System.out.println(instrumentedApkHashes);
-
         return instrumentedApkHashes;
-    }
-
-    public List<String> getAllRepositoryApkLinks() {
-
-        connectToDatabase();
-
-        String sqlStatementGetAllRepositoryApkLinks = QueryBuilder.getQueryGetAllRepositoryApkLinks();
-        try {
-
-            Statement statement = databaseConnection.createStatement();
-
-            List<String> repositoryApkLinkList = new ArrayList<String>();
-            ResultSet resultSet = statement.executeQuery(sqlStatementGetAllRepositoryApkLinks);
-
-            while (resultSet.next()) {
-                String link = resultSet.getString("APPURL");
-                repositoryApkLinkList.add(link);
-            }
-            resultSet.close();
-            databaseConnection.close();
-            return repositoryApkLinkList;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }

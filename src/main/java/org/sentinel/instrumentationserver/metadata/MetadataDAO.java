@@ -52,9 +52,7 @@ public class MetadataDAO extends DAOBase {
      */
     public MetadataList getAllMetadata() {
         connectToDatabase();
-        //List<Long> metadataIdList = getAllDatabaseMetadataIds();
-
-        String sqlStatementGetAllMetadata = QueryBuilder.getQueryGetAllMetadata();
+        String sqlStatementGetAllMetadata = QueryBuilder.getQueryToGetAllMetadata();
         try {
 
             Statement statement = databaseConnection.createStatement();
@@ -85,14 +83,17 @@ public class MetadataDAO extends DAOBase {
         return null;
     }
 
+    /**
+     * Save the metadata for an app that was instrumented and is specified to be made public.
+     */
     public void saveMetadataForInstrumentedApk(byte[] logo, String appName, String packageName, String sha512Hash, String sha256hash) {
         connectToDatabase();
         long apkId = getApkId(sha512Hash);
-        String sqlStatementSaveMetadataForInstrumentedApk = QueryBuilder.getQuerySaveMetadataForInstrumentedApk();
+        String sqlStatementSaveMetadataForInstrumentedApk = QueryBuilder.getQueryToSaveMetadataForInstrumentedApk();
 
         try {
             if (getMetadataId(sha256hash) != -1) {
-                String sqlStatementSaveInstrumentedApkIdForExistingMetadata = QueryBuilder.getQueryLinkApkToMetadata();
+                String sqlStatementSaveInstrumentedApkIdForExistingMetadata = QueryBuilder.getQueryToLinkApkToMetadata();
                 PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatementSaveInstrumentedApkIdForExistingMetadata);
                 preparedStatement.setLong(1, apkId);
                 preparedStatement.setString(2, sha512Hash);
@@ -117,6 +118,9 @@ public class MetadataDAO extends DAOBase {
         }
     }
 
+    /**
+     * Fetch the logo specified in the URL.
+     */
     private byte[] fetchLogo(String logoUrl) {
         try {
             if (logoUrl != null) {
@@ -133,10 +137,13 @@ public class MetadataDAO extends DAOBase {
         return new byte[0];
     }
 
+    /**
+     * Get the ID of the data set of metadata for a SHA 256 hash of an APK.
+     */
     private long getMetadataId(String sha256Hash) {
         connectToDatabase();
 
-        String sqlStatementGetMetadataIdFromHash = QueryBuilder.getQueryGetMetadataIdFromHash();
+        String sqlStatementGetMetadataIdFromHash = QueryBuilder.getQueryToGetMetadataIdFromSha256Hash();
         try {
             PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatementGetMetadataIdFromHash);
             preparedStatement.setString(1, sha256Hash);
@@ -157,10 +164,13 @@ public class MetadataDAO extends DAOBase {
         return -1;
     }
 
-    public void saveMetadataFromXml(Node applicationNode) {
+    /**
+     * Save the metadata from one XML element in the database.
+     */
+    public void saveMetadataFromXmlElement(Node applicationNode) {
         String LOGO_BASE_URI = "https://f-droid.org/repo/icons/";
         String APP_BASE_URI = "https://f-droid.org/repo/";
-        String sqlStatementGetMetadataFromXml = QueryBuilder.getQueryToSaveMetadataFromXml();
+        String sqlStatementGetMetadataFromXml = QueryBuilder.getQueryToSaveMetadataFromXmlElement();
         PreparedStatement preparedStatement = null;
         try {
             preparedStatement = databaseConnection.prepareStatement(sqlStatementGetMetadataFromXml);
@@ -238,7 +248,6 @@ public class MetadataDAO extends DAOBase {
 
             byte[] logoBytes = fetchLogo(logo);
 
-
             preparedStatement.setBytes(1, logoBytes);
             preparedStatement.setString(2, appName);
             preparedStatement.setString(3, packageName);
@@ -258,13 +267,16 @@ public class MetadataDAO extends DAOBase {
             preparedStatement.setString(17, sha256Hash);
 
             preparedStatement.execute();
-
             preparedStatement.close();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Retrieve the logo from the database.
+     */
     public byte[] retrieveLogoFromDatabase(String apkHash) {
         connectToDatabase();
 
@@ -274,8 +286,8 @@ public class MetadataDAO extends DAOBase {
             preparedStatement.setString(1, apkHash);
 
             ResultSet resultSet = preparedStatement.executeQuery();
-
             byte[] logo = resultSet.getBytes(1);
+
             resultSet.close();
             preparedStatement.close();
             databaseConnection.close();
@@ -291,9 +303,8 @@ public class MetadataDAO extends DAOBase {
      */
     public MetadataList getInstrumentedMetadata() {
         connectToDatabase();
-        //List<Long> metadataIdList = getAllDatabaseMetadataIds();
 
-        String sqlStatementGetInstrumentedMetadata = QueryBuilder.getQueryGetInstrumentedMetadata();
+        String sqlStatementGetInstrumentedMetadata = QueryBuilder.getQueryToGetInstrumentedMetadata();
         try {
 
             Statement statement = databaseConnection.createStatement();
@@ -317,7 +328,37 @@ public class MetadataDAO extends DAOBase {
             }
             resultSet.close();
             databaseConnection.close();
+
             return new MetadataList().withMetadata(metadataList);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Get all the links to APKs from the metadata table.
+     */
+    public List<String> getAllRepositoryApkLinks() {
+
+        connectToDatabase();
+
+        String sqlStatementGetAllRepositoryApkLinks = QueryBuilder.getQueryToGetAllRepositoryApkLinks();
+        try {
+
+            Statement statement = databaseConnection.createStatement();
+
+            List<String> repositoryApkLinkList = new ArrayList<String>();
+            ResultSet resultSet = statement.executeQuery(sqlStatementGetAllRepositoryApkLinks);
+
+            while (resultSet.next()) {
+                String link = resultSet.getString("APPURL");
+                repositoryApkLinkList.add(link);
+            }
+            resultSet.close();
+            databaseConnection.close();
+            return repositoryApkLinkList;
 
         } catch (SQLException e) {
             e.printStackTrace();

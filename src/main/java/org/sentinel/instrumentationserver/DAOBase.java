@@ -2,6 +2,9 @@ package org.sentinel.instrumentationserver;
 
 import java.sql.*;
 
+/**
+ * Base class for all data access objects for the server.
+ */
 public abstract class DAOBase {
 
     /**
@@ -18,14 +21,9 @@ public abstract class DAOBase {
         connectToDatabase();
         System.out.println("Opened database successfully");
 
-        // TODO make this parameterized.
         try {
             statement = databaseConnection.createStatement();
 
-            // Used to test with fresh database.
-            //statement.executeUpdate(QueryBuilder.SQL_STATEMENT_DROP_TABLE_APKS);
-            // Used to test with fresh database.
-            //statement.executeUpdate(QueryBuilder.SQL_STATEMENT_DROP_TABLE_METADATA);
             statement.executeUpdate(QueryBuilder.SQL_STATEMENT_CREATE_TABLE_APKS_IF_NOT_EXISTS);
             statement.executeUpdate(QueryBuilder.SQL_STATEMENT_CREATE_TABLE_METADATA_IF_NOT_EXISTS);
             statement.close();
@@ -49,6 +47,9 @@ public abstract class DAOBase {
         }
     }
 
+    /**
+     * End an interaction with the database.
+     */
     public void disconnectFromDatabase() {
         try {
             databaseConnection.close();
@@ -57,10 +58,14 @@ public abstract class DAOBase {
         }
     }
 
+
+    /**
+     * Get the dataset ID in the database from the SHA 512 hash of the uninstrumented version of an APK.
+     */
     protected long getApkId(String sha512Hash) {
         connectToDatabase();
 
-        String sqlStatementGetApkIdFromHash = QueryBuilder.getQueryGetApkIdFromHash();
+        String sqlStatementGetApkIdFromHash = QueryBuilder.getQueryToGetApkIdFromHash();
         try {
             PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatementGetApkIdFromHash);
             preparedStatement.setString(1, sha512Hash);
@@ -75,7 +80,6 @@ public abstract class DAOBase {
             e.printStackTrace();
         }
 
-        //TODO handle this better
         return -1;
     }
 }

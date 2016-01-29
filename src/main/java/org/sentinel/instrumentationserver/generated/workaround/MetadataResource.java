@@ -10,12 +10,17 @@ import javax.ws.rs.core.Response;
 import org.sentinel.instrumentationserver.generated.model.Error;
 import org.sentinel.instrumentationserver.generated.model.MetadataList;
 
+/**
+ * Get metadata for instrumented APKs, all stored metadata and logos of APKs from their hash. The kinds of metadata
+ * saved are inspired from F-Droid (https://f-droid.org/). This file was generated but manually edited in order to
+ * return a binary blob of the image as a png.
+ */
 @Path("metadata")
 public interface MetadataResource {
 
 
     /**
-     * Retrieve a list of all the metadata of all instrumented apps
+     * Retrieve a list of all the metadata currently stored on the server.
      */
     @GET
     @Path("all")
@@ -27,7 +32,7 @@ public interface MetadataResource {
     ;
 
     /**
-     * Retrieve a list of all the metadata of all instrumented apps
+     * Retrieve a list of all the metadata of all instrumented apps currently stored on the server.
      */
     @GET
     @Path("instrumented")
@@ -39,9 +44,7 @@ public interface MetadataResource {
     ;
 
     /**
-     * Retrieve the logo of the APK corresponding to the hash.
-     *
-     * @param apkHash
+     * Retrieve the logo of the APK corresponding to the hash specified by "{apkHash}" with the .png extension.
      */
     @GET
     @Path("logo/{apkHash}.png")
@@ -54,7 +57,10 @@ public interface MetadataResource {
             throws Exception
     ;
 
-    public class GetMetadataAllResponse
+    /**
+     * The response for the /metadata/all resource. It returns a list of all the metadata on the server.
+     */
+    class GetMetadataAllResponse
             extends org.sentinel.instrumentationserver.generated.resource.support.ResponseWrapper {
 
 
@@ -62,9 +68,6 @@ public interface MetadataResource {
             super(delegate);
         }
 
-        /**
-         * @param entity
-         */
         public static MetadataResource.GetMetadataAllResponse withJsonOK(MetadataList entity) {
             Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "application/json");
             responseBuilder.entity(entity);
@@ -73,7 +76,12 @@ public interface MetadataResource {
 
     }
 
-    public class GetMetadataInstrumentedResponse
+    /**
+     * The response for the /metatdata/instrumented resource. It returns a list of all the metadata corresponding
+     * to instrumented APKs that are made public either because they were posted on /instrument/withMetadata and were
+     * specified to be made public or because they were fetched from the F-Droid repository.
+     */
+    class GetMetadataInstrumentedResponse
             extends org.sentinel.instrumentationserver.generated.resource.support.ResponseWrapper {
 
 
@@ -81,9 +89,6 @@ public interface MetadataResource {
             super(delegate);
         }
 
-        /**
-         * @param entity
-         */
         public static MetadataResource.GetMetadataInstrumentedResponse withJsonOK(MetadataList entity) {
             Response.ResponseBuilder responseBuilder = Response.status(200).header("Content-Type", "application/json");
             responseBuilder.entity(entity);
@@ -92,7 +97,10 @@ public interface MetadataResource {
 
     }
 
-    public class GetMetadataLogoByApkHashResponse
+    /**
+     * The response for the /metadata/logo/apkhash resource that returns a binary dump with the .png extension.
+     */
+    class GetMetadataLogoByApkHashResponse
             extends org.sentinel.instrumentationserver.generated.resource.support.ResponseWrapper {
 
 
@@ -100,26 +108,12 @@ public interface MetadataResource {
             super(delegate);
         }
 
-        /**
-         * @param logoFile
-         */
         public static MetadataResource.GetMetadataLogoByApkHashResponse withFormdataOK(byte[] logoFile) {
             Response.ResponseBuilder responseBuilder = Response.status(200);
             responseBuilder.entity(logoFile);
             return new MetadataResource.GetMetadataLogoByApkHashResponse(responseBuilder.build());
         }
 
-        /**
-         * e.g. {
-         * "errorId": "1",
-         * "msg": "Bad format"
-         * }
-         *
-         * @param entity {
-         *               "errorId": "1",
-         *               "msg": "Bad format"
-         *               }
-         */
         public static MetadataResource.GetMetadataLogoByApkHashResponse withJsonNotFound(Error entity) {
             Response.ResponseBuilder responseBuilder = Response.status(404).header("Content-Type", "application/json");
             responseBuilder.entity(entity);

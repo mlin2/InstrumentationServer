@@ -104,8 +104,8 @@ public class InstrumentationRunner implements Runnable {
             if (saveMetadata) {
                 metadataDAO.saveMetadataForInstrumentedApk(logo, appName, packageName, sha512Hash, sha256hash);
             }
-            if (Main.DELETE_DATA_DIRECTORY) {
-                FileUtils.deleteDirectory(new File(Main.DATA_DIRECTORY + "/" + sha512Hash));
+            if (Main.DELETE_INSTRUMENTATION_JOB_DIRECTORY) {
+                FileUtils.deleteDirectory(new File(Main.INSTRUMENTATION_JOB_DIRECTORY + "/" + sha512Hash));
             }
         } catch (Exception e) {
             e.printStackTrace();

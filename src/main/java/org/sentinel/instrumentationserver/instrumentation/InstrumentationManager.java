@@ -32,7 +32,7 @@ public class InstrumentationManager {
      * Instrument an APK without saving metadata in the database.
      */
     public void instrument(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource, byte[] apkFile, String sha512Hash) {
-        String alignedApkPath = Main.DATA_DIRECTORY + "/" + sha512Hash + "/alignedApk.apk";
+        String alignedApkPath = Main.INSTRUMENTATION_JOB_DIRECTORY + "/" + sha512Hash + "/alignedApk.apk";
         ProcessBuilder processBuilder = createInstrumentationProcessBuilder(sourceFile,
                 sinkFile, easyTaintWrapperSource, apkFile, sha512Hash);
 
@@ -49,7 +49,7 @@ public class InstrumentationManager {
                                        byte[] logo, String appName, String packageName, boolean makeAppPublic) {
 
 
-        String alignedApkPath = Main.DATA_DIRECTORY + "/" + sha512Hash + "/alignedApk.apk";
+        String alignedApkPath = Main.INSTRUMENTATION_JOB_DIRECTORY + "/" + sha512Hash + "/alignedApk.apk";
         ProcessBuilder processBuilder = createInstrumentationProcessBuilder(sourceFile,
                 sinkFile, easyTaintWrapperSource, apkFile, sha512Hash);
 
@@ -78,7 +78,7 @@ public class InstrumentationManager {
                     byte[] apkBytes = IOUtils.toByteArray(urlConnection.getInputStream());
                     String sha512Hash = String.valueOf(Hex.encodeHex(messageDigest.digest(apkBytes)));
 
-                    String instrumentationJobsDirectory = Main.DATA_DIRECTORY;
+                    String instrumentationJobsDirectory = Main.INSTRUMENTATION_JOB_DIRECTORY;
                     String alignedApkPath = instrumentationJobsDirectory + "/" + sha512Hash + "/alignedApk.apk";
 
                     ProcessBuilder processBuilder = createInstrumentationProcessBuilder(
@@ -108,8 +108,6 @@ public class InstrumentationManager {
         }
     }
 
-    //TODO do something better than returning null
-
     /**
      * Build the process builder for the instrumentation and set all necessary variables.
      */
@@ -117,7 +115,7 @@ public class InstrumentationManager {
                                                                InputStream sinkFile, InputStream easyTaintWrapperSource,
                                                                byte[] apkFile, String sha512Hash) {
 
-        String instrumentationJobPath = Main.DATA_DIRECTORY + "/" + sha512Hash;
+        String instrumentationJobPath = Main.INSTRUMENTATION_JOB_DIRECTORY + "/" + sha512Hash;
         File instrumentationJobDirectory = new File(instrumentationJobPath);
         try {
             if (instrumentationJobDirectory.exists()) {
