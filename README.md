@@ -32,7 +32,8 @@ cd InstrumentationServer
 
 Create a config.ini:
 The instrumentation server needs a file named config.ini in the project root folder. This is an example of what the config file must include:
-
+```
+```
 # The URL the server will run on
 [URL]
 ServerUrl: http://your.domain.org
@@ -43,6 +44,11 @@ ServerPort: 8080
 # The port the server can be accessed at from the sentinel app. If no value is set, the server assumes ServerPort to be the #port that is accessable by the sentinel app.
 ForwardedPort: 443
 
+# The directory the database and files created for instrumentation should be saved.
+[Directories]
+DataDirectory: e.g. InstrumentationServer/instrumentation-server-jobs
+DeleteDataDirectory: true
+
 [Android Jar]
 # Path to android Jar
 androidJarPath: your/path/android-sdk-linux/platforms/android-19/android.jar
@@ -52,10 +58,13 @@ keyStorePath: your/path/Keystores/instrumentationKeystore
 alias: instrumentationKeystore
 storePass: your_password
 
-[Android]
-# Android Platform Path
-PlatformsPath: yourpath/android-sdk-linux/platforms/
+[Fetch]
+fetchMetadata:  false
+fetchFdroidApks: true
+TimeoutForApkFetchingInMinutes: 1
+```
 
+```
 Run the following commands from your terminal
 
 This will download all the maven dependencies and execute the tests.
