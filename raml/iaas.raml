@@ -1,9 +1,8 @@
 #%RAML 1.0
 title: IaaS
 # description: Instrumentation As A Service
-version: v1
+version: v2
 protocols: [http, https]
-baseUri: http://sentinel.org/{version}
 schemas:
   - error: !include schemas/error-schema.json
   - apk: !include schemas/apk-schema.json
@@ -16,7 +15,7 @@ schemas:
       post:
         description: |
           Instrument an apk file based on the configuration files attached
-          to the request
+          to the request and store its logo, app name and package name in the database.
         body:
           multipart/form-data:
             formParameters:
@@ -117,7 +116,7 @@ schemas:
               example: !include examples/error-response.json
   /all:
     description: |
-      Instrument apk based on the configuration files contained in the request.
+      A count and list of the SHA 512 hashes of all instrumented APKs
     get:
       description: Retrieve a list of instrumented apk files
       responses:
@@ -129,7 +128,7 @@ schemas:
   /{apkHash}:
     get:
       description: |
-        Retrieve the location of the instrumented apk file based its hash sum value.
+        Retrieve the binary dump of the instrumented apk file based on its hash sum value.
         The hash value is calculated from the non-instrumented apk with sha512.
       responses:
         200:
