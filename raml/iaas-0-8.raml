@@ -1,8 +1,8 @@
-#%RAML 1.0
+#%RAML 0.8
 title: IaaS
 # description: Instrumentation As A Service
 version: v2
-protocols: [http, https]
+protocols: [HTTP, HTTPS]
 schemas:
   - error: !include schemas/error-schema.json
   - apk: !include schemas/apk-schema.json
@@ -121,8 +121,9 @@ schemas:
         The hash value is calculated from the non-instrumented apk with sha512.
       responses:
         200:
-          body:
-              binary/octet-stream:
+            body:
+             binary/octet-stream:
+
         404:
           body:
             application/json:
