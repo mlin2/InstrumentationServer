@@ -12,7 +12,6 @@ import org.sentinel.instrumentationserver.metadata.MetadataFetcher;
 import org.sentinel.instrumentationserver.resource.impl.InstrumentResourceImpl;
 import org.sentinel.instrumentationserver.resource.impl.MetadataResourceImpl;
 
-import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -25,11 +24,6 @@ import java.util.concurrent.Executors;
  * instrumentation server components.
  */
 public class Main {
-
-    /**
-     * Object representation of the config.ini file.
-     */
-    private static Ini configIni;
 
     /**
      * Base URI the Grizzly HTTP server will listen on.
@@ -66,7 +60,7 @@ public class Main {
      * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application, read the config file
      * and start all the configured services.
      *
-     * @param configIni*/
+     */
     public static HttpServer startServer(Ini configIni) {
         // create a resource config that scans for JAX-RS resources and providers
         // in org.sentinel.instrumentationserver package
@@ -97,7 +91,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        configIni = new Ini(new File("config.ini"));
+        Ini configIni = new Ini(new File("config.ini"));
         TIMEOUT_FOR_INSTRUMENTATION_IN_MINUTES = configIni.get("Fetch", "TimeoutForApkFetchingInMinutes", Integer.class);
         INSTRUMENTATION_JOB_DIRECTORY = configIni.get("Directories", "DataDirectory", String.class);
         DELETE_INSTRUMENTATION_JOB_DIRECTORY = configIni.get("Directories", "DeleteDataDirectory", Boolean.class);

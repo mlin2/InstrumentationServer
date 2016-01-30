@@ -10,7 +10,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -28,18 +27,21 @@ public class MetadataFetcher {
             URLConnection urlConnection = url.openConnection();
 
             Document document = parseXML(urlConnection.getInputStream());
-            NodeList nodelist = document.getElementsByTagName("application");
+            NodeList nodelist = null;
+            if (document != null) {
+                nodelist = document.getElementsByTagName("application");
+            }
 
             MetadataDAO metadataDAO = new MetadataDAO();
 
             metadataDAO.connectToDatabase();
-            for (int i = 0; i < nodelist.getLength(); i++) {
-                metadataDAO.saveMetadataFromXmlElement(nodelist.item(i));
+            if (nodelist != null) {
+                for (int i = 0; i < nodelist.getLength(); i++) {
+                    metadataDAO.saveMetadataFromXmlElement(nodelist.item(i));
+                }
             }
             metadataDAO.disconnectFromDatabase();
 
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -52,17 +54,12 @@ public class MetadataFetcher {
     private Document parseXML(InputStream inputStream) {
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder documentBuilder = null;
+        DocumentBuilder documentBuilder;
         try {
             documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            Document document = documentBuilder.parse(inputStream);
 
-            return document;
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+            return documentBuilder.parse(inputStream);
+        } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
         }
 

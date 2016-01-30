@@ -12,7 +12,6 @@ import org.w3c.dom.Node;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -108,8 +107,6 @@ public class MetadataDAO extends DAOBase {
                 InputStream inputStream = new BufferedInputStream(url.openStream());
                 return IOUtils.toByteArray(inputStream);
             }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -151,7 +148,7 @@ public class MetadataDAO extends DAOBase {
         String LOGO_BASE_URI = "https://f-droid.org/repo/icons/";
         String APP_BASE_URI = "https://f-droid.org/repo/";
         String sqlStatementGetMetadataFromXml = QueryBuilder.getQueryToSaveMetadataFromXmlElement();
-        PreparedStatement preparedStatement = null;
+        PreparedStatement preparedStatement;
         try {
             preparedStatement = databaseConnection.prepareStatement(sqlStatementGetMetadataFromXml);
 
@@ -167,7 +164,7 @@ public class MetadataDAO extends DAOBase {
             String summary = null;
             String description = null;
             String license = null;
-            String appcategory = null;
+            String appCategory = null;
             String webLink = null;
             String sourceCodeLink = null;
             String marketVersion = null;
@@ -199,7 +196,7 @@ public class MetadataDAO extends DAOBase {
                 license = applicationNodeElement.getElementsByTagName("license").item(0).getTextContent();
             }
             if (applicationNodeElement.getElementsByTagName("category").item(0) != null) {
-                appcategory = applicationNodeElement.getElementsByTagName("category").item(0).getTextContent();
+                appCategory = applicationNodeElement.getElementsByTagName("category").item(0).getTextContent();
             }
             if (applicationNodeElement.getElementsByTagName("web").item(0) != null) {
                 webLink = applicationNodeElement.getElementsByTagName("web").item(0).getTextContent();
@@ -235,7 +232,7 @@ public class MetadataDAO extends DAOBase {
             preparedStatement.setString(5, summary);
             preparedStatement.setString(6, description);
             preparedStatement.setString(7, license);
-            preparedStatement.setString(8, appcategory);
+            preparedStatement.setString(8, appCategory);
             preparedStatement.setString(9, webLink);
             preparedStatement.setString(10, sourceCodeLink);
             preparedStatement.setString(11, marketVersion);

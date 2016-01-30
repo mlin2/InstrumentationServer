@@ -18,7 +18,7 @@ public class InstrumentationDAO extends DAOBase {
     /**
      * Store the APK and its hash in the database.
      */
-    public void saveInstrumentedApkToDatabase(byte[] apkBytes, String sha512Hash, String sha256hash) {
+    public void saveInstrumentedApkToDatabase(byte[] apkBytes, String sha512Hash) {
         connectToDatabase();
 
         try {

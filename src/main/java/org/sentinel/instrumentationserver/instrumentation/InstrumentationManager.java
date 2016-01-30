@@ -5,11 +5,9 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.ini4j.Ini;
-import org.ini4j.InvalidFileFormatException;
 import org.sentinel.instrumentationserver.Main;
 
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
@@ -17,7 +15,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -64,15 +61,13 @@ public class InstrumentationManager {
      */
     public void instrumentFromLinks(List<String> repositoryApkLinks) {
         {
-            Iterator<String> repositoryApkLinkIterator = repositoryApkLinks.iterator();
-            while (repositoryApkLinkIterator.hasNext()) {
+            for (String repositoryApkLink : repositoryApkLinks) {
                 InstrumentationDAO instrumentationDAO = new InstrumentationDAO();
-                String apkLink = repositoryApkLinkIterator.next();
                 try {
                     FileInputStream sourceFile = new FileInputStream("InstrumentationDependencies/files/catSources_Short.txt");
                     FileInputStream sinkFile = new FileInputStream("InstrumentationDependencies/files/catSinks_Short.txt");
                     FileInputStream easyTaintWrapperSource = new FileInputStream("InstrumentationDependencies/files/EasyTaintWrapperSource.txt");
-                    URL url = new URL(apkLink);
+                    URL url = new URL(repositoryApkLink);
                     URLConnection urlConnection = url.openConnection();
                     byte[] apkBytes = IOUtils.toByteArray(urlConnection.getInputStream());
 
@@ -94,15 +89,7 @@ public class InstrumentationManager {
                             executorService.awaitTermination(Main.TIMEOUT_FOR_INSTRUMENTATION_IN_MINUTES, TimeUnit.MINUTES);
                         }
                     }
-                } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
+                } catch (NoSuchAlgorithmException | InterruptedException | IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -152,10 +139,6 @@ public class InstrumentationManager {
                     outputDirectoryAbsolutePath, androidJarDirectory, instrumentedApkPath, keystoreDirectory,
                     keystoreAlias, keystorePass, signedApkPath, alignedApkPath, String.valueOf(Main.TIMEOUT_FOR_INSTRUMENTATION_IN_MINUTES));
 
-        } catch (InvalidFileFormatException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -62,13 +62,6 @@ public class QueryBuilder {
     }
 
     /**
-     * Save metadata for an APK that is already instrumented by linking to the ID of the APK in the APKS table.
-     */
-    public static String getQueryToSaveMetadataForInstrumentedApk() {
-        return "INSERT INTO METADATA(LOGO, APPNAME, PACKAGENAME, APKID) VALUES(?, ?, ?, ?)";
-    }
-
-    /**
      * Get the APKID from the SHA 512 hash.
      */
     public static String getQueryToGetApkIdFromHash() {
@@ -80,6 +73,20 @@ public class QueryBuilder {
      */
     public static String getQueryToGetAllMetadata() {
         return "SELECT * FROM METADATA";
+    }
+
+    /**
+     * Get the metadata of all instrumented APKs on the server that should be made public.
+     */
+    public static String getQueryToGetInstrumentedMetadata() {
+        return "SELECT * FROM METADATA m WHERE m.APKID IS NOT NULL";
+    }
+
+    /**
+     * Save metadata for an APK that is already instrumented by linking to the ID of the APK in the APKS table.
+     */
+    public static String getQueryToSaveMetadataForInstrumentedApk() {
+        return "INSERT INTO METADATA(LOGO, APPNAME, PACKAGENAME, APKID) VALUES(?, ?, ?, ?)";
     }
 
     /**
@@ -120,12 +127,5 @@ public class QueryBuilder {
      */
     public static String getQueryToGetAllRepositoryApkLinks() {
         return "SELECT APPURL FROM METADATA m WHERE m.APKID IS NULL";
-    }
-
-    /**
-     * Get the metadata of all instrumented APKs on the server that should be made public.
-     */
-    public static String getQueryToGetInstrumentedMetadata() {
-        return "SELECT * FROM METADATA m WHERE m.APKID IS NOT NULL";
     }
 }

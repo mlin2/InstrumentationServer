@@ -97,10 +97,10 @@ public class InstrumentationRunner implements Runnable {
             MetadataDAO metadataDAO = new MetadataDAO();
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
             String sha256hash = String.valueOf(Hex.encodeHex(messageDigest.digest(apkFile)));
-            InputStream instrumentedApkInputstream = new FileInputStream((new File(alignedApkPath)));
-            byte[] apkBytes = IOUtils.toByteArray(instrumentedApkInputstream);
+            InputStream instrumentedApkInputStream = new FileInputStream((new File(alignedApkPath)));
+            byte[] apkBytes = IOUtils.toByteArray(instrumentedApkInputStream);
 
-            instrumentationDAO.saveInstrumentedApkToDatabase(apkBytes, sha512Hash, sha256hash);
+            instrumentationDAO.saveInstrumentedApkToDatabase(apkBytes, sha512Hash);
             if (saveMetadata) {
                 metadataDAO.saveMetadataForInstrumentedApk(logo, appName, packageName, sha512Hash, sha256hash);
             }
