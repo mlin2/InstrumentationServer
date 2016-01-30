@@ -27,11 +27,17 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertArrayEquals;
 
+/**
+ * This class tests the parts of the server that handle the instrumentation.
+ */
 public class InstrumentationTest {
 
     private HttpServer server;
     private WebTarget target;
 
+    /**
+     * Set up the server for the test.
+     */
     @Before
     public void setUp() throws Exception {
         Ini configIni = new Ini(new File("src/test/java/org/sentinel/instrumentationserver/test-config.ini"));
@@ -43,28 +49,10 @@ public class InstrumentationTest {
         MetadataDAO metadataDAO = new MetadataDAO();
         metadataDAO.initializeDatabase();
 
-/*        System.out.println("Fetching metadata...");
-        MetadataFetcher metadataFetcher = new MetadataFetcher();
-        metadataFetcher.fetch();
-
-        List<String> repositoryApkLinks = metadataDAO.getAllRepositoryApkLinks();
-        ApkFetcherRunner apkFetcherRunner = new ApkFetcherRunner(repositoryApkLinks);
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.execute(apkFetcherRunner);
-        executorService.shutdown();*/
-
-        // start the server
         server = Main.startServer(configIni);
-        // create the client
         Client client = ClientBuilder.newBuilder()
                 .register(MultiPartFeature.class)
                 .build();
-
-        // uncomment the following line if you want to enable
-        // support for JSON in the client (you also have to uncomment
-        // dependency on jersey-media-json module in pom.xml and Main.startServer())
-        // --
-        // c.configuration().enable(new org.glassfish.jersey.media.json.JsonJaxbFeature());
 
         if (Main.FORWARDED_URI.equals("")) {
             target = client.target(Main.FORWARDED_URI);
@@ -74,13 +62,16 @@ public class InstrumentationTest {
 
     }
 
+    /**
+     * Shut down the server after the test.
+     */
     @After
     public void tearDown() throws Exception {
         server.shutdown();
     }
 
     /**
-     * Test to see that the message "Got it!" is sent in the response.
+     * This test is used for making sure the basic usecase of instrumenting an APK without metadata works.
      */
     @Test
     public void testInstrumentWithoutMetadata() {
@@ -111,7 +102,7 @@ public class InstrumentationTest {
             byte[] instrumentedApkResponse = apkResponse.readEntity(byte[].class);
 
             assertArrayEquals(IOUtils.toByteArray(new FileInputStream(
-                    "src/test/java/org/sentinel/instrumentationserver/instrumentation/kr.softgear.multiping_11-instrumented.apk")), instrumentedApkResponse);
+                    Main.INSTRUMENTATION_JOB_DIRECTORY + "/" + apkHash + "/alignedApk.apk")), instrumentedApkResponse);
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();

@@ -17,6 +17,7 @@ buildNumber.properties
 
 # Java
 *.class
+/src/test/java/org/sentinel/instrumentationserver/instrumentation/test-config.ini
 *.jar
 *.war
 *.ear
