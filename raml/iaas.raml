@@ -24,13 +24,11 @@ schemas:
                 displayName: Source File
                 type: file
                 required: true
-                example: !include examples/sources.txt
               sinkFile:
                 description: Sink file containing the android's sink methods
                 displayName: Sink File
                 type: file
                 required: true
-                example: !include examples/sinks.txt
               easyTaintWrapperSource:
                 description: |
                   Taint wrapper file containing the android's package names that
@@ -38,7 +36,6 @@ schemas:
                 displayName: Easy Taint Wrapper File
                 type: file
                 required: true
-                example: !include examples/taintWrapperSource.txt
               apkFile:
                 description: APK file that should be instrumented
                 displayName: APK File
@@ -64,12 +61,10 @@ schemas:
             body:
               application/json:
                 schema: apk
-                example: !include examples/instrumentPost-response.json
           400:
             body:
               application/json:
                 schema: error
-                example: !include examples/error-response.json
   /withoutmetadata:
     post:
       description: |
@@ -83,13 +78,11 @@ schemas:
               displayName: Source File
               type: file
               required: true
-              example: !include examples/sources.txt
             sinkFile:
               description: Sink file containing the android's sink methods
               displayName: Sink File
               type: file
               required: true
-              example: !include examples/sinks.txt
             easyTaintWrapperSource:
               description: |
                 Taint wrapper file containing the android's package names that
@@ -97,7 +90,6 @@ schemas:
               displayName: Easy Taint Wrapper File
               type: file
               required: true
-              example: !include examples/taintWrapperSource.txt
             apkFile:
               description: APK file that should be instrumented
               displayName: APK File
@@ -108,12 +100,10 @@ schemas:
           body:
             application/json:
               schema: apk
-              example: !include examples/instrumentPost-response.json
         400:
           body:
             application/json:
               schema: error
-              example: !include examples/error-response.json
   /all:
     description: |
       A count and list of the SHA 512 hashes of all instrumented APKs
@@ -124,7 +114,6 @@ schemas:
           body:
             application/json:
               schema: apks
-              example: !include examples/instrumentGet-response.json
   /{apkHash}:
     get:
       description: |
@@ -144,7 +133,6 @@ schemas:
           body:
             application/json:
               schema: error
-              example: !include examples/error-response.json
 /metadata:
   /all:
     description: |
@@ -185,4 +173,3 @@ schemas:
             body:
               application/json:
                 schema: error
-                example: !include examples/error-response.json
