@@ -290,7 +290,7 @@ public class MetadataDAO extends DAOBase {
 
             resultSet.close();
             preparedStatement.close();
-            databaseConnection.close();
+            disconnectFromDatabase();
             return logo;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -327,9 +327,9 @@ public class MetadataDAO extends DAOBase {
                 metadataList.add(metadatum);
             }
             resultSet.close();
-            databaseConnection.close();
+            disconnectFromDatabase();
 
-            return new MetadataList().withMetadata(metadataList);
+            return new MetadataList().withMetadata(metadataList).withSize(metadataList.size());
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -357,7 +357,7 @@ public class MetadataDAO extends DAOBase {
                 repositoryApkLinkList.add(link);
             }
             resultSet.close();
-            databaseConnection.close();
+            disconnectFromDatabase();
             return repositoryApkLinkList;
 
         } catch (SQLException e) {

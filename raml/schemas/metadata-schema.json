@@ -14,8 +14,7 @@
       "required": true
     },
     "hash": {
-      "type": "string",
-      "required": true
+      "type": "string"
     },
     "appName": {
       "type": "string",

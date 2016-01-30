@@ -3,8 +3,7 @@
   "type": "object",
   "properties": {
     "errorId": {
-      "type": "number",
-      "required": true
+      "type": "number"
     },
     "msg": {
       "type": "string",

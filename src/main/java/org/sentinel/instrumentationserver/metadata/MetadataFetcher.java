@@ -32,11 +32,12 @@ public class MetadataFetcher {
 
             MetadataDAO metadataDAO = MetadataDAO.getInstance();
 
+            metadataDAO.connectToDatabase();
             for (int i = 0; i < nodelist.getLength(); i++) {
-                metadataDAO.connectToDatabase();
                 metadataDAO.saveMetadataFromXmlElement(nodelist.item(i));
-                metadataDAO.disconnectFromDatabase();
             }
+            metadataDAO.disconnectFromDatabase();
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {

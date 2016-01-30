@@ -101,7 +101,7 @@ public class InstrumentationDAO extends DAOBase {
             }
             resultSet.close();
             preparedStatement.close();
-            databaseConnection.close();
+            disconnectFromDatabase();
             return alreadyInstrumented;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -129,7 +129,7 @@ public class InstrumentationDAO extends DAOBase {
             }
             resultSet.close();
             statement.close();
-            databaseConnection.close();
+            disconnectFromDatabase();
         } catch (SQLException e) {
             e.printStackTrace();
         }
