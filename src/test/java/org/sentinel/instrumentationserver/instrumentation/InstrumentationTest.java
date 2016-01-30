@@ -1,5 +1,8 @@
 package org.sentinel.instrumentationserver.instrumentation;
 
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.FileHeader;
 import org.apache.commons.io.IOUtils;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -23,9 +26,16 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.CRC32;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * This class tests the parts of the server that handle the instrumentation.
@@ -91,7 +101,6 @@ public class InstrumentationTest {
 
             formDataMultiPart.bodyPart(formDataBodyPartSourceFile).bodyPart(formDataBodyPartSinkFile).bodyPart(formDataBodyPartEasyTaintWrapperSource).bodyPart(formDataBodyPartApkFile);
 
-
             final javax.ws.rs.core.Response hashResponse = target.path("instrument/withoutmetadata").request().post(Entity.entity(formDataMultiPart, formDataMultiPart.getMediaType()));
             String apkHash = hashResponse.readEntity(Apk.class).getHash();
 
@@ -101,12 +110,41 @@ public class InstrumentationTest {
             final javax.ws.rs.core.Response apkResponse = target.path("instrument/" + apkHash).request().get();
             byte[] instrumentedApkResponse = apkResponse.readEntity(byte[].class);
 
-            assertArrayEquals(IOUtils.toByteArray(new FileInputStream(
+            CRC32 crc32 = new CRC32();
+            crc32.update(IOUtils.toByteArray(new FileInputStream("InstrumentationDependencies/resources/protect.png")));
+
+            net.lingala.zip4j.core.ZipFile zipFile = new ZipFile(new File(Main.INSTRUMENTATION_JOB_DIRECTORY + "/" + apkHash + "/alignedApk.apk"));
+            List<FileHeader> fileHeaders = zipFile.getFileHeaders();
+            Iterator<FileHeader> fileHeadersIterator = fileHeaders.iterator();
+
+            boolean shieldImageIncludedInApk = false;
+
+            while (fileHeadersIterator.hasNext()) {
+                FileHeader fileHeader = fileHeadersIterator.next();
+                if (fileHeader.getCrc32() == crc32.getValue()) {
+                    shieldImageIncludedInApk = true;
+                }
+            }
+
+            boolean bytesInResponseEqualInstrumentedApk = Arrays.equals(IOUtils.toByteArray(new FileInputStream(
                     Main.INSTRUMENTATION_JOB_DIRECTORY + "/" + apkHash + "/alignedApk.apk")), instrumentedApkResponse);
+
+            assertTrue(shieldImageIncludedInApk && bytesInResponseEqualInstrumentedApk);
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+        } catch (ZipException e) {
+            e.printStackTrace();
         }
+
+    }
+
+    /**
+     * Test whether the instrumented APK includes the file protect.png that can be found in
+     * InstrumentationDependencies/resources. This file is included in the instrumented APK by DroidForce.
+     */
+    @Test
+    public void testApkIncludesShieldImage() {
 
     }
 }
