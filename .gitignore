@@ -19,6 +19,7 @@ buildNumber.properties
 *.class
 /src/test/java/org/sentinel/instrumentationserver/instrumentation/test-config.ini
 *.jar
+/src/test/java/org/sentinel/instrumentationserver/test-config.ini
 *.war
 *.ear
 hs_err_pid*
