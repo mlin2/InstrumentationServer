@@ -16,26 +16,6 @@ import java.util.List;
 public class InstrumentationDAO extends DAOBase {
 
     /**
-     * The database manager.
-     */
-    private static InstrumentationDAO InstrumentationDAO;
-
-    protected InstrumentationDAO() {
-    }
-
-
-    /**
-     * Singleton pattern.
-     */
-    public static InstrumentationDAO getInstance() {
-        if (InstrumentationDAO == null) {
-            InstrumentationDAO = new InstrumentationDAO();
-        }
-
-        return InstrumentationDAO;
-    }
-
-    /**
      * Store the APK and its hash in the database.
      */
     public void saveInstrumentedApkToDatabase(byte[] apkBytes, String sha512Hash, String sha256hash) {
@@ -70,11 +50,15 @@ public class InstrumentationDAO extends DAOBase {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
+            if (!resultSet.isClosed()) {
             byte[] apk = resultSet.getBytes(1);
-            resultSet.close();
+
+                resultSet.close();
+                return apk;
+            }
             preparedStatement.close();
             databaseConnection.close();
-            return apk;
+            return new byte[0];
         } catch (SQLException e) {
             e.printStackTrace();
         }

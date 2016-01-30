@@ -5,10 +5,10 @@ import java.util.List;
 /**
  * This class fetches APKs for instrumentation in a separate thread.
  */
-public class RemoteRepositoryApkFetcherRunner implements Runnable {
+public class ApkFetcherRunner implements Runnable {
     List<String> repositoryApkLinks;
 
-    public RemoteRepositoryApkFetcherRunner(List<String> repositoryApkLinks) {
+    public ApkFetcherRunner(List<String> repositoryApkLinks) {
         this.repositoryApkLinks = repositoryApkLinks;
     }
 

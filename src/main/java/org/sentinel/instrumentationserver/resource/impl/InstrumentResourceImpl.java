@@ -25,7 +25,7 @@ import java.util.List;
 public class InstrumentResourceImpl implements InstrumentResource {
     @Override
     public InstrumentResource.GetInstrumentAllResponse getInstrumentAll() throws Exception {
-        InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
+        InstrumentationDAO instrumentationDAO = new InstrumentationDAO();
         List<String> allInstrumentedApkHashes = instrumentationDAO.getAllInstrumentedApkHashes();
         final Apks apks = new Apks().withSize(allInstrumentedApkHashes.size());
         Iterator<String> iterator = allInstrumentedApkHashes.iterator();
@@ -58,7 +58,7 @@ public class InstrumentResourceImpl implements InstrumentResource {
         // be closed after instrumentation.
         byte[] logoBytes = IOUtils.toByteArray(logo);
 
-        InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
+        InstrumentationDAO instrumentationDAO = new InstrumentationDAO();
 
         if (!instrumentationDAO.checkIfApkAlreadyInstrumented(sha512Hash)) {
             InstrumentationManager instrumentationManager = new InstrumentationManager();
@@ -84,7 +84,7 @@ public class InstrumentResourceImpl implements InstrumentResource {
         String sha512Hash = String.valueOf(Hex.encodeHex(messageDigest.digest(apkFileBytes)));
 
 
-        InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
+        InstrumentationDAO instrumentationDAO = new InstrumentationDAO();
 
         if (!instrumentationDAO.checkIfApkAlreadyInstrumented(sha512Hash)) {
             InstrumentationManager instrumentationManager = new InstrumentationManager();
@@ -103,7 +103,7 @@ public class InstrumentResourceImpl implements InstrumentResource {
     })
     public GetInstrumentByApkHashResponse getInstrumentByApkHash(@PathParam("apkHash") String apkHash) throws Exception {
 
-        InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
+        InstrumentationDAO instrumentationDAO = new InstrumentationDAO();
         byte[] apkFile = instrumentationDAO.retrieveInstrumentedApkFromDatabase(apkHash);
         if (apkFile.length == 0) {
             return GetInstrumentByApkHashResponse.withJsonNotFound(new Error().withMsg("APK file not stored in the database"));

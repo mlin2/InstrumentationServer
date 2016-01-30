@@ -6,16 +6,19 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.ini4j.Ini;
-import org.sentinel.instrumentationserver.instrumentation.RemoteRepositoryApkFetcherRunner;
+import org.sentinel.instrumentationserver.instrumentation.ApkFetcherRunner;
 import org.sentinel.instrumentationserver.metadata.MetadataDAO;
 import org.sentinel.instrumentationserver.metadata.MetadataFetcher;
 import org.sentinel.instrumentationserver.resource.impl.InstrumentResourceImpl;
 import org.sentinel.instrumentationserver.resource.impl.MetadataResourceImpl;
 
+import javax.ws.rs.ext.MessageBodyWriter;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * This Main class handles the configuration and startup of the Jersey framework, Grizzly NIO framework and
@@ -62,8 +65,9 @@ public class Main {
     /**
      * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application, read the config file
      * and start all the configured services.
-     * */
-    public static HttpServer startServer() {
+     *
+     * @param configIni*/
+    public static HttpServer startServer(Ini configIni) {
         // create a resource config that scans for JAX-RS resources and providers
         // in org.sentinel.instrumentationserver package
         final ResourceConfig rc = new ResourceConfig().packages("org.sentinel.instrumentationserver.resource");
@@ -99,7 +103,7 @@ public class Main {
         DELETE_INSTRUMENTATION_JOB_DIRECTORY = configIni.get("Directories", "DeleteDataDirectory", Boolean.class);
         METADATA_XML_URI = configIni.get("Fetch", "metadataXmlURL", String.class);
 
-        MetadataDAO metadataDAO = MetadataDAO.getInstance();
+        MetadataDAO metadataDAO = new MetadataDAO();
         metadataDAO.initializeDatabase();
 
         if (configIni.get("Fetch", "fetchMetadata", Boolean.class)) {
@@ -110,16 +114,17 @@ public class Main {
 
         if (configIni.get("Fetch", "fetchFdroidApks", Boolean.class)) {
             List<String> repositoryApkLinks = metadataDAO.getAllRepositoryApkLinks();
-            RemoteRepositoryApkFetcherRunner remoteRepositoryApkFetcherRunner = new RemoteRepositoryApkFetcherRunner(repositoryApkLinks);
-            Thread thread = new Thread(remoteRepositoryApkFetcherRunner);
-            thread.start();
+            ApkFetcherRunner apkFetcherRunner = new ApkFetcherRunner(repositoryApkLinks);
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
+            executorService.execute(apkFetcherRunner);
+            executorService.shutdown();
         }
 
-        final HttpServer server = startServer();
+        final HttpServer server = startServer(configIni);
         System.out.println(String.format("Jersey app started with WADL available at "
                 + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
 
         System.in.read();
-        server.stop();
+        server.shutdown();
     }
 }

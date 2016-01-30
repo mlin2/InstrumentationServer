@@ -66,7 +66,7 @@ public class InstrumentationManager {
         {
             Iterator<String> repositoryApkLinkIterator = repositoryApkLinks.iterator();
             while (repositoryApkLinkIterator.hasNext()) {
-                InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
+                InstrumentationDAO instrumentationDAO = new InstrumentationDAO();
                 String apkLink = repositoryApkLinkIterator.next();
                 try {
                     FileInputStream sourceFile = new FileInputStream("InstrumentationDependencies/files/catSources_Short.txt");
@@ -74,8 +74,9 @@ public class InstrumentationManager {
                     FileInputStream easyTaintWrapperSource = new FileInputStream("InstrumentationDependencies/files/EasyTaintWrapperSource.txt");
                     URL url = new URL(apkLink);
                     URLConnection urlConnection = url.openConnection();
-                    MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
                     byte[] apkBytes = IOUtils.toByteArray(urlConnection.getInputStream());
+
+                    MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
                     String sha512Hash = String.valueOf(Hex.encodeHex(messageDigest.digest(apkBytes)));
 
                     String instrumentationJobsDirectory = Main.INSTRUMENTATION_JOB_DIRECTORY;
@@ -140,7 +141,7 @@ public class InstrumentationManager {
             String androidJarDirectory = ini.get("Android Jar", "androidJarPath", String.class);
 
             String outputDirectoryAbsolutePath = instrumentationJobPath + "/sootOutput";
-            String instrumentedApkPath = instrumentationJobPath + "/" + fileToInstrumentInstrumentationJob.getName();
+            String instrumentedApkPath = outputDirectoryAbsolutePath + "/" + "fileToInstrument.apk";
             String signedApkPath = instrumentationJobPath + "/signedApk.apk";
             String alignedApkPath = instrumentationJobPath + "/alignedApk.apk";
 

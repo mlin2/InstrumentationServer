@@ -30,7 +30,7 @@ public class MetadataFetcher {
             Document document = parseXML(urlConnection.getInputStream());
             NodeList nodelist = document.getElementsByTagName("application");
 
-            MetadataDAO metadataDAO = MetadataDAO.getInstance();
+            MetadataDAO metadataDAO = new MetadataDAO();
 
             metadataDAO.connectToDatabase();
             for (int i = 0; i < nodelist.getLength(); i++) {

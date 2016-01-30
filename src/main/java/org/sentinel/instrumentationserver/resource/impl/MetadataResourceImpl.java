@@ -16,7 +16,7 @@ import javax.ws.rs.Produces;
 public class MetadataResourceImpl implements MetadataResource {
     @Override
     public GetMetadataAllResponse getMetadataAll() throws Exception {
-        MetadataDAO metadataDAO = MetadataDAO.getInstance();
+        MetadataDAO metadataDAO = new MetadataDAO();
         MetadataList metadataList = metadataDAO.getAllMetadata();
 
         return GetMetadataAllResponse.withJsonOK(metadataList);
@@ -24,7 +24,7 @@ public class MetadataResourceImpl implements MetadataResource {
 
     @Override
     public GetMetadataInstrumentedResponse getMetadataInstrumented() throws Exception {
-        MetadataDAO metadataDAO = MetadataDAO.getInstance();
+        MetadataDAO metadataDAO = new MetadataDAO();
         MetadataList metadataList = metadataDAO.getInstrumentedMetadata();
 
         return GetMetadataInstrumentedResponse.withJsonOK(metadataList);
@@ -37,7 +37,7 @@ public class MetadataResourceImpl implements MetadataResource {
             "image/png"
     })
     public GetMetadataLogoByApkHashResponse getMetadataLogoByApkHash(@PathParam("apkHash") String apkHash) throws Exception {
-        MetadataDAO metadataDAO = MetadataDAO.getInstance();
+        MetadataDAO metadataDAO = new MetadataDAO();
         byte[] logoFile = metadataDAO.retrieveLogoFromDatabase(apkHash);
         if (logoFile.length == 0) {
             return GetMetadataLogoByApkHashResponse.withJsonNotFound(new Error().withMsg("APK logo file not stored in the database"));

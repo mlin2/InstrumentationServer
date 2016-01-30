@@ -26,26 +26,6 @@ import java.util.List;
  */
 public class MetadataDAO extends DAOBase {
 
-    /**
-     * The database manager.
-     */
-    private static MetadataDAO MetadataDAO;
-
-    protected MetadataDAO() {
-    }
-
-
-    /**
-     * Singleton pattern.
-     */
-    public static MetadataDAO getInstance() {
-        if (MetadataDAO == null) {
-            MetadataDAO = new MetadataDAO();
-        }
-
-        return MetadataDAO;
-    }
-
 
     /**
      * Get the metadata of all apps saved on the server.

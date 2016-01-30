@@ -93,8 +93,8 @@ public class InstrumentationRunner implements Runnable {
             System.out.println(" EXITVALUE " + process.exitValue());
 
 
-            InstrumentationDAO instrumentationDAO = InstrumentationDAO.getInstance();
-            MetadataDAO metadataDAO = MetadataDAO.getInstance();
+            InstrumentationDAO instrumentationDAO = new InstrumentationDAO();
+            MetadataDAO metadataDAO = new MetadataDAO();
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
             String sha256hash = String.valueOf(Hex.encodeHex(messageDigest.digest(apkFile)));
             InputStream instrumentedApkInputstream = new FileInputStream((new File(alignedApkPath)));
