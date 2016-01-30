@@ -34,33 +34,53 @@ Create a config.ini:
 The instrumentation server needs a file named config.ini in the project root folder. This is an example of what the config file must include:
 ```
 ```
-# The URL the server will run on
 [URL]
+# The URL the server will run on
 ServerUrl: http://your.domain.org
 
-# The port the server will run on
+
 [Port]
+# The port the server will run on
 ServerPort: 8080
-# The port the server can be accessed at from the sentinel app. If no value is set, the server assumes ServerPort to be the #port that is accessable by the sentinel app.
+
+# In case the port to the server is forwarded, specify the forwarded port
 ForwardedPort: 443
 
-# The directory the database and files created for instrumentation should be saved.
+
 [Directories]
-DataDirectory: e.g. InstrumentationServer/instrumentation-server-jobs
+# The directory the files created for instrumentation should be saved in
+DataDirectory: e.g. your/path/InstrumentationServer/instrumentation-server-jobs
+
+# Should the directory be deleted after instrumentation?
 DeleteDataDirectory: true
+
 
 [Android Jar]
 # Path to android Jar
 androidJarPath: your/path/android-sdk-linux/platforms/android-19/android.jar
 
+
 [Keystore]
+# The absolute path to the keystore
 keyStorePath: your/path/Keystores/instrumentationKeystore
+
+# The alias of the keystore
 alias: instrumentationKeystore
+
+# The pass of the keystore
 storePass: your_password
 
+
 [Fetch]
+# Fetch APK metadata form F-Droid
 fetchMetadata:  false
-fetchFdroidApks: true
+
+# The URL to the xml to fetch the metadata from
+metadataXmlURL: https://example.org/index.xml
+
+# Fetch APKs from F-Droid
+fetchFdroidApks: false
+
 TimeoutForApkFetchingInMinutes: 1
 ```
 
