@@ -1,6 +1,7 @@
 # InstrumentationServer
 
 Instrumentation REST API backend as part of the project Sentinel https://github.com/lolobosse/DroidForce2.
+A lengthy report is given at https://github.com/lolobosse/DroidForce/wiki/All-report.
 
 This project uses the jersey Jax-RS implementation, a grizzly server and SQLite as a database management system.
 
