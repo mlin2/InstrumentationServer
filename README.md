@@ -5,6 +5,8 @@ All components of the project as submodules as well as a lengthy report are avai
 
 This instrumentation server implementation uses RAML to generate model classes and endpoints for the Jersey Jax-RS implementation, a Grizzly server and SQLite as a database management system.
 
+### Some information
+
 To generate the code [this library](https://github.com/mulesoft/raml-for-jax-rs) is used, however it has some important issues concerning the `Multipart` that were already reported [here](https://github.com/mulesoft/raml-for-jax-rs/issues/105)
 
 The code we generated from the RAML is JAX-RS code which is why [Jersey](https://jersey.java.net/) was chosen as an implementation of JAX-RS. Because an JAX-RS implementation is used as a framework for the backend of our instrumentation service, the instrumentation server can be integrated with other JAX-RS implementations or as a servlet with some modification. This allows the project to grow a lot and be easily extensible.
