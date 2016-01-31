@@ -4,9 +4,7 @@ Instrumentation REST API backend for Securing Android practical course.
 
 This project uses the jersey Jax-RS implementation, a grizzly server and SQLite as a database management system.
 
-Ok so here is how you run the server:
-
-
+** Dependencies
 We used this instrumentation server implementation on a debian server. For most of the dependencies below you can use "apt-get install packagename" to install them. 
 
 Install Java http://openjdk.java.net/install/
@@ -23,7 +21,7 @@ You already should have it if you are running linux but in case you don't, you a
 
 Furthermore, the operating system running the instrumentation server has to be able to run bash scripts.
 
-All of the above except the android jar file have to be added to your PATH. Alternatively, you can change the bash script "instrumentation.sh" in the projects root folder and add your individual program paths to all the programs that get executed there.
+All of the above except the android jar file have to be added to your [PATH] (http://unix.stackexchange.com/questions/26047/how-to-correctly-add-a-path-to-path). Alternatively, you can change the bash script "instrumentation.sh" in the projects root folder and add your individual program paths to all the programs that get executed there.
 
 The steps to get the server running are as follows:
 ```
