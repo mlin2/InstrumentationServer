@@ -1,6 +1,8 @@
 package org.sentinel.instrumentationserver;
 
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.ssl.SSLContextConfigurator;
+import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
@@ -69,13 +71,17 @@ public class Main {
         rc.register(MultiPartFeature.class);
         rc.register(JacksonFeature.class);
 
-        // Determine the URL and port the Grizzly HTTP server will listen on
         String serverUrl = configIni.get("URL", "ServerUrl", String.class);
         int serverPort = configIni.get("Port", "ServerPort", Integer.class);
         int forwardedPort = 0;
         if (configIni.get("Port", "ForwardedPort", Integer.class) != null) {
             forwardedPort = configIni.get("Port", "ForwardedPort", Integer.class);
         }
+        boolean enableHttps = configIni.get("Security", "enableHTTPS", Boolean.class);
+        String securityKeystoreFile = configIni.get("Security", "keyStorePathSecurity", String.class);
+        String securityKeystorePassword = configIni.get("Security", "storePassSecurity", String.class);
+
+
         BASE_URI = serverUrl + ":" + serverPort + "/";
 
         if (forwardedPort != 0) {
@@ -83,8 +89,14 @@ public class Main {
         } else {
             FORWARDED_URI = BASE_URI;
         }
-        // create and start a new instance of grizzly http server
-        // exposing the Jersey application at BASE_URI
+        if (enableHttps) {
+            SSLContextConfigurator sslContextConfigurator = new SSLContextConfigurator();
+            sslContextConfigurator.setKeyStoreFile(securityKeystoreFile);
+            sslContextConfigurator.setKeyPass(securityKeystorePassword);
+            SSLEngineConfigurator sslEngineConfigurator = new SSLEngineConfigurator(sslContextConfigurator).setClientMode(false);
+
+            return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc, true, sslEngineConfigurator);
+        }
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
     }
 
