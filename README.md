@@ -4,7 +4,7 @@ Instrumentation REST API backend for Securing Android practical course.
 
 This project uses the jersey Jax-RS implementation, a grizzly server and SQLite as a database management system.
 
-** Dependencies
+### Dependencies
 We used this instrumentation server implementation on a debian server. For most of the dependencies below you can use "apt-get install packagename" to install them. 
 
 Install Java http://openjdk.java.net/install/
