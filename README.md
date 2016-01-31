@@ -19,6 +19,8 @@ Install zipalign http://developer.android.com/tools/help/zipalign.html
 
 Get an android jar http://developer.android.com/sdk/index.html
 
+You already should have it if you are running linux but in case you don't, you also need timeout https://www.gnu.org/software/coreutils/manual/html_node/timeout-invocation.html
+
 Furthermore, the operating system running the instrumentation server has to be able to run bash scripts.
 
 All of the above except the android jar file have to be added to your PATH. Alternatively, you can change the bash script "instrumentation.sh" in the projects root folder and add your individual program paths to all the programs that get executed there.
