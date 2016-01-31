@@ -34,7 +34,7 @@ cd InstrumentationServer
 Create a config.ini:
 The instrumentation server needs a file named config.ini in the project root folder. This is an example of what the config file must include:
 ```
-```
+```ini
 [URL]
 # The URL the server will run on
 ServerUrl: http://your.domain.org
