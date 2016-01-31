@@ -19,7 +19,7 @@ Install zipalign http://developer.android.com/tools/help/zipalign.html
 
 Get an android jar http://developer.android.com/sdk/index.html
 
-You already should have it if you are running linux but in case you don't, you also need timeout https://www.gnu.org/software/coreutils/manual/html_node/timeout-invocation.html
+You already should have it if you are running linux but in case you don't, you also need the timeout program that can be found in gnu coreutils.
 
 Furthermore, the operating system running the instrumentation server has to be able to run bash scripts.
 
