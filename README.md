@@ -46,21 +46,20 @@ ServerUrl: http://your.domain.org
 ServerPort: 8080
 
 # In case the port to the server is forwarded, specify the forwarded port
-ForwardedPort: 443
+ForwardedPort: 8080
 
 
 [Directories]
 # The directory the files created for instrumentation should be saved in
-DataDirectory: e.g. your/path/InstrumentationServer/instrumentation-server-jobs
+DataDirectory: your/path/InstrumentationServer/instrumentation-server-jobs
 
 # Should the directory be deleted after instrumentation?
-DeleteDataDirectory: true
+DeleteDataDirectory: false
 
 
 [Android Jar]
 # Path to android Jar
 androidJarPath: your/path/android-sdk-linux/platforms/android-19/android.jar
-
 
 [Keystore]
 # The absolute path to the keystore
@@ -78,7 +77,7 @@ storePass: your_password
 fetchMetadata:  false
 
 # The URL to the xml to fetch the metadata from
-metadataXmlURL: https://example.org/index.xml
+metadataXmlURL: https://f-droid.org/repo/index.xml
 
 # Fetch APKs from F-Droid
 fetchFdroidApks: false
@@ -89,17 +88,14 @@ TimeoutForApkFetchingInMinutes: 1
 ```
 Run the following commands from your terminal
 
-This will download all the maven dependencies and execute the tests.
-mvn test
-
 This will generate all the model classes and endpoint interfaces defined in InstrumentationServer/raml/iaas.raml
 mvn raml:generate
 
-This command will run the server with the configuration specified in the config file.
+This will download all the maven dependencies and execute the tests.
+mvn test
+
+This command will run the server with the configuration specified in the config file "config.ini".
 mvn exec:java
 ```
-Limitations:
-* As the wrong resource interfaces were generated for form-data multiparts out of the RAML file, we introduced the workaround.resource package with the fixed resource interfaces.
-* The project both includes a jar of the DroidForce project and also a folder for the Instrumentation-PEPs files.
-* When trying to use XML model classes to map the metadata from an XML file, Jersey only returns request failed for all requests. This is probably the case because JacksonFeature registers both the Json model classes and the XML model classes. Therefore, a manual mapping of the XML metadata was implemented. This may be improved by registering a custom ObjectMapper.
+
 
