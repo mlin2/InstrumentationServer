@@ -93,7 +93,12 @@ public class Main {
             SSLContextConfigurator sslContextConfigurator = new SSLContextConfigurator();
             sslContextConfigurator.setKeyStoreFile(securityKeystoreFile);
             sslContextConfigurator.setKeyPass(securityKeystorePassword);
+            sslContextConfigurator.setSecurityProtocol("TLS");
+            sslContextConfigurator.setKeyPass(securityKeystorePassword);
+
+
             SSLEngineConfigurator sslEngineConfigurator = new SSLEngineConfigurator(sslContextConfigurator).setClientMode(false).setNeedClientAuth(false);
+            System.out.println(sslContextConfigurator.validateConfiguration());
 
             return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc, true, sslEngineConfigurator);
         }
