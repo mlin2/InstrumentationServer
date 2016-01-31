@@ -59,7 +59,6 @@ public class Main {
     /**
      * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application, read the config file
      * and start all the configured services.
-     *
      */
     public static HttpServer startServer(Ini configIni) {
         // create a resource config that scans for JAX-RS resources and providers

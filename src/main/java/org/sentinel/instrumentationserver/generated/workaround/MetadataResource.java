@@ -20,18 +20,6 @@ public interface MetadataResource {
 
 
     /**
-     * Retrieve a list of all the metadata currently stored on the server.
-     */
-    @GET
-    @Path("all")
-    @Produces({
-            "application/json"
-    })
-    MetadataResource.GetMetadataAllResponse getMetadataAll()
-            throws Exception
-    ;
-
-    /**
      * Retrieve a list of all the metadata of all instrumented apps currently stored on the server.
      */
     @GET
@@ -40,6 +28,18 @@ public interface MetadataResource {
             "application/json"
     })
     MetadataResource.GetMetadataInstrumentedResponse getMetadataInstrumented()
+            throws Exception
+    ;
+
+    /**
+     * Retrieve a list of all the metadata currently stored on the server.
+     */
+    @GET
+    @Path("all")
+    @Produces({
+            "application/json"
+    })
+    MetadataResource.GetMetadataAllResponse getMetadataAll()
             throws Exception
     ;
 

@@ -63,6 +63,45 @@ public class MetadataDAO extends DAOBase {
     }
 
     /**
+     * Get the metadata of all instrumented apps saved on the server.
+     */
+    public MetadataList getInstrumentedMetadata() {
+        connectToDatabase();
+
+        String sqlStatementGetInstrumentedMetadata = QueryBuilder.getQueryToGetInstrumentedMetadata();
+        try {
+
+            Statement statement = databaseConnection.createStatement();
+
+            List<Metadatum> metadataList = new ArrayList<Metadatum>();
+            ResultSet resultSet = statement.executeQuery(sqlStatementGetInstrumentedMetadata);
+
+            while (resultSet.next()) {
+                String sha512Hash = resultSet.getString("HASH");
+                Metadatum metadatum = new Metadatum().withDownloadUrl(Main.FORWARDED_URI + "instrument/" + sha512Hash)
+                        .withLogoUrl(Main.FORWARDED_URI + "metadata/logo/" + sha512Hash + ".png").
+                                withAppName(resultSet.getString("APPNAME")).withPackageName(resultSet.getString("PACKAGENAME"))
+                        .withAppUrl(resultSet.getString("APPURL")).withHash(sha512Hash)
+                        .withSummary(resultSet.getString("SUMMARY")).withDescription(resultSet.getString("DESCRIPTION"))
+                        .withLicense(resultSet.getString("LICENSE")).withAppCategory(resultSet.getString("APPCATEGORY"))
+                        .withWebLink(resultSet.getString("WEBLINK")).withSourceCodeLink(resultSet.getString("SOURCECODELINK"))
+                        .withMarketVersion(resultSet.getString("MARKETVERSION")).withSha256hash(resultSet.getString("SHA256HASH"))
+                        .withSizeInBytes(resultSet.getDouble("SIZEINBYTES")).withSdkVersion(resultSet.getString("SDKVERSION"))
+                        .withPermissions(resultSet.getString("PERMISSIONS")).withFeatures(resultSet.getString("FEATURES"));
+                metadataList.add(metadatum);
+            }
+            resultSet.close();
+            disconnectFromDatabase();
+
+            return new MetadataList().withMetadata(metadataList).withSize(metadataList.size());
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
      * Save the metadata for an app that was instrumented and is specified to be made public.
      */
     public void saveMetadataForInstrumentedApk(byte[] logo, String appName, String packageName, String sha512Hash, String sha256hash) {
@@ -98,23 +137,6 @@ public class MetadataDAO extends DAOBase {
     }
 
     /**
-     * Fetch the logo specified in the URL.
-     */
-    private byte[] fetchLogo(String logoUrl) {
-        try {
-            if (logoUrl != null) {
-                URL url = new URL(logoUrl);
-                InputStream inputStream = new BufferedInputStream(url.openStream());
-                return IOUtils.toByteArray(inputStream);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return new byte[0];
-    }
-
-    /**
      * Get the ID of the data set of metadata for a SHA 256 hash of an APK.
      */
     private long getMetadataId(String sha256Hash) {
@@ -137,8 +159,60 @@ public class MetadataDAO extends DAOBase {
             e.printStackTrace();
         }
 
-        //TODO handle this better
         return -1;
+    }
+
+    /**
+     * Retrieve the logo from the database.
+     */
+    public byte[] retrieveLogoFromDatabase(String apkHash) {
+        connectToDatabase();
+
+        try {
+            String sqlStatementGetLogoFromHash = QueryBuilder.getQueryToRetrieveLogoFile();
+            PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatementGetLogoFromHash);
+            preparedStatement.setString(1, apkHash);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            byte[] logo = resultSet.getBytes(1);
+
+            resultSet.close();
+            preparedStatement.close();
+            disconnectFromDatabase();
+            return logo;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Get all the links to APKs from the metadata table.
+     */
+    public List<String> getAllRepositoryApkLinks() {
+
+        connectToDatabase();
+
+        String sqlStatementGetAllRepositoryApkLinks = QueryBuilder.getQueryToGetAllRepositoryApkLinks();
+        try {
+
+            Statement statement = databaseConnection.createStatement();
+
+            List<String> repositoryApkLinkList = new ArrayList<String>();
+            ResultSet resultSet = statement.executeQuery(sqlStatementGetAllRepositoryApkLinks);
+
+            while (resultSet.next()) {
+                String link = resultSet.getString("APPURL");
+                repositoryApkLinkList.add(link);
+            }
+            resultSet.close();
+            disconnectFromDatabase();
+            return repositoryApkLinkList;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
@@ -252,95 +326,20 @@ public class MetadataDAO extends DAOBase {
     }
 
     /**
-     * Retrieve the logo from the database.
+     * Fetch the logo specified in the URL.
      */
-    public byte[] retrieveLogoFromDatabase(String apkHash) {
-        connectToDatabase();
-
+    private byte[] fetchLogo(String logoUrl) {
         try {
-            String sqlStatementGetLogoFromHash = QueryBuilder.getQueryToRetrieveLogoFile();
-            PreparedStatement preparedStatement = databaseConnection.prepareStatement(sqlStatementGetLogoFromHash);
-            preparedStatement.setString(1, apkHash);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            byte[] logo = resultSet.getBytes(1);
-
-            resultSet.close();
-            preparedStatement.close();
-            disconnectFromDatabase();
-            return logo;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * Get the metadata of all instrumented apps saved on the server.
-     */
-    public MetadataList getInstrumentedMetadata() {
-        connectToDatabase();
-
-        String sqlStatementGetInstrumentedMetadata = QueryBuilder.getQueryToGetInstrumentedMetadata();
-        try {
-
-            Statement statement = databaseConnection.createStatement();
-
-            List<Metadatum> metadataList = new ArrayList<Metadatum>();
-            ResultSet resultSet = statement.executeQuery(sqlStatementGetInstrumentedMetadata);
-
-            while (resultSet.next()) {
-                String sha512Hash = resultSet.getString("HASH");
-                Metadatum metadatum = new Metadatum().withDownloadUrl(Main.FORWARDED_URI + "instrument/" + sha512Hash)
-                        .withLogoUrl(Main.FORWARDED_URI + "metadata/logo/" + sha512Hash + ".png").
-                                withAppName(resultSet.getString("APPNAME")).withPackageName(resultSet.getString("PACKAGENAME"))
-                        .withAppUrl(resultSet.getString("APPURL")).withHash(sha512Hash)
-                        .withSummary(resultSet.getString("SUMMARY")).withDescription(resultSet.getString("DESCRIPTION"))
-                        .withLicense(resultSet.getString("LICENSE")).withAppCategory(resultSet.getString("APPCATEGORY"))
-                        .withWebLink(resultSet.getString("WEBLINK")).withSourceCodeLink(resultSet.getString("SOURCECODELINK"))
-                        .withMarketVersion(resultSet.getString("MARKETVERSION")).withSha256hash(resultSet.getString("SHA256HASH"))
-                        .withSizeInBytes(resultSet.getDouble("SIZEINBYTES")).withSdkVersion(resultSet.getString("SDKVERSION"))
-                        .withPermissions(resultSet.getString("PERMISSIONS")).withFeatures(resultSet.getString("FEATURES"));
-                metadataList.add(metadatum);
+            if (logoUrl != null) {
+                URL url = new URL(logoUrl);
+                InputStream inputStream = new BufferedInputStream(url.openStream());
+                return IOUtils.toByteArray(inputStream);
             }
-            resultSet.close();
-            disconnectFromDatabase();
-
-            return new MetadataList().withMetadata(metadataList).withSize(metadataList.size());
-
-        } catch (SQLException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
-    }
 
-    /**
-     * Get all the links to APKs from the metadata table.
-     */
-    public List<String> getAllRepositoryApkLinks() {
-
-        connectToDatabase();
-
-        String sqlStatementGetAllRepositoryApkLinks = QueryBuilder.getQueryToGetAllRepositoryApkLinks();
-        try {
-
-            Statement statement = databaseConnection.createStatement();
-
-            List<String> repositoryApkLinkList = new ArrayList<String>();
-            ResultSet resultSet = statement.executeQuery(sqlStatementGetAllRepositoryApkLinks);
-
-            while (resultSet.next()) {
-                String link = resultSet.getString("APPURL");
-                repositoryApkLinkList.add(link);
-            }
-            resultSet.close();
-            disconnectFromDatabase();
-            return repositoryApkLinkList;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return new byte[0];
     }
 
 

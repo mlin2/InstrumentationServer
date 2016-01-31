@@ -23,21 +23,6 @@ import java.util.List;
  * edited manually in order to accept form-data MultiParts.
  */
 public class InstrumentResourceImpl implements InstrumentResource {
-    @Override
-    public InstrumentResource.GetInstrumentAllResponse getInstrumentAll() throws Exception {
-        InstrumentationDAO instrumentationDAO = new InstrumentationDAO();
-        List<String> allInstrumentedApkHashes = instrumentationDAO.getAllInstrumentedApkHashes();
-        final Apks apks = new Apks().withSize(allInstrumentedApkHashes.size());
-        Iterator<String> iterator = allInstrumentedApkHashes.iterator();
-        while (iterator.hasNext()) {
-            String hashOfCurrentApk = iterator.next();
-            apks.getApks().add(new Apk().withHash(hashOfCurrentApk));
-            iterator.remove();
-        }
-
-        return GetInstrumentAllResponse.withJsonOK(apks);
-    }
-
     @POST
     @Path("withmetadata")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -54,7 +39,7 @@ public class InstrumentResourceImpl implements InstrumentResource {
         byte[] apkFileBytes = IOUtils.toByteArray(apkFile);
         String sha512Hash = String.valueOf(Hex.encodeHex(messageDigest.digest(apkFileBytes)));
 
-        // Save the logo as an array of bytes because the InputStream for the logo will
+        // Save the logo as an array of bytes because the InputStream for the logo can
         // be closed after instrumentation.
         byte[] logoBytes = IOUtils.toByteArray(logo);
 
@@ -109,5 +94,20 @@ public class InstrumentResourceImpl implements InstrumentResource {
             return GetInstrumentByApkHashResponse.withJsonNotFound(new Error().withMsg("APK file not stored in the database"));
         }
         return GetInstrumentByApkHashResponse.withOK(apkFile);
+    }
+
+    @Override
+    public InstrumentResource.GetInstrumentAllResponse getInstrumentAll() throws Exception {
+        InstrumentationDAO instrumentationDAO = new InstrumentationDAO();
+        List<String> allInstrumentedApkHashes = instrumentationDAO.getAllInstrumentedApkHashes();
+        final Apks apks = new Apks().withSize(allInstrumentedApkHashes.size());
+        Iterator<String> iterator = allInstrumentedApkHashes.iterator();
+        while (iterator.hasNext()) {
+            String hashOfCurrentApk = iterator.next();
+            apks.getApks().add(new Apk().withHash(hashOfCurrentApk));
+            iterator.remove();
+        }
+
+        return GetInstrumentAllResponse.withJsonOK(apks);
     }
 }

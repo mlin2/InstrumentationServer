@@ -45,7 +45,6 @@ public class InstrumentationManager {
     public void instrumentWithMetadata(InputStream sourceFile, InputStream sinkFile, InputStream easyTaintWrapperSource, byte[] apkFile, String sha512Hash,
                                        byte[] logo, String appName, String packageName, boolean makeAppPublic) {
 
-
         String alignedApkPath = Main.INSTRUMENTATION_JOB_DIRECTORY + "/" + sha512Hash + "/alignedApk.apk";
         ProcessBuilder processBuilder = createInstrumentationProcessBuilder(sourceFile,
                 sinkFile, easyTaintWrapperSource, apkFile, sha512Hash);

@@ -22,18 +22,6 @@ public interface InstrumentResource {
 
 
     /**
-     * Retrieve a list of instrumented apk files
-     */
-    @GET
-    @Path("all")
-    @Produces({
-            "application/json"
-    })
-    InstrumentResource.GetInstrumentAllResponse getInstrumentAll()
-            throws Exception
-    ;
-
-    /**
      * Instrument an apk file based on the configuration files attached
      * to the form-data MultiPart request and store it with the corresponding metadata. If the boolean "makeAppPublic"
      * is set to true, the APK will be made public in the sentinel app store.
@@ -126,7 +114,7 @@ public interface InstrumentResource {
     InstrumentResource.PostInstrumentWithoutmetadataResponse postInstrumentWithoutmetadata(@FormDataParam("file") InputStream sourceFile, @FormDataParam("file") InputStream sinkFile,
                                                                                            @FormDataParam("file") InputStream easyTaintWrapperSource, @FormDataParam("file") InputStream apkFile)
             throws Exception
-            ;
+    ;
 
     /**
      * Retrieve the instrumented apk as a binary blob based on the hash sum value of the non-instrumented version of
@@ -140,6 +128,18 @@ public interface InstrumentResource {
     InstrumentResource.GetInstrumentByApkHashResponse getInstrumentByApkHash(
             @PathParam("apkHash")
             String apkHash)
+            throws Exception
+    ;
+
+    /**
+     * Retrieve a list of instrumented apk files
+     */
+    @GET
+    @Path("all")
+    @Produces({
+            "application/json"
+    })
+    InstrumentResource.GetInstrumentAllResponse getInstrumentAll()
             throws Exception
     ;
 
