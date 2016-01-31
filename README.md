@@ -23,6 +23,7 @@ Furthermore, the operating system running the instrumentation server has to be a
 
 All of the above except the android jar file have to be added to your [PATH] (http://unix.stackexchange.com/questions/26047/how-to-correctly-add-a-path-to-path). Alternatively, you can change the bash script "instrumentation.sh" in the projects root folder and add your individual program paths to all the programs that get executed there.
 
+### Running the server
 The steps to get the server running are as follows:
 ```
 Run in a terminal
