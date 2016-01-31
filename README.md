@@ -1,9 +1,9 @@
 # InstrumentationServer
 
-Instrumentation REST API backend as part of the project Sentinel https://github.com/lolobosse/DroidForce.
-A lengthy report is given at https://github.com/lolobosse/DroidForce/wiki/All-report.
+Instrumentation Server is a Server with an REST API backend as that has been implemented as part of a [project](https://github.com/lolobosse/DroidForce) to extend [DroidForce](https://github.com/secure-software-engineering/DroidForce) with an [Android app](https://github.com/lolobosse/Sentinel) and this instrumentation server.
+All components of the project as submodules as well as a lengthy report are available at https://github.com/lolobosse/DroidForce.
 
-This project uses RAML to generate model classes and endpoints for the Jersey Jax-RS implementation, a Grizzly server and SQLite as a database management system.
+This instrumentation server implementation uses RAML to generate model classes and endpoints for the Jersey Jax-RS implementation, a Grizzly server and SQLite as a database management system.
 
 To generate the code [this library](https://github.com/mulesoft/raml-for-jax-rs) is used, however it has some important issues concerning the `Multipart` that were already reported [here](https://github.com/mulesoft/raml-for-jax-rs/issues/105)
 
