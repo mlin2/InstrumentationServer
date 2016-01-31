@@ -16,7 +16,7 @@ cd InstrumentationDependencies
 pwd
 
 ls
-# "m" as a suffix of the timeout argument tells timeout that the time is in minutes
+# "m" as a suffix of the timeout argument tells timeout that the time is in minutes. The if statement checks whether the last command was executed successfully and returned status code 0 and only then executes the signing and aligning of the APK.
 echo timeout ${13}m java -jar DroidForce.jar -sourceFile $1 -sinkFile $2 -taintWrapper $4 -apkFile $3 -o $5 -j -androidJar $6
 /usr/bin/timeout ${13}m java -jar DroidForce.jar -sourceFile $1 -sinkFile $2 -taintWrapper $4 -apkFile $3 -o $5 -j -androidJar $6
 if [ $? == 0 ]; then
