@@ -1,6 +1,6 @@
 # InstrumentationServer
 
-Instrumentation REST API backend for Securing Android practical course.
+Instrumentation REST API backend as part of the project Sentinel https://github.com/lolobosse/DroidForce2.
 
 This project uses the jersey Jax-RS implementation, a grizzly server and SQLite as a database management system.
 
