@@ -38,7 +38,7 @@ Install zipalign http://developer.android.com/tools/help/zipalign.html
 
 Get an android jar http://developer.android.com/sdk/index.html
 
-Generate a [keystore](https://www.digitalocean.com/community/tutorials/java-keytool-essentials-working-with-java-keystores) for signing of APKs and if you want to offer HTTPS support also for the certificates.
+Generate a [keystore](https://www.digitalocean.com/community/tutorials/java-keytool-essentials-working-with-java-keystores) for signing of APKs and if you want to offer HTTPS support for the certificates as well.
 
 You already should have it if you are running linux but in case you don't, you also need the timeout program that can be found in gnu coreutils.
 
