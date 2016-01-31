@@ -89,16 +89,16 @@ public class Main {
         } else {
             FORWARDED_URI = BASE_URI;
         }
+
         if (enableHttps) {
             SSLContextConfigurator sslContextConfigurator = new SSLContextConfigurator();
             sslContextConfigurator.setKeyStoreFile(securityKeystoreFile);
+            sslContextConfigurator.setKeyStorePass(securityKeystorePassword);
             sslContextConfigurator.setKeyPass(securityKeystorePassword);
             sslContextConfigurator.setSecurityProtocol("TLS");
-            sslContextConfigurator.setKeyPass(securityKeystorePassword);
-
 
             SSLEngineConfigurator sslEngineConfigurator = new SSLEngineConfigurator(sslContextConfigurator).setClientMode(false).setNeedClientAuth(false);
-            System.out.println(sslContextConfigurator.validateConfiguration());
+            System.out.println("Is the SSL context for the server configured correctly? " + sslContextConfigurator.validateConfiguration());
 
             return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc, true, sslEngineConfigurator);
         }
