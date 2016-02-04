@@ -201,7 +201,6 @@ This command will run the server with the configuration specified in the config 
 mvn exec:java
 ```
 ### Limitations
- * One big limitation of the server is security: All interaction is done via HTTP. Therefore, you can not be sure the app you receive from the server or send to the server was not tempered with. It could additionally be implemented to have the app check the hash of the APK with the server before installing it. 
  * Overall robustness: The backend for the service has been written by Sebastian alone and has not been thoroughly tested. Therefore while the basic use cases work with the Sentinel app and the server, other cases might not be handled well by the server. To tackle this issue, more people testing and developing the server would be needed.
  * It has an limited amount of RAM like every machine, so we suppose that sending it 1000's of apps is very likely to make it crash or lead to unexpected errors.
  * Due to a fatal error while fetching F-Droid APKs that is detected by the Java Runtime Environment that happens outside of the Java Virtual Machine in native code in the frame sqlite-3.8.11.2-3fc6f6da-4c38-4319-bac9-b596f7d5cbc6-libsqlitejdbc.so+0x64427, the server however crashes after a few hours. This may be solved by investigating the error. We used OpenJDK Runtime Environment (8.0_66-b17) and sqlite-jdbc 3.8.11.2 for running the server. After implementing more thread safe access to the database, this issue seems to be resolved.
