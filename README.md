@@ -19,11 +19,9 @@ The database used for the project is [SQLite](https://www.sqlite.org/whentouse.h
 
 Note: The hashes used in the implementation of the server always correspond to the uninstrumented versions of APKs because we try to receive data from already having an APK that is not yet instrumented.
 
-### Why is all of that cool?
+### Advantages of the approach:
  * If we change the RAML, the endpoints and model classes can be generated again. Therefore much less implementation is required for changing the REST API.
  * It integrates well with Maven
- * It's just clean software engineering.
- * Because we want that other devs try our server code, we made its configuration pretty simple and devs just have to follow the steps described.
  * Extending the server or including it in a bigger Java server project will be possible.
 
 
