@@ -55,7 +55,7 @@ git clone https://github.com/mlin2/InstrumentationServer.git
 cd InstrumentationServer
 ```
 Create a config.ini:
-The instrumentation server needs a file named config.ini in the project root folder. This is an example of what the config file must include:
+The instrumentation server needs a file named config.ini in the project root folder. Please use absolute paths. This is an example of what the config file must include:
 
 ```ini
 [URL]
@@ -120,7 +120,7 @@ TimeoutForApkFetchingInMinutes: 1
 ```
 An example .ini file is included in the project root.
 
-The tests for the server additionally need a config file at src/test/java/org/sentinel/instrumentationserver. Agai, an example file is given at this location:
+The tests for the server additionally need a config file at src/test/java/org/sentinel/instrumentationserver. Please use absolute paths. Again, an example file is given at this location:
 
 ```ini
 [URL]
@@ -199,16 +199,12 @@ This command will run the server with the configuration specified in the config 
 mvn exec:java
 ```
 ### Limitations
- * Overall robustness: The backend for the service has been written by Sebastian alone and has not been thoroughly tested. Therefore while the basic use cases work with the Sentinel app and the server, other cases might not be handled well by the server. To tackle this issue, more people testing and developing the server would be needed.
- * It has an limited amount of RAM like every machine, so we suppose that sending it 1000's of apps is very likely to make it crash or lead to unexpected errors.
- * Due to a fatal error while fetching F-Droid APKs that is detected by the Java Runtime Environment that happens outside of the Java Virtual Machine in native code in the frame sqlite-3.8.11.2-3fc6f6da-4c38-4319-bac9-b596f7d5cbc6-libsqlitejdbc.so+0x64427, the server however crashes after a few hours. This may be solved by investigating the error. We used OpenJDK Runtime Environment (8.0_66-b17) and sqlite-jdbc 3.8.11.2 for running the server. After implementing more thread safe access to the database connection, this issue seems to be resolved.
- * After some time, the database seems to become unusable such that no APKs can be fetched anymore and also the sentinel app doesn't seem to be able to work with the server in that case. We do not know why this happens. It could be that a series of requests sent to the server puts the database in this state through the operations that are executed in the implementation or a bug in the implementation of the access to SQLite from java.
+ * Overall robustness: The backend for the service has not been thoroughly tested. Therefore while the basic use cases work with the Sentinel app and the server, other cases might not be handled well by the server. To tackle this issue, more people testing and developing the server would be needed.
  * Currently the server fetches remote repository APKs in one single thread because we also want it to be able to handle instrumentation from the sentinel app at the same time. With a stronger server, it would be easy however to split up the list of links to APKs and let several threads instrument them. This may be done with a thread pool.
  * The database queries and Data Access Objects should be improved to handle more special cases with instrumentation data. [Hibernate](http://hibernate.org/) could be used to handle the database queries better than with Strings and prepared statements. For example, model classes for the database could be generated and queries could be written with methods instead of Strings. SQLite is probably not the best choice for an instrumentation server since it takes a long time (about three to five minutes) for the metadata fetching to be done because single transactions are written to the database file.
- * Because of time reasons and because only one person implemented all the features of the server, too few tests were written. 
  * Currently, only png logos are supported because they get returned on the endpoint with the .png extension. Some logo, out of this reason or another unknown reason, do not show up in the app store.
  * A big limitation is that only one version of an instrumented APK can currently be saved on the server. Subsequent requests for the same APK will not be instrumented and the first instrumentation of an APK corresponding to a hash will be returned. Also, some database accesses make usage of the "HASH" (SHA 512 hash) and "SHA256HASH" (SHA 256 hash) fields. They are therefore set to be UNIQUE. This can be changed by accessing by the ID and APKID fields in the tables APKS and METADATA, respectively, implementing the methods in the data access objects differently and removing the UNIQUE statements.
  * As the wrong resource interfaces were generated for form-data multiparts out of the RAML file, we introduced the workaround.resource package with the fixed resource interfaces.
- * The project both includes a jar of the DroidForce project and also a folder for the Instrumentation-PEPs files. We tried getting DroidForce running with a normal Java invocation however could not get it running. Possibly this is the case because of relative paths in the DroidForce implementation or because of concurrency problems.
- * When trying to use XML model classes to map the metadata from an XML file, Jersey only returns request failed for all requests. This is probably the case because JacksonFeature registers both the Json model classes and the XML model classes. Therefore, a manual mapping of the XML metadata was implemented. This may be improved by registering a custom ObjectMapper.
+ * The project both includes a jar of the DroidForce project and also a folder for the Instrumentation-PEPs files. We tried getting DroidForce running with a normal Java invocation however could not get it running. Possibly this is the case because of relative paths in the DroidForce implementation.
+ * When trying to use XML model classes to map the metadata from an XML file, Jersey returns request failed for all requests. This is probably the case because JacksonFeature registers both the Json model classes and the XML model classes. Therefore, a manual mapping of the XML metadata was implemented. This may be improved by registering a custom ObjectMapper.
 
