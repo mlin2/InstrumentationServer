@@ -17,8 +17,8 @@ pwd
 
 ls
 # "m" as a suffix of the timeout argument tells timeout that the time is in minutes.
-echo timeout ${13}m java -jar DroidForce.jar -sourceFile $1 -sinkFile $2 -taintWrapper $4 -apkFile $3 -o $5 -j -androidJar $6
-/usr/bin/timeout ${13}m java -jar DroidForce.jar -sourceFile $1 -sinkFile $2 -taintWrapper $4 -apkFile $3 -o $5 -j -androidJar $6
+echo timeout ${13}m java -jar Updated.jar -sourceFile $1 -sinkFile $2 -taintWrapper $4 -apkFile $3 -o $5 -j -androidJar $6
+/usr/bin/timeout ${13}m java -jar Updated.jar -sourceFile $1 -sinkFile $2 -taintWrapper $4 -apkFile $3 -o $5 -j -androidJar $6 -eventInformation files/eventInformation.xml
 # Check whether the last command was executed successfully and has returned status code 0 and only then execute
 # the signing and aligning of the APK.
 if [ $? == 0 ]; then
