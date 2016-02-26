@@ -131,10 +131,13 @@ public class Main {
         }
 
         final HttpServer server = startServer(configIni);
-        System.out.println(String.format("Jersey app started with WADL available at "
-                + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
+/*        System.out.println(String.format("Jersey app started with WADL available at "
+                + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));*/
+                
+                        System.out.println(String.format("Jersey app started with WADL available at "
+                + "%sapplication.wadl", BASE_URI));
 
-        System.in.read();
-        server.shutdown();
+        //System.in.read();
+        //server.shutdown();
     }
 }
